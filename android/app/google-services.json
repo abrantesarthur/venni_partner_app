@@ -1,0 +1,91 @@
+{
+  "project_info": {
+    "project_number": "433294907451",
+    "firebase_url": "https://venni-rider-development-8a3f8-default-rtdb.firebaseio.com",
+    "project_id": "venni-rider-development-8a3f8",
+    "storage_bucket": "venni-rider-development-8a3f8.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:433294907451:android:2bce672204ceebb0a6e41e",
+        "android_client_info": {
+          "package_name": "com.venni.partner.dev"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "433294907451-kedg2iigemtftrmh3jlv6i9k3rcp96v1.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBeXA3UYwnfv7m3jHUGVcC1T3GshI1jWVI"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "433294907451-kedg2iigemtftrmh3jlv6i9k3rcp96v1.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "433294907451-20sb2s0ov2c5qbfgl05bpmp5k585780v.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "com.venni.rider.app.dev"
+              }
+            }
+          ]
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:433294907451:android:11e40e37cfac32c4a6e41e",
+        "android_client_info": {
+          "package_name": "com.venni.rider.dev"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "433294907451-smujcl660batspbesi5c33nd2sokql30.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.venni.rider.dev",
+            "certificate_hash": "efb97e4eb0fa75454cbfbfce0918762209580366"
+          }
+        },
+        {
+          "client_id": "433294907451-kedg2iigemtftrmh3jlv6i9k3rcp96v1.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBeXA3UYwnfv7m3jHUGVcC1T3GshI1jWVI"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "433294907451-kedg2iigemtftrmh3jlv6i9k3rcp96v1.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "433294907451-20sb2s0ov2c5qbfgl05bpmp5k585780v.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "com.venni.rider.app.dev"
+              }
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
