@@ -21,6 +21,22 @@ if (flutterVersionName == null) {
     flutterVersionName = '1.0'
 }
 
+// extract the environment variables passed with the flutter --dart-define flag
+// reference: https://itnext.io/flutter-1-17-no-more-flavors-no-more-ios-schemas-command-argument-that-solves-everything-8b145ed4285d
+def dartEnvironmentVariables = [
+    DEV_GOOGLE_MAPS_API_KEY: '',
+    STAG_GOOGLE_MAPS_API_KEY: '',
+    // GOOGLE_MAPS_API_KEY: ''
+];
+if (project.hasProperty('dart-defines')) {
+    dartEnvironmentVariables = dartEnvironmentVariables + project.property('dart-defines')
+        .split(',')
+        .collectEntries { entry ->
+            def pair = URLDecoder.decode(entry,"UTF-8" ).split('=')
+            [(pair.first()): pair.last()]
+        }
+}
+
 apply plugin: 'com.google.gms.google-services'
 apply plugin: 'com.android.application'
 apply plugin: 'kotlin-android'
@@ -28,6 +44,8 @@ apply from: "$flutterRoot/packages/flutter_tools/gradle/flutter.gradle"
 
 android {
     compileSdkVersion 30
+
+    flavorDimensions "app"
 
     sourceSets {
         main.java.srcDirs += 'src/main/kotlin'
@@ -47,6 +65,28 @@ android {
             // Signing with the debug keys for now, so `flutter run --release` works.
             signingConfig signingConfigs.debug
         }
+    }
+
+    productFlavors {
+        dev {
+            dimension "app"
+            resValue "string", "app_name", "Dev PartnerApp"
+            applicationIdSuffix ".dev"
+            versionNameSuffix "-dev"
+            resValue "string", "googleMapsApiKey", dartEnvironmentVariables.DEV_GOOGLE_MAPS_API_KEY
+        }
+        stag {
+            dimension "app"
+            resValue "string", "app_name", "Stag PartnerApp"
+            applicationIdSuffix ".stag"
+            versionNameSuffix "-stag"
+            resValue "string", "googleMapsApiKey", dartEnvironmentVariables.STAG_GOOGLE_MAPS_API_KEY
+        }
+        // prod {
+        //     dimension "app"
+        //     resValue "string", "app_name", "RiderApp"
+        //     resValue "string", "googleMapsApiKey", dartEnvironmentVariables.GOOGLE_MAPS_API_KEY
+        // }
     }
 }
 
