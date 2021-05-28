@@ -1,0 +1,16 @@
+<svg width="11" height="76" viewBox="0 0 11 76" fill="none" xmlns="http://www.w3.org/2000/svg">
+<g id="dropOffToPickUpIcon">
+<g id="destination illustration">
+<path id="Line 10 (Stroke)" fill-rule="evenodd" clip-rule="evenodd" d="M4.9998 71L4.9998 7H5.7998L5.7998 71H4.9998Z" fill="black"/>
+</g>
+<g id="pickUpIcon">
+<path id="Rectangle 18" d="M0 0H11V11H0V0Z" fill="#F22E7F"/>
+<path id="Rectangle 18 (Stroke)" fill-rule="evenodd" clip-rule="evenodd" d="M10.7 0.3H0.3V10.7H10.7V0.3ZM0 0V11H11V0H0Z" fill="black"/>
+<path id="Ellipse 31" d="M6.875 5.5C6.875 6.25939 6.25939 6.875 5.5 6.875C4.74061 6.875 4.125 6.25939 4.125 5.5C4.125 4.74061 4.74061 4.125 5.5 4.125C6.25939 4.125 6.875 4.74061 6.875 5.5Z" fill="white"/>
+</g>
+<g id="dropOffIcon">
+<path id="Ellipse 32" d="M11 70.5C11 73.5376 8.53757 76 5.5 76C2.46243 76 0 73.5376 0 70.5C0 67.4624 2.46243 65 5.5 65C8.53757 65 11 67.4624 11 70.5Z" fill="black"/>
+<path id="Rectangle 19" d="M4.125 69.125H6.875V71.875H4.125V69.125Z" fill="white"/>
+</g>
+</g>
+</svg>
