@@ -1,6 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:partner_app/models/connectivity.dart';
+import 'package:partner_app/models/firebase.dart';
+import 'package:partner_app/models/partner.dart';
 import 'package:partner_app/styles.dart';
+import 'package:partner_app/widgets/overallPadding.dart';
 import 'package:provider/provider.dart';
 
 class Documents extends StatefulWidget {
@@ -15,11 +18,14 @@ class DocumentsState extends State<Documents> with WidgetsBindingObserver {
   @override
   Widget build(BuildContext context) {
     ConnectivityModel connectivity = Provider.of<ConnectivityModel>(context);
+    FirebaseModel firebase = Provider.of<FirebaseModel>(context);
+    PartnerModel partner = Provider.of<PartnerModel>(context);
     final screenHeight = MediaQuery.of(context).size.height;
     final screenWidth = MediaQuery.of(context).size.width;
 
     return Scaffold(
       body: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Container(
             height: screenHeight / 8,
@@ -63,6 +69,95 @@ class DocumentsState extends State<Documents> with WidgetsBindingObserver {
                   )
                 ],
               ),
+            ),
+          ),
+          OverallPadding(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  "Bem-vindo(a), " + partner.name,
+                  style: TextStyle(fontSize: 22, fontWeight: FontWeight.w600),
+                ),
+                SizedBox(height: screenHeight / 20),
+                Text(
+                  "Documentos obrigatórios",
+                  style: TextStyle(fontSize: 16, fontWeight: FontWeight.w600),
+                ),
+                SizedBox(height: screenHeight / 40),
+                Text(
+                  "Após o envio dos documentos, analizaremos a sua inscrição em até 48 horas.",
+                  style: TextStyle(fontSize: 16, color: AppColor.disabled),
+                ),
+                SizedBox(height: screenHeight / 40),
+                ListBody(
+                  children: [
+                    ListTile(
+                      minLeadingWidth: 0,
+                      contentPadding: EdgeInsets.all(0),
+                      onTap: () async {},
+                      title: Text(
+                        "Carteira Nacional de Habilitação com EAR (CNH)",
+                        style: TextStyle(
+                            fontSize: 16, fontWeight: FontWeight.w600),
+                      ),
+                      leading: Icon(Icons.description, color: Colors.black),
+                      trailing: Icon(
+                        Icons.keyboard_arrow_right,
+                        color: AppColor.disabled,
+                      ),
+                    ),
+                    Divider(color: Colors.black, thickness: 0.1),
+                    ListTile(
+                      minLeadingWidth: 0,
+                      contentPadding: EdgeInsets.all(0),
+                      onTap: () async {},
+                      title: Text(
+                        "Foto do Rosto com CNH do Lado",
+                        style: TextStyle(
+                            fontSize: 16, fontWeight: FontWeight.w600),
+                      ),
+                      leading: Icon(Icons.description, color: Colors.black),
+                      trailing: Icon(
+                        Icons.keyboard_arrow_right,
+                        color: AppColor.disabled,
+                      ),
+                    ),
+                    Divider(color: Colors.black, thickness: 0.1),
+                    ListTile(
+                      minLeadingWidth: 0,
+                      contentPadding: EdgeInsets.all(0),
+                      onTap: () async {},
+                      title: Text(
+                        "Foto de Perfil",
+                        style: TextStyle(
+                            fontSize: 16, fontWeight: FontWeight.w600),
+                      ),
+                      leading: Icon(Icons.description, color: Colors.black),
+                      trailing: Icon(
+                        Icons.keyboard_arrow_right,
+                        color: AppColor.disabled,
+                      ),
+                    ),
+                    Divider(color: Colors.black, thickness: 0.1),
+                    ListTile(
+                      minLeadingWidth: 0,
+                      contentPadding: EdgeInsets.all(0),
+                      onTap: () async {},
+                      title: Text(
+                        "Informações bançarias",
+                        style: TextStyle(
+                            fontSize: 16, fontWeight: FontWeight.w600),
+                      ),
+                      leading: Icon(Icons.description, color: Colors.black),
+                      trailing: Icon(
+                        Icons.keyboard_arrow_right,
+                        color: AppColor.disabled,
+                      ),
+                    ),
+                  ],
+                ),
+              ],
             ),
           )
         ],

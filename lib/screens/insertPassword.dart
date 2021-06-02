@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/scheduler.dart';
 import 'package:partner_app/models/connectivity.dart';
 import 'package:partner_app/models/firebase.dart';
+import 'package:partner_app/models/partner.dart';
 import 'package:partner_app/vendors/firebaseDatabase/methods.dart';
 import 'package:partner_app/screens/documents.dart';
 import 'package:partner_app/screens/splash.dart';
@@ -258,6 +259,19 @@ class InsertPasswordState extends State<InsertPassword> {
           gender: widget.gender,
         );
 
+        // we enforce a variant that, by the time Documents is pushed, PartnerModel
+        // must have been updated with the user information
+        // try getting partner credentials
+        PartnerInterface partnerInterface =
+            await firebase.database.getPilotFromID(
+          widget.userCredential.user.uid,
+        );
+        PartnerModel partner = Provider.of<PartnerModel>(
+          context,
+          listen: false,
+        );
+        partner.fromPartnerInterface(partnerInterface);
+
         return true;
       } on FirebaseAuthException catch (e) {
         await handleRegistrationFailure(firebase, e);
@@ -277,6 +291,19 @@ class InsertPasswordState extends State<InsertPassword> {
           cpf: widget.cpf,
           gender: widget.gender,
         );
+
+        // we enforce a variant that, by the time Documents is pushed, PartnerModel
+        // must have been updated with the user information
+        // try getting partner credentials
+        PartnerInterface partnerInterface =
+            await firebase.database.getPilotFromID(
+          widget.userCredential.user.uid,
+        );
+        PartnerModel partner = Provider.of<PartnerModel>(
+          context,
+          listen: false,
+        );
+        partner.fromPartnerInterface(partnerInterface);
         return true;
       } on FirebaseAuthException catch (e) {
         await handleRegistrationFailure(firebase, e);
