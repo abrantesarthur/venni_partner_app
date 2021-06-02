@@ -7,6 +7,15 @@ import 'package:flutter/material.dart';
 import 'package:partner_app/config/config.dart';
 import 'package:partner_app/models/connectivity.dart';
 import 'package:partner_app/models/firebase.dart';
+import 'package:partner_app/models/partner.dart';
+import 'package:partner_app/screens/documents.dart';
+import 'package:partner_app/screens/home.dart';
+import 'package:partner_app/screens/insertAditionalInfo.dart';
+import 'package:partner_app/screens/insertEmail.dart';
+import 'package:partner_app/screens/insertName.dart';
+import 'package:partner_app/screens/insertPassword.dart';
+import 'package:partner_app/screens/insertPhone.dart';
+import 'package:partner_app/screens/insertSmsCode.dart';
 import 'package:partner_app/screens/splash.dart';
 import 'package:partner_app/screens/start.dart';
 import 'package:provider/provider.dart';
@@ -19,6 +28,7 @@ class _AppState extends State<App> {
   bool _initialized = false;
   bool _error = false;
   FirebaseModel firebaseModel;
+  PartnerModel partnerModel;
   ConnectivityModel connectivity;
   // GoogleMapsModel googleMaps;
   FirebaseAuth firebaseAuth;
@@ -79,7 +89,6 @@ class _AppState extends State<App> {
         _error = false;
       });
     } catch (e) {
-      print(e);
       // Set `_error` state to true if Firebase initialization fails
       setState(() {
         _error = true;
@@ -140,7 +149,8 @@ class _AppState extends State<App> {
         firebaseFunctions: firebaseFunctions,
       );
 
-      // // initialize models
+      // initialize models
+      partnerModel = PartnerModel();
       // tripModel = TripModel();
       // user = UserModel();
       // googleMaps = GoogleMapsModel();
@@ -157,6 +167,9 @@ class _AppState extends State<App> {
           ChangeNotifierProvider<FirebaseModel>(
             create: (context) => firebaseModel,
           ),
+          ChangeNotifierProvider<PartnerModel>(
+            create: (context) => partnerModel,
+          ),
           ChangeNotifierProvider<ConnectivityModel>(
             create: (context) => connectivity,
           ),
@@ -171,7 +184,7 @@ class _AppState extends State<App> {
             theme: ThemeData(fontFamily: "OpenSans"),
             // start screen depends on whether user is registered
             initialRoute:
-                firebase.isRegistered ? Start.routeName : Start.routeName,
+                firebase.hasClientAccount ? Start.routeName : Start.routeName,
             // pass appropriate arguments to routes
             onGenerateRoute: (RouteSettings settings) {
               // if Home is pushed
@@ -188,6 +201,68 @@ class _AppState extends State<App> {
               //   });
               // }
 
+              // if InsertSmsCode is pushed
+              if (settings.name == InsertSmsCode.routeName) {
+                final InsertSmsCodeArguments args = settings.arguments;
+                return MaterialPageRoute(builder: (context) {
+                  return InsertSmsCode(
+                    verificationId: args.verificationId,
+                    resendToken: args.resendToken,
+                    phoneNumber: args.phoneNumber,
+                    mode: args.mode,
+                  );
+                });
+              }
+
+              // if InsertEmail is pushed
+              if (settings.name == InsertEmail.routeName) {
+                final InsertEmailArguments args = settings.arguments;
+                return MaterialPageRoute(builder: (context) {
+                  return InsertEmail(
+                    userCredential: args.userCredential,
+                  );
+                });
+              }
+
+              // if InsertName is pushed
+              if (settings.name == InsertName.routeName) {
+                final InsertNameArguments args = settings.arguments;
+                return MaterialPageRoute(builder: (context) {
+                  return InsertName(
+                    userCredential: args.userCredential,
+                    userEmail: args.userEmail,
+                  );
+                });
+              }
+
+              // if InsertAditionalInfo is pushed
+              if (settings.name == InsertAditionalInfo.routeName) {
+                final InsertAditionalInfoArguments args = settings.arguments;
+                return MaterialPageRoute(builder: (context) {
+                  return InsertAditionalInfo(
+                    userCredential: args.userCredential,
+                    userEmail: args.userEmail,
+                    name: args.name,
+                    surname: args.surname,
+                  );
+                });
+              }
+
+              // if InsertPassword is pushed
+              if (settings.name == InsertPassword.routeName) {
+                final InsertPasswordArguments args = settings.arguments;
+                return MaterialPageRoute(builder: (context) {
+                  return InsertPassword(
+                    userCredential: args.userCredential,
+                    userEmail: args.userEmail,
+                    name: args.name,
+                    surname: args.surname,
+                    cpf: args.cpf,
+                    gender: args.gender,
+                  );
+                });
+              }
+
               assert(false, 'Need to implement ${settings.name}');
               return null;
             },
@@ -199,7 +274,10 @@ class _AppState extends State<App> {
               //       googleMaps: googleMaps,
               //       connectivity: connectivity,
               //     ),
+              Home.routeName: (context) => Home(),
               Start.routeName: (context) => Start(),
+              InsertPhone.routeName: (context) => InsertPhone(),
+              Documents.routeName: (context) => Documents(),
             },
           );
         });

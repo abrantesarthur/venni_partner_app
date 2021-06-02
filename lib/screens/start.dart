@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:partner_app/screens/insertPhone.dart';
 import 'package:partner_app/widgets/appButton.dart';
 import 'package:partner_app/widgets/overallPadding.dart';
 
@@ -21,7 +22,8 @@ class Start extends StatelessWidget {
               ),
               Spacer(flex: 3),
               Text(
-                "Chame uma corrida",
+                "Bem-vindo(a) ao app de parceiros",
+                textAlign: TextAlign.center,
                 style: TextStyle(
                   fontFamily: "OpenSans",
                   fontWeight: FontWeight.bold,
@@ -32,7 +34,9 @@ class Start extends StatelessWidget {
               AppButton(
                 textData: "Começar",
                 iconRight: Icons.arrow_forward,
-                onTapCallBack: () {},
+                onTapCallBack: () {
+                  Navigator.pushNamed(context, InsertPhone.routeName);
+                },
               ),
               Spacer(flex: 2),
             ],
