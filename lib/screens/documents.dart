@@ -38,23 +38,26 @@ class DocumentsState extends State<Documents> with WidgetsBindingObserver {
                     width: screenWidth * 0.3,
                   ),
                   Spacer(),
-                  Container(
-                    width: screenWidth / 4.5,
-                    decoration: BoxDecoration(
-                      borderRadius: BorderRadius.circular(50),
-                      color: Colors.white,
-                    ),
-                    child: Padding(
-                      padding: EdgeInsets.all(screenHeight / 100),
-                      child: Row(
-                        children: [
-                          Text("Ajuda"),
-                          Spacer(),
-                          Icon(
-                            Icons.keyboard_arrow_down,
-                            size: 18,
-                          )
-                        ],
+                  GestureDetector(
+                    onTap: () => _showHelpDialog(context),
+                    child: Container(
+                      width: screenWidth / 4.5,
+                      decoration: BoxDecoration(
+                        borderRadius: BorderRadius.circular(50),
+                        color: Colors.white,
+                      ),
+                      child: Padding(
+                        padding: EdgeInsets.all(screenHeight / 100),
+                        child: Row(
+                          children: [
+                            Text("Ajuda"),
+                            Spacer(),
+                            Icon(
+                              Icons.keyboard_arrow_down,
+                              size: 18,
+                            )
+                          ],
+                        ),
                       ),
                     ),
                   )
@@ -66,4 +69,37 @@ class DocumentsState extends State<Documents> with WidgetsBindingObserver {
       ),
     );
   }
+}
+
+Future<dynamic> _showHelpDialog(BuildContext context) {
+  return showDialog(
+    context: context,
+    builder: (BuildContext context) {
+      return AlertDialog(
+        content: SingleChildScrollView(
+          child: ListBody(
+            children: [
+              ListTile(
+                onTap: () async {
+                  // TODO: open whatsapp
+                },
+                title: Text("Chat com o suporte"),
+                leading: Icon(
+                  Icons.question_answer,
+                  color: AppColor.primaryPink,
+                ),
+              ),
+              Divider(color: Colors.black, thickness: 0.1),
+              ListTile(
+                onTap: () async {
+                  // TODO: logout
+                },
+                title: Text("sair"),
+              ),
+            ],
+          ),
+        ),
+      );
+    },
+  );
 }
