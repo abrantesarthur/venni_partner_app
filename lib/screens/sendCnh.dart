@@ -48,7 +48,7 @@ class SendCnhNumberState extends State<SendCnh> {
                           fontWeight: FontWeight.w500,
                         ),
                       ),
-                      SizedBox(height: screenHeight / 20),
+                      SizedBox(height: screenHeight / 25),
                       Text(
                         "Requisitos de envio",
                         style: TextStyle(
@@ -59,20 +59,20 @@ class SendCnhNumberState extends State<SendCnh> {
                       ),
                       SizedBox(height: screenHeight / 50),
                       Text(
-                        "1. A CNH deve ter a observação Exerce Atividade Remunerada (EAR)",
+                        "1. A CNH deve ter a observação Exerce Atividade Remunerada (EAR), estar legível e dentro do prazo de validade.",
                         style: TextStyle(color: Colors.black, fontSize: 14),
                       ),
                       SizedBox(height: screenHeight / 50),
                       Text(
-                        "2. O documento deve estar dentro do prazo de validade",
+                        "2. A foto deve ser tirada do documento aberto e fora do plástico, como na ilustração abaixo",
                         style: TextStyle(color: Colors.black, fontSize: 14),
                       ),
                       SizedBox(height: screenHeight / 50),
                       Text(
-                        "3. Os dados do documento devem estar legíveis",
+                        "3. Se preferir, pode enviar uma foto da CNH digital que você pode obter no site do Denatran ou através do app gov.b",
                         style: TextStyle(color: Colors.black, fontSize: 14),
                       ),
-                      SizedBox(height: screenHeight / 20),
+                      SizedBox(height: screenHeight / 25),
                       Row(
                         children: [
                           Spacer(),
@@ -83,13 +83,13 @@ class SendCnhNumberState extends State<SendCnh> {
                             decoration: new BoxDecoration(
                               image: new DecorationImage(
                                   fit: BoxFit.cover,
-                                  image: AssetImage("images/crlv.png")),
+                                  image: AssetImage("images/cnh.png")),
                             ),
                           ),
                           Spacer(),
                         ],
                       ),
-                      SizedBox(height: screenHeight / 20),
+                      SizedBox(height: screenHeight / 25),
                       // TODO: name CRLV correctly based on type (image versus pdf)
                       AppButton(textData: "Enviar CNH", onTapCallBack: () {}),
                     ],

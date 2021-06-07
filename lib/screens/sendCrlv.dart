@@ -48,7 +48,7 @@ class SendCrlvNumberState extends State<SendCrlv> {
                           fontWeight: FontWeight.w500,
                         ),
                       ),
-                      SizedBox(height: screenHeight / 20),
+                      SizedBox(height: screenHeight / 25),
                       Text(
                         "Requisitos de envio",
                         style: TextStyle(
@@ -72,7 +72,7 @@ class SendCrlvNumberState extends State<SendCrlv> {
                         "3. Você pode enviar ou uma foto do CRLV físico ou o CRLV digital em formato PDF que você pode obter no site do Detran ou através do app gov.br",
                         style: TextStyle(color: Colors.black, fontSize: 14),
                       ),
-                      SizedBox(height: screenHeight / 20),
+                      SizedBox(height: screenHeight / 25),
                       Row(
                         children: [
                           Spacer(),
@@ -89,7 +89,7 @@ class SendCrlvNumberState extends State<SendCrlv> {
                           Spacer(),
                         ],
                       ),
-                      SizedBox(height: screenHeight / 20),
+                      SizedBox(height: screenHeight / 25),
                       // TODO: name CRLV correctly based on type (image versus pdf)
                       AppButton(textData: "Enviar CRLV", onTapCallBack: () {}),
                     ],
