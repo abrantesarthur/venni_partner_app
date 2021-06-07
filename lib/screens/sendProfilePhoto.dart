@@ -87,13 +87,13 @@ class SendProfilePhotoState extends State<SendProfilePhoto> {
                           children: [
                             Spacer(),
                             Container(
-                              width: screenWidth / 1.3,
-                              height: screenHeight / 2,
+                              width: screenWidth / 2,
+                              height: screenHeight / 4,
                               alignment: Alignment.center,
                               decoration: new BoxDecoration(
                                 image: new DecorationImage(
                                     fit: BoxFit.cover,
-                                    image: AssetImage("images/cnh.png")),
+                                    image: AssetImage("images/profilePic.png")),
                               ),
                             ),
                             Spacer(),
