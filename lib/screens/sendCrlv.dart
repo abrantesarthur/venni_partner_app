@@ -1,8 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:partner_app/models/firebase.dart';
 import 'package:partner_app/widgets/arrowBackButton.dart';
 import 'package:partner_app/widgets/overallPadding.dart';
-import 'package:provider/provider.dart';
 
 class SendCrlv extends StatefulWidget {
   static const String routeName = "sendCrlv";
@@ -15,7 +13,6 @@ class SendCrlvNumberState extends State<SendCrlv> {
   @override
   Widget build(BuildContext context) {
     final screenHeight = MediaQuery.of(context).size.height;
-    final firebaseModel = Provider.of<FirebaseModel>(context);
 
     return Scaffold(
       body: LayoutBuilder(
@@ -42,10 +39,37 @@ class SendCrlvNumberState extends State<SendCrlv> {
                       ),
                       SizedBox(height: screenHeight / 25),
                       Text(
-                        "Insira seu nº de celular",
-                        style: TextStyle(color: Colors.black, fontSize: 18),
+                        "Envie o seu CRLV",
+                        style: TextStyle(
+                          color: Colors.black,
+                          fontSize: 20,
+                          fontWeight: FontWeight.w500,
+                        ),
                       ),
-                      SizedBox(height: screenHeight / 40),
+                      SizedBox(height: screenHeight / 20),
+                      Text(
+                        "Requisitos de envio",
+                        style: TextStyle(
+                          color: Colors.black,
+                          fontSize: 16,
+                          fontWeight: FontWeight.w500,
+                        ),
+                      ),
+                      SizedBox(height: screenHeight / 50),
+                      Text(
+                        "1. O documento do veículo deve estar dentro do prazo de validade",
+                        style: TextStyle(color: Colors.black, fontSize: 14),
+                      ),
+                      SizedBox(height: screenHeight / 50),
+                      Text(
+                        "2. Envie somente a primeira página. Porém, os dados devem estar legíveis",
+                        style: TextStyle(color: Colors.black, fontSize: 14),
+                      ),
+                      SizedBox(height: screenHeight / 50),
+                      Text(
+                        "3. Você pode enviar ou uma foto do CRLV físico ou o CRLV digital em formato PDF que você pode obter no site do Detran ou através do app gov.br",
+                        style: TextStyle(color: Colors.black, fontSize: 14),
+                      ),
                     ],
                   ),
                 ),
