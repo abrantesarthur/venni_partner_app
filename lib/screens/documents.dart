@@ -12,6 +12,8 @@ class Documents extends StatefulWidget {
   DocumentsState createState() => DocumentsState();
 }
 
+// TODO: as user sends information, add the under 'Documentos enviados'
+
 class DocumentsState extends State<Documents> with WidgetsBindingObserver {
   bool _hasConnection;
 
@@ -97,6 +99,22 @@ class DocumentsState extends State<Documents> with WidgetsBindingObserver {
                       contentPadding: EdgeInsets.all(0),
                       onTap: () async {},
                       title: Text(
+                        "Certificado de Registro e Licensiamento de Veículo (CRLV)",
+                        style: TextStyle(
+                            fontSize: 16, fontWeight: FontWeight.w600),
+                      ),
+                      leading: Icon(Icons.description, color: Colors.black),
+                      trailing: Icon(
+                        Icons.keyboard_arrow_right,
+                        color: AppColor.disabled,
+                      ),
+                    ),
+                    Divider(color: Colors.black, thickness: 0.1),
+                    ListTile(
+                      minLeadingWidth: 0,
+                      contentPadding: EdgeInsets.all(0),
+                      onTap: () async {},
+                      title: Text(
                         "Carteira Nacional de Habilitação com EAR (CNH)",
                         style: TextStyle(
                             fontSize: 16, fontWeight: FontWeight.w600),
@@ -145,7 +163,7 @@ class DocumentsState extends State<Documents> with WidgetsBindingObserver {
                       contentPadding: EdgeInsets.all(0),
                       onTap: () async {},
                       title: Text(
-                        "Informações bançarias",
+                        "Informações bancárias",
                         style: TextStyle(
                             fontSize: 16, fontWeight: FontWeight.w600),
                       ),

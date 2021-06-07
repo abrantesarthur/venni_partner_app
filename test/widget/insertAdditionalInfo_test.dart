@@ -35,13 +35,6 @@ void main() {
       // add InsertName widget to the UI
       await pumpWidget(tester);
 
-      // expect inactive state
-      final InsertAditionalInfoState insertAdditionalInfoState =
-          tester.state(find.byType(InsertName));
-      expect(insertAdditionalInfoState.circularButtonCallback, isNull);
-      expect(insertAdditionalInfoState.circularButtonColor,
-          equals(AppColor.disabled));
-
       // expect focus to start on name input
       final nameInputWidget = tester.firstWidget(find.byType(AppInputText));
       expect(
