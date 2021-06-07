@@ -138,7 +138,9 @@ class DocumentsState extends State<Documents> with WidgetsBindingObserver {
                       contentPadding: EdgeInsets.all(0),
                       onTap: () async {
                         Navigator.pushNamed(
-                            context, SendPhotoWithCnh.routeName);
+                          context,
+                          SendPhotoWithCnh.routeName,
+                        );
                       },
                       title: Text(
                         "Foto do Rosto com CNH do Lado",

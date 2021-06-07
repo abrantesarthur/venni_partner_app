@@ -68,7 +68,7 @@ class SendCnhState extends State<SendCnh> {
                         ),
                         SizedBox(height: screenHeight / 50),
                         Text(
-                          "3. Se preferir, pode enviar uma foto da CNH digital que você pode obter no site do Denatran ou através do app gov.b",
+                          "3. Se preferir, pode enviar uma foto da CNH digital que você pode obter no site do Denatran ou através do app gov.br",
                           style: TextStyle(color: Colors.black, fontSize: 14),
                         ),
                         SizedBox(height: screenHeight / 25),

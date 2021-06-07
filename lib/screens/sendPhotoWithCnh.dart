@@ -11,6 +11,7 @@ class SendPhotoWithCnh extends StatefulWidget {
   SendPhotoWithCnhState createState() => SendPhotoWithCnhState();
 }
 
+// TODO: update photo
 class SendPhotoWithCnhState extends State<SendPhotoWithCnh> {
   @override
   Widget build(BuildContext context) {
@@ -33,7 +34,7 @@ class SendPhotoWithCnhState extends State<SendPhotoWithCnh> {
             ),
             SizedBox(height: screenHeight / 25),
             Text(
-              "Envie uma foto da sua Carteira Nacional de Habilitação (CNH) com EAR",
+              "Envie uma foto de você segurando sua CNH",
               style: TextStyle(
                 color: Colors.black,
                 fontSize: 20,
@@ -58,17 +59,17 @@ class SendPhotoWithCnhState extends State<SendPhotoWithCnh> {
                         ),
                         SizedBox(height: screenHeight / 50),
                         Text(
-                          "1. A CNH deve ter a observação Exerce Atividade Remunerada (EAR), estar legível e dentro do prazo de validade.",
+                          "1. A CNH deve estar próxima do seu rosto, como na ilustração abaixo",
                           style: TextStyle(color: Colors.black, fontSize: 14),
                         ),
                         SizedBox(height: screenHeight / 50),
                         Text(
-                          "2. A foto deve ser tirada do documento aberto e fora do plástico, como na ilustração abaixo",
+                          "2. O documento deve estar legível",
                           style: TextStyle(color: Colors.black, fontSize: 14),
                         ),
                         SizedBox(height: screenHeight / 50),
                         Text(
-                          "3. Se preferir, pode enviar uma foto da CNH digital que você pode obter no site do Denatran ou através do app gov.b",
+                          "3. Se você possui a CNH digital, recomendamos que abra o documento em um outro aparelho e aproxime ao seu rosto",
                           style: TextStyle(color: Colors.black, fontSize: 14),
                         ),
                         SizedBox(height: screenHeight / 25),
@@ -97,7 +98,7 @@ class SendPhotoWithCnhState extends State<SendPhotoWithCnh> {
                     left: 0,
                     right: 0,
                     child: AppButton(
-                      textData: "Enviar CNH",
+                      textData: "Enviar Foto",
                       buttonColor: AppColor.primaryPink,
                       onTapCallBack: () {},
                     ),
