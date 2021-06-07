@@ -4,14 +4,14 @@ import 'package:partner_app/widgets/appButton.dart';
 import 'package:partner_app/widgets/arrowBackButton.dart';
 import 'package:partner_app/widgets/overallPadding.dart';
 
-class SendCnh extends StatefulWidget {
-  static const String routeName = "sendCnh";
+class SendPhotoWithCnh extends StatefulWidget {
+  static const String routeName = "sendPhotoWithCnh";
 
   @override
-  SendCnhNumberState createState() => SendCnhNumberState();
+  SendPhotoWithCnhState createState() => SendPhotoWithCnhState();
 }
 
-class SendCnhNumberState extends State<SendCnh> {
+class SendPhotoWithCnhState extends State<SendPhotoWithCnh> {
   @override
   Widget build(BuildContext context) {
     final screenHeight = MediaQuery.of(context).size.height;

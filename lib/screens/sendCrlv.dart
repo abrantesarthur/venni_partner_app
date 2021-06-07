@@ -8,10 +8,10 @@ class SendCrlv extends StatefulWidget {
   static const String routeName = "sendCrlv";
 
   @override
-  SendCrlvNumberState createState() => SendCrlvNumberState();
+  SendCrlvState createState() => SendCrlvState();
 }
 
-class SendCrlvNumberState extends State<SendCrlv> {
+class SendCrlvState extends State<SendCrlv> {
   @override
   Widget build(BuildContext context) {
     final screenHeight = MediaQuery.of(context).size.height;

@@ -18,6 +18,7 @@ import 'package:partner_app/screens/insertName.dart';
 import 'package:partner_app/screens/insertPassword.dart';
 import 'package:partner_app/screens/insertPhone.dart';
 import 'package:partner_app/screens/insertSmsCode.dart';
+import 'package:partner_app/screens/sendPhotoWithCnh.dart';
 import 'package:partner_app/screens/splash.dart';
 import 'package:partner_app/screens/start.dart';
 import 'package:provider/provider.dart';
@@ -282,6 +283,7 @@ class _AppState extends State<App> {
               Documents.routeName: (context) => Documents(),
               SendCrlv.routeName: (context) => SendCrlv(),
               SendCnh.routeName: (context) => SendCnh(),
+              SendPhotoWithCnh.routeName: (context) => SendPhotoWithCnh(),
             },
           );
         });

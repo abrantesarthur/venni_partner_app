@@ -4,6 +4,7 @@ import 'package:partner_app/models/firebase.dart';
 import 'package:partner_app/models/partner.dart';
 import 'package:partner_app/screens/sendCnh.dart';
 import 'package:partner_app/screens/sendCrlv.dart';
+import 'package:partner_app/screens/sendPhotoWithCnh.dart';
 import 'package:partner_app/styles.dart';
 import 'package:partner_app/widgets/overallPadding.dart';
 import 'package:provider/provider.dart';
@@ -135,7 +136,10 @@ class DocumentsState extends State<Documents> with WidgetsBindingObserver {
                     ListTile(
                       minLeadingWidth: 0,
                       contentPadding: EdgeInsets.all(0),
-                      onTap: () async {},
+                      onTap: () async {
+                        Navigator.pushNamed(
+                            context, SendPhotoWithCnh.routeName);
+                      },
                       title: Text(
                         "Foto do Rosto com CNH do Lado",
                         style: TextStyle(
