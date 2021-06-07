@@ -3,14 +3,14 @@ import 'package:partner_app/widgets/appButton.dart';
 import 'package:partner_app/widgets/arrowBackButton.dart';
 import 'package:partner_app/widgets/overallPadding.dart';
 
-class SendCrlv extends StatefulWidget {
-  static const String routeName = "sendCrlv";
+class SendCnh extends StatefulWidget {
+  static const String routeName = "sendCnh";
 
   @override
-  SendCrlvNumberState createState() => SendCrlvNumberState();
+  SendCnhNumberState createState() => SendCnhNumberState();
 }
 
-class SendCrlvNumberState extends State<SendCrlv> {
+class SendCnhNumberState extends State<SendCnh> {
   @override
   Widget build(BuildContext context) {
     final screenHeight = MediaQuery.of(context).size.height;
@@ -41,7 +41,7 @@ class SendCrlvNumberState extends State<SendCrlv> {
                       ),
                       SizedBox(height: screenHeight / 25),
                       Text(
-                        "Envie o seu CRLV",
+                        "Envie uma foto da sua Carteira Nacional de Habilitação (CNH) com EAR",
                         style: TextStyle(
                           color: Colors.black,
                           fontSize: 20,
@@ -59,17 +59,17 @@ class SendCrlvNumberState extends State<SendCrlv> {
                       ),
                       SizedBox(height: screenHeight / 50),
                       Text(
-                        "1. O documento do veículo deve estar dentro do prazo de validade",
+                        "1. A CNH deve ter a observação Exerce Atividade Remunerada (EAR)",
                         style: TextStyle(color: Colors.black, fontSize: 14),
                       ),
                       SizedBox(height: screenHeight / 50),
                       Text(
-                        "2. Envie somente a primeira página. Porém, os dados devem estar legíveis",
+                        "2. O documento deve estar dentro do prazo de validade",
                         style: TextStyle(color: Colors.black, fontSize: 14),
                       ),
                       SizedBox(height: screenHeight / 50),
                       Text(
-                        "3. Você pode enviar ou uma foto do CRLV físico ou o CRLV digital em formato PDF que você pode obter no site do Detran ou através do app gov.br",
+                        "3. Os dados do documento devem estar legíveis",
                         style: TextStyle(color: Colors.black, fontSize: 14),
                       ),
                       SizedBox(height: screenHeight / 20),
@@ -91,7 +91,7 @@ class SendCrlvNumberState extends State<SendCrlv> {
                       ),
                       SizedBox(height: screenHeight / 20),
                       // TODO: name CRLV correctly based on type (image versus pdf)
-                      AppButton(textData: "Enviar CRLV", onTapCallBack: () {}),
+                      AppButton(textData: "Enviar CNH", onTapCallBack: () {}),
                     ],
                   ),
                 ),

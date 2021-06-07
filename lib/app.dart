@@ -8,6 +8,7 @@ import 'package:partner_app/config/config.dart';
 import 'package:partner_app/models/connectivity.dart';
 import 'package:partner_app/models/firebase.dart';
 import 'package:partner_app/models/partner.dart';
+import 'package:partner_app/screens/sendCnh.dart';
 import 'package:partner_app/screens/sendCrlv.dart';
 import 'package:partner_app/screens/documents.dart';
 import 'package:partner_app/screens/home.dart';
@@ -280,6 +281,7 @@ class _AppState extends State<App> {
               InsertPhone.routeName: (context) => InsertPhone(),
               Documents.routeName: (context) => Documents(),
               SendCrlv.routeName: (context) => SendCrlv(),
+              SendCnh.routeName: (context) => SendCnh(),
             },
           );
         });
