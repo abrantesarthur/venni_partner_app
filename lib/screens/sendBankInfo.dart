@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:partner_app/styles.dart';
 import 'package:partner_app/widgets/appButton.dart';
+import 'package:partner_app/widgets/appInputText.dart';
 import 'package:partner_app/widgets/arrowBackButton.dart';
 import 'package:partner_app/widgets/overallPadding.dart';
 
@@ -11,8 +13,71 @@ class SendBankInfo extends StatefulWidget {
   SendBankInfoState createState() => SendBankInfoState();
 }
 
-// TODO: update photo
+// TODO: lock screen in all screens while submitting info
+// TOOD: display warnings if something goes wrong
 class SendBankInfoState extends State<SendBankInfo> {
+  TextEditingController agencyNumberController = TextEditingController();
+  TextEditingController agencyDigitController = TextEditingController();
+  TextEditingController accountNumberController = TextEditingController();
+  TextEditingController accountDigitController = TextEditingController();
+  bool agencyNumberIsValid = false;
+  bool agencyDigitIsValid = false;
+  bool accountNumberIsValid = false;
+  bool accountDigitIsValid = false;
+  bool lockScreen = false;
+  Banks selectedBank;
+  AccountTypes selectedAccountType;
+
+  Map<Banks, String> bankMap = {
+    Banks.BancoDoBrasil: "1 - Banco do Brasil",
+    Banks.Santander: "33 - Santander",
+    Banks.Caixa: "104 - Caixa",
+    Banks.Bradesco: "237 - Bradesco",
+    Banks.Itau: "341 - Itaú",
+    Banks.Hsbc: "399 - HSBC",
+  };
+
+  Map<AccountTypes, String> accountTypeMap = {
+    AccountTypes.Corrente: "Corrente",
+    AccountTypes.Poupanca: "Poupança",
+    AccountTypes.CorrenteConjunta: "Corrente Conjunta",
+    AccountTypes.PoupancaConjunta: "Poupança Conjunta",
+  };
+
+  @override
+  void initState() {
+    agencyNumberController.addListener(() {
+      setState(() {
+        agencyNumberIsValid = agencyNumberController.text.length > 0;
+      });
+    });
+    agencyDigitController.addListener(() {
+      setState(() {
+        agencyDigitIsValid = agencyDigitController.text.length > 0;
+      });
+    });
+    accountNumberController.addListener(() {
+      setState(() {
+        accountNumberIsValid = accountNumberController.text.length > 0;
+      });
+    });
+    accountDigitController.addListener(() {
+      setState(() {
+        accountDigitIsValid = accountDigitController.text.length > 0;
+      });
+    });
+    super.initState();
+  }
+
+  @override
+  void dispose() {
+    agencyNumberController.dispose();
+    agencyDigitController.dispose();
+    accountNumberController.dispose();
+    accountDigitController.dispose();
+    super.dispose();
+  }
+
   @override
   Widget build(BuildContext context) {
     final screenHeight = MediaQuery.of(context).size.height;
@@ -34,7 +99,7 @@ class SendBankInfoState extends State<SendBankInfo> {
             ),
             SizedBox(height: screenHeight / 25),
             Text(
-              "Tire sua foto de perfil",
+              "Adicionar conta bancária",
               style: TextStyle(
                 color: Colors.black,
                 fontSize: 20,
@@ -43,7 +108,7 @@ class SendBankInfoState extends State<SendBankInfo> {
             ),
             SizedBox(height: screenHeight / 25),
             Text(
-              "Atenção: não é possível alterar a foto depois de enviá-la. Sua foto de perfil ajuda as pessoas a reconhecerem você.",
+              "Usaremos a conta cadastrada para depositar os pagamentos referentes às corridas pagas com cartão de crédito pelos clientes",
               style: TextStyle(color: Colors.black, fontSize: 14),
             ),
             SizedBox(height: screenHeight / 25),
@@ -55,7 +120,7 @@ class SendBankInfoState extends State<SendBankInfo> {
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         Text(
-                          "Requisitos de envio",
+                          "Importante",
                           style: TextStyle(
                             color: Colors.black,
                             fontSize: 16,
@@ -64,55 +129,169 @@ class SendBankInfoState extends State<SendBankInfo> {
                         ),
                         SizedBox(height: screenHeight / 50),
                         Text(
-                          "1. Fique de frente para a câmera e deixe os olhos e boca visíveis, como na ilustração abaixo",
+                          "Usaremos o Nome e CPF usados na criação da sua conta na Venni para adicionar uma conta bancária. Portanto, informe dados bancários referentes à sua conta pessoal no banco. Caso o Nome e CPF da conta bancária sejam diferentes dos informados para a Venni, o procedimento irá falhar",
                           style: TextStyle(color: Colors.black, fontSize: 14),
                         ),
                         SizedBox(height: screenHeight / 50),
-                        Text(
-                          "2. Não use oculos escuros, bonés, chapéus, tocas ou qualquer acessório que cubra seu rosto",
-                          style: TextStyle(color: Colors.black, fontSize: 14),
+                        Container(
+                          width: screenWidth,
+                          decoration: BoxDecoration(
+                              borderRadius: BorderRadius.circular(10),
+                              border: Border.all(
+                                width: 0.5,
+                                color: Colors.black,
+                              )),
+                          child: DropdownButtonHideUnderline(
+                            child: ButtonTheme(
+                              alignedDropdown: true,
+                              child: DropdownButton(
+                                  value: selectedBank,
+                                  hint: Text(
+                                    "Banco",
+                                    style: TextStyle(
+                                      fontSize: 18,
+                                      color: AppColor.disabled,
+                                    ),
+                                  ),
+                                  onChanged: (value) {
+                                    FocusScope.of(context)
+                                        .requestFocus(new FocusNode());
+                                    setState(() {
+                                      selectedBank = value;
+                                    });
+                                  },
+                                  items: bankMap.keys
+                                      .map((key) => DropdownMenuItem(
+                                            child: Text(bankMap[key]),
+                                            value: key,
+                                          ))
+                                      .toList()),
+                            ),
+                          ),
                         ),
                         SizedBox(height: screenHeight / 50),
-                        Text(
-                          "3. Não fotografe outra foto, não use filtros nem retoque a image",
-                          style: TextStyle(color: Colors.black, fontSize: 14),
-                        ),
-                        SizedBox(height: screenHeight / 50),
-                        Text(
-                          "4. Verifique se a foto está nítida, bem iluminada e sem reflexos",
-                          style: TextStyle(color: Colors.black, fontSize: 14),
-                        ),
-                        SizedBox(height: screenHeight / 25),
                         Row(
                           children: [
-                            Spacer(),
-                            Container(
+                            AppInputText(
+                              hintText: "Agência",
                               width: screenWidth / 2,
-                              height: screenHeight / 4,
-                              alignment: Alignment.center,
-                              decoration: new BoxDecoration(
-                                image: new DecorationImage(
-                                    fit: BoxFit.cover,
-                                    image: AssetImage("images/profilePic.png")),
-                              ),
+                              maxLines: 1,
+                              inputFormatters: [
+                                LengthLimitingTextInputFormatter(4),
+                                FilteringTextInputFormatter.digitsOnly,
+                              ],
+                              keyboardType:
+                                  TextInputType.numberWithOptions(signed: true),
+                              controller: agencyNumberController,
+                              enabled: !lockScreen,
                             ),
                             Spacer(),
+                            AppInputText(
+                              hintText: "Dígito",
+                              width: screenWidth / 3,
+                              maxLines: 1,
+                              inputFormatters: [
+                                LengthLimitingTextInputFormatter(1),
+                                FilteringTextInputFormatter.digitsOnly,
+                              ],
+                              keyboardType:
+                                  TextInputType.numberWithOptions(signed: true),
+                              controller: agencyDigitController,
+                              enabled: !lockScreen,
+                            ),
                           ],
+                        ),
+                        SizedBox(height: screenHeight / 50),
+                        Row(
+                          children: [
+                            AppInputText(
+                              hintText: "Conta",
+                              width: screenWidth / 2,
+                              maxLines: 1,
+                              inputFormatters: [
+                                LengthLimitingTextInputFormatter(13),
+                                FilteringTextInputFormatter.digitsOnly,
+                              ],
+                              keyboardType:
+                                  TextInputType.numberWithOptions(signed: true),
+                              controller: accountNumberController,
+                              enabled: !lockScreen,
+                            ),
+                            Spacer(),
+                            AppInputText(
+                              hintText: "Dígito",
+                              width: screenWidth / 3,
+                              maxLines: 1,
+                              inputFormatters: [
+                                LengthLimitingTextInputFormatter(2),
+                                FilteringTextInputFormatter.digitsOnly,
+                              ],
+                              keyboardType:
+                                  TextInputType.numberWithOptions(signed: true),
+                              controller: accountDigitController,
+                              enabled: !lockScreen,
+                            ),
+                          ],
+                        ),
+                        SizedBox(height: screenHeight / 50),
+                        Container(
+                          width: screenWidth,
+                          decoration: BoxDecoration(
+                              borderRadius: BorderRadius.circular(10),
+                              border: Border.all(
+                                width: 0.5,
+                                color: Colors.black,
+                              )),
+                          child: DropdownButtonHideUnderline(
+                            child: ButtonTheme(
+                              alignedDropdown: true,
+                              child: DropdownButton(
+                                  value: selectedAccountType,
+                                  hint: Text(
+                                    "Tipo de Conta",
+                                    style: TextStyle(
+                                      fontSize: 18,
+                                      color: AppColor.disabled,
+                                    ),
+                                  ),
+                                  onChanged: (value) {
+                                    FocusScope.of(context)
+                                        .requestFocus(new FocusNode());
+
+                                    setState(() {
+                                      selectedAccountType = value;
+                                    });
+                                  },
+                                  items: accountTypeMap.keys
+                                      .map((key) => DropdownMenuItem(
+                                            child: Text(accountTypeMap[key]),
+                                            value: key,
+                                          ))
+                                      .toList()),
+                            ),
+                          ),
                         ),
                         SizedBox(height: screenHeight / 5),
                       ],
                     ),
                   ),
-                  Positioned(
-                    bottom: screenHeight / 15,
-                    left: 0,
-                    right: 0,
-                    child: AppButton(
-                      textData: "Enviar Foto",
-                      buttonColor: AppColor.primaryPink,
-                      onTapCallBack: () {},
-                    ),
-                  )
+                  // only show button when keyboard is hidden
+                  MediaQuery.of(context).viewInsets.bottom == 0
+                      ? Positioned(
+                          bottom: screenHeight / 15,
+                          left: 0,
+                          right: 0,
+                          child: AppButton(
+                            textData: "Adicionar Conta",
+                            buttonColor: allFieldsAreValid()
+                                ? AppColor.primaryPink
+                                : AppColor.disabled,
+                            onTapCallBack: !lockScreen && allFieldsAreValid()
+                                ? () => {print("add")}
+                                : () {},
+                          ),
+                        )
+                      : Container()
                 ],
               ),
             )
@@ -121,4 +300,29 @@ class SendBankInfoState extends State<SendBankInfo> {
       ),
     );
   }
+
+  bool allFieldsAreValid() {
+    return agencyNumberIsValid &&
+        agencyDigitIsValid &&
+        accountNumberIsValid &&
+        accountDigitIsValid &&
+        selectedBank != null &&
+        selectedAccountType != null;
+  }
+}
+
+enum Banks {
+  BancoDoBrasil,
+  Santander,
+  Caixa,
+  Bradesco,
+  Itau,
+  Hsbc,
+}
+
+enum AccountTypes {
+  Corrente,
+  Poupanca,
+  CorrenteConjunta,
+  PoupancaConjunta,
 }
