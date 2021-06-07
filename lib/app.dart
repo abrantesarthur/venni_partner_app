@@ -8,6 +8,7 @@ import 'package:partner_app/config/config.dart';
 import 'package:partner_app/models/connectivity.dart';
 import 'package:partner_app/models/firebase.dart';
 import 'package:partner_app/models/partner.dart';
+import 'package:partner_app/screens/sendBankInfo.dart';
 import 'package:partner_app/screens/sendCnh.dart';
 import 'package:partner_app/screens/sendCrlv.dart';
 import 'package:partner_app/screens/documents.dart';
@@ -286,6 +287,7 @@ class _AppState extends State<App> {
               SendCnh.routeName: (context) => SendCnh(),
               SendPhotoWithCnh.routeName: (context) => SendPhotoWithCnh(),
               SendProfilePhoto.routeName: (context) => SendProfilePhoto(),
+              SendBankInfo.routeName: (context) => SendBankInfo(),
             },
           );
         });
