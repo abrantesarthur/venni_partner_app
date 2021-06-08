@@ -8,14 +8,56 @@ extension AppFirebaseStorage on FirebaseStorage {
   void sendCrlv({
     @required String partnerID,
     @required PickedFile crlv,
-  }) {
+  }) async {
     try {
-      this
+      await this
           .ref()
           .child("partner-documents")
           .child(partnerID)
           .child("crlv" + path.extension(crlv.path))
           .putFile(dartIo.File(crlv.path));
+    } catch (e) {}
+  }
+
+  void sendCnh({
+    @required String partnerID,
+    @required PickedFile cnh,
+  }) async {
+    try {
+      await this
+          .ref()
+          .child("partner-documents")
+          .child(partnerID)
+          .child("cnh" + path.extension(cnh.path))
+          .putFile(dartIo.File(cnh.path));
+    } catch (e) {}
+  }
+
+  void sendPhotoWithCnh({
+    @required String partnerID,
+    @required PickedFile photoWithCnh,
+  }) async {
+    try {
+      await this
+          .ref()
+          .child("partner-documents")
+          .child(partnerID)
+          .child("photoWithCnh" + path.extension(photoWithCnh.path))
+          .putFile(dartIo.File(photoWithCnh.path));
+    } catch (e) {}
+  }
+
+  void sendProfilePhoto({
+    @required String partnerID,
+    @required PickedFile profilePhoto,
+  }) async {
+    try {
+      await this
+          .ref()
+          .child("partner-documents")
+          .child(partnerID)
+          .child("profilePhoto" + path.extension(profilePhoto.path))
+          .putFile(dartIo.File(profilePhoto.path));
     } catch (e) {}
   }
 }
