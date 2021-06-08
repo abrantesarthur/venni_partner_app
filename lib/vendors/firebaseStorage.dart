@@ -16,7 +16,9 @@ extension AppFirebaseStorage on FirebaseStorage {
           .child(partnerID)
           .child("crlv" + path.extension(crlv.path))
           .putFile(dartIo.File(crlv.path));
-    } catch (e) {}
+    } catch (e) {
+      throw e;
+    }
   }
 
   void sendCnh({

@@ -1,6 +1,10 @@
 import 'package:flutter/material.dart';
+import 'package:image_picker/image_picker.dart';
 import 'package:partner_app/models/connectivity.dart';
+import 'package:partner_app/models/firebase.dart';
 import 'package:partner_app/styles.dart';
+import 'package:partner_app/vendors/imagePicker.dart';
+import 'package:partner_app/vendors/firebaseStorage.dart';
 import 'package:partner_app/widgets/appButton.dart';
 import 'package:partner_app/widgets/arrowBackButton.dart';
 import 'package:partner_app/widgets/overallPadding.dart';
@@ -111,6 +115,8 @@ class SendCnhState extends State<SendCnh> {
                           );
                           return;
                         }
+                        // push cnh to firebase
+                        await sendCnh(context);
                       },
                     ),
                   )
@@ -121,5 +127,48 @@ class SendCnhState extends State<SendCnh> {
         ),
       ),
     );
+  }
+
+  Future<void> sendCnh(BuildContext context) async {
+    final FirebaseModel firebase = Provider.of<FirebaseModel>(
+      context,
+      listen: false,
+    );
+
+    // get cnh from camera or gallery
+    PickedFile cnh = await pickImage(context);
+
+    // send crlv to firebase
+    if (cnh != null) {
+      try {
+        firebase.storage.sendCnh(
+          partnerID: firebase.auth.currentUser.uid,
+          cnh: cnh,
+        );
+      } catch (e) {
+        // on error, display warning
+        await showDialog(
+          context: context,
+          builder: (BuildContext context) {
+            return AlertDialog(
+              title: Text("Algo deu errado."),
+              content: Text(
+                "Tente novamente mais tarde.",
+                style: TextStyle(color: AppColor.disabled),
+              ),
+              actions: [
+                TextButton(
+                  child: Text(
+                    "ok",
+                    style: TextStyle(fontSize: 18),
+                  ),
+                  onPressed: () => Navigator.pop(context),
+                ),
+              ],
+            );
+          },
+        );
+      }
+    }
   }
 }

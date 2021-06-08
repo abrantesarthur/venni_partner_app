@@ -4,6 +4,7 @@ import 'package:partner_app/models/connectivity.dart';
 import 'package:partner_app/models/firebase.dart';
 import 'package:partner_app/styles.dart';
 import 'package:partner_app/vendors/imagePicker.dart';
+import 'package:partner_app/vendors/firebaseStorage.dart';
 import 'package:partner_app/widgets/appButton.dart';
 import 'package:partner_app/widgets/arrowBackButton.dart';
 import 'package:partner_app/widgets/overallPadding.dart';
@@ -22,7 +23,6 @@ class SendCrlvState extends State<SendCrlv> {
     final screenHeight = MediaQuery.of(context).size.height;
     final screenWidth = MediaQuery.of(context).size.width;
     final connectivity = Provider.of<ConnectivityModel>(context);
-    final FirebaseModel firebase = Provider.of<FirebaseModel>(context);
 
     return Scaffold(
       backgroundColor: Colors.white,
@@ -118,16 +118,8 @@ class SendCrlvState extends State<SendCrlv> {
                           return;
                         }
 
-                        // get crlv from camera or gallery
-                        PickedFile crlv = await pickImage(context);
-
-                        // push image to firebase
-                        if (crlv != null) {
-                          firebase.storage.putProfileImage(
-                            uid: firebase.auth.currentUser.uid,
-                            img: img,
-                          );
-                        }
+                        // push crlv to firebase
+                        await sendCrlv(context);
                       },
                     ),
                   )
@@ -138,5 +130,48 @@ class SendCrlvState extends State<SendCrlv> {
         ),
       ),
     );
+  }
+
+  Future<void> sendCrlv(BuildContext context) async {
+    final FirebaseModel firebase = Provider.of<FirebaseModel>(
+      context,
+      listen: false,
+    );
+
+    // get crlv from camera or gallery
+    PickedFile crlv = await pickImage(context);
+
+    // send crlv to firebase
+    if (crlv != null) {
+      try {
+        firebase.storage.sendCrlv(
+          partnerID: firebase.auth.currentUser.uid,
+          crlv: crlv,
+        );
+      } catch (e) {
+        // on error, display warning
+        await showDialog(
+          context: context,
+          builder: (BuildContext context) {
+            return AlertDialog(
+              title: Text("Algo deu errado."),
+              content: Text(
+                "Tente novamente mais tarde.",
+                style: TextStyle(color: AppColor.disabled),
+              ),
+              actions: [
+                TextButton(
+                  child: Text(
+                    "ok",
+                    style: TextStyle(fontSize: 18),
+                  ),
+                  onPressed: () => Navigator.pop(context),
+                ),
+              ],
+            );
+          },
+        );
+      }
+    }
   }
 }

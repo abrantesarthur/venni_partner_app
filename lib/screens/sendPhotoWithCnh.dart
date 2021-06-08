@@ -1,6 +1,10 @@
 import 'package:flutter/material.dart';
+import 'package:image_picker/image_picker.dart';
 import 'package:partner_app/models/connectivity.dart';
+import 'package:partner_app/models/firebase.dart';
 import 'package:partner_app/styles.dart';
+import 'package:partner_app/vendors/imagePicker.dart';
+import 'package:partner_app/vendors/firebaseStorage.dart';
 import 'package:partner_app/widgets/appButton.dart';
 import 'package:partner_app/widgets/arrowBackButton.dart';
 import 'package:partner_app/widgets/overallPadding.dart';
@@ -113,6 +117,8 @@ class SendPhotoWithCnhState extends State<SendPhotoWithCnh> {
                           );
                           return;
                         }
+
+                        await sendPhotoWithCnh(context);
                       },
                     ),
                   )
@@ -123,5 +129,48 @@ class SendPhotoWithCnhState extends State<SendPhotoWithCnh> {
         ),
       ),
     );
+  }
+
+  Future<void> sendPhotoWithCnh(BuildContext context) async {
+    final FirebaseModel firebase = Provider.of<FirebaseModel>(
+      context,
+      listen: false,
+    );
+
+    // get photoWithCnh from camera or gallery
+    PickedFile photoWithCnh = await pickImage(context);
+
+    // send photoWithCnh to firebase
+    if (photoWithCnh != null) {
+      try {
+        firebase.storage.sendPhotoWithCnh(
+          partnerID: firebase.auth.currentUser.uid,
+          photoWithCnh: photoWithCnh,
+        );
+      } catch (e) {
+        // on error, display warning
+        await showDialog(
+          context: context,
+          builder: (BuildContext context) {
+            return AlertDialog(
+              title: Text("Algo deu errado."),
+              content: Text(
+                "Tente novamente mais tarde.",
+                style: TextStyle(color: AppColor.disabled),
+              ),
+              actions: [
+                TextButton(
+                  child: Text(
+                    "ok",
+                    style: TextStyle(fontSize: 18),
+                  ),
+                  onPressed: () => Navigator.pop(context),
+                ),
+              ],
+            );
+          },
+        );
+      }
+    }
   }
 }
