@@ -222,9 +222,10 @@ class InsertPasswordState extends State<InsertPassword> {
   // If the user already has a client account, registerUser makes sure they enter
   // a correct password. If so, it updates their name and other entered information.
   // If the user is registering for the first time, it just creates their account
-  Future<bool> registerUser(BuildContext context) async {
-    FirebaseModel firebase = Provider.of<FirebaseModel>(context, listen: false);
-
+  Future<bool> registerUser(
+    FirebaseModel firebase,
+    PartnerModel partner,
+  ) async {
     // if the user already has a client account
     if (firebase.hasClientAccount) {
       // make sure they've entered a valid password
@@ -314,8 +315,14 @@ class InsertPasswordState extends State<InsertPassword> {
 
   // buttonCallback tries signing user up by adding remainig data to its credential
   void buttonCallback(BuildContext context) async {
+    FirebaseModel firebase = Provider.of<FirebaseModel>(context, listen: false);
+    PartnerModel partner = Provider.of<PartnerModel>(context, listen: false);
+
     setState(() {
-      successfullyRegisteredUser = registerUser(context);
+      successfullyRegisteredUser = registerUser(
+        firebase,
+        partner,
+      );
     });
   }
 
@@ -351,7 +358,7 @@ class InsertPasswordState extends State<InsertPassword> {
         if (snapshot.connectionState == ConnectionState.waiting) {
           // show loading screen
           return Splash(
-              text: "Criando conta",
+              text: "Criando conta de parceiro(a)",
               child: CircularProgressIndicator(
                 valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
               ));
