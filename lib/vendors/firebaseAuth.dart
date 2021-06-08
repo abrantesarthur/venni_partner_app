@@ -26,7 +26,7 @@ extension AppFirebaseAuth on FirebaseAuth {
           await firebaseAuth.signInWithCredential(credential);
 
       // however, we only consider the user to be registered as a pilot, if they
-      // have an entry in pilots database. It may also be the case that the user
+      // have an entry in partners database. It may also be the case that the user
       // already has an account throught the client app (e.g., firebase.isRegistered
       // is true and they have a displayName). In those cases, we use some of
       // their already provided information (phone number, email and password).

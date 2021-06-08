@@ -101,7 +101,7 @@ extension AppFirebaseDatabase on FirebaseDatabase {
   Future<PartnerInterface> getPilotFromID(String pilotID) async {
     try {
       DataSnapshot snapshot =
-          await this.reference().child("pilots").child(pilotID).once();
+          await this.reference().child("partners").child(pilotID).once();
       return PartnerInterface.fromJson(snapshot.value);
     } catch (_) {}
     return null;
@@ -112,7 +112,7 @@ extension AppFirebaseDatabase on FirebaseDatabase {
     Map<String, dynamic> data,
   ) async {
     try {
-      await this.reference().child("pilots").child(id).set(data);
+      await this.reference().child("partners").child(id).set(data);
     } catch (e) {
       throw e;
     }
@@ -120,7 +120,7 @@ extension AppFirebaseDatabase on FirebaseDatabase {
 
   Future<void> deletePartner(String id) async {
     try {
-      await this.reference().child("pilots").child(id).remove();
+      await this.reference().child("partners").child(id).remove();
     } catch (e) {
       throw e;
     }
@@ -133,7 +133,7 @@ extension AppFirebaseDatabase on FirebaseDatabase {
   // ) {
   //   return this
   //       .reference()
-  //       .child("pilots")
+  //       .child("partners")
   //       .child(pilotID)
   //       .onValue
   //       .listen(onData);
