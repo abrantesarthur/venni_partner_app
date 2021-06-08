@@ -17,9 +17,11 @@ class Documents extends StatefulWidget {
   DocumentsState createState() => DocumentsState();
 }
 
-// TODO: as user sends information, add the under 'Documentos enviados'
+// TODO: as user sends information, add them under 'Documentos enviados'
+// TODO: implement 'Ajuda': 'chat com supporte' and 'sair'
+// TODO: add lockscreen to all screens
 
-class DocumentsState extends State<Documents> with WidgetsBindingObserver {
+class DocumentsState extends State<Documents> {
   bool _hasConnection;
 
   @override

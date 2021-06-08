@@ -93,8 +93,10 @@ extension AppFirebaseAuth on FirebaseAuth {
     } else if (e.code == "too-many-requests") {
       warningMessage =
           "Ops, número de tentativas excedidas. Tente novamente em alguns minutos.";
+    } else if (e.code == "network-request-failed") {
+      warningMessage =
+          "Você está offline. Conecte-se à internet e tente novamente.";
     } else {
-      print(e.code);
       warningMessage = "Ops, algo deu errado. Tente novamente mais tarde.";
     }
     return warningMessage;

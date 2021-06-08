@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
+import 'package:partner_app/models/connectivity.dart';
 import 'package:partner_app/styles.dart';
 import 'package:partner_app/widgets/appButton.dart';
 import 'package:partner_app/widgets/arrowBackButton.dart';
 import 'package:partner_app/widgets/overallPadding.dart';
+import 'package:provider/provider.dart';
 
 class SendCnh extends StatefulWidget {
   static const String routeName = "sendCnh";
@@ -16,6 +18,8 @@ class SendCnhState extends State<SendCnh> {
   Widget build(BuildContext context) {
     final screenHeight = MediaQuery.of(context).size.height;
     final screenWidth = MediaQuery.of(context).size.width;
+    final connectivity = Provider.of<ConnectivityModel>(context);
+
     return Scaffold(
       backgroundColor: Colors.white,
       body: OverallPadding(
@@ -99,7 +103,15 @@ class SendCnhState extends State<SendCnh> {
                     child: AppButton(
                       textData: "Enviar CNH",
                       buttonColor: AppColor.primaryPink,
-                      onTapCallBack: () {},
+                      onTapCallBack: () async {
+                        if (!connectivity.hasConnection) {
+                          await connectivity.alertWhenOffline(
+                            context,
+                            message: "Conecte-se à internet para enviar a CNH.",
+                          );
+                          return;
+                        }
+                      },
                     ),
                   )
                 ],

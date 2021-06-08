@@ -1,8 +1,13 @@
 import 'package:flutter/material.dart';
+import 'package:image_picker/image_picker.dart';
+import 'package:partner_app/models/connectivity.dart';
+import 'package:partner_app/models/firebase.dart';
 import 'package:partner_app/styles.dart';
+import 'package:partner_app/vendors/imagePicker.dart';
 import 'package:partner_app/widgets/appButton.dart';
 import 'package:partner_app/widgets/arrowBackButton.dart';
 import 'package:partner_app/widgets/overallPadding.dart';
+import 'package:provider/provider.dart';
 
 class SendCrlv extends StatefulWidget {
   static const String routeName = "sendCrlv";
@@ -16,6 +21,8 @@ class SendCrlvState extends State<SendCrlv> {
   Widget build(BuildContext context) {
     final screenHeight = MediaQuery.of(context).size.height;
     final screenWidth = MediaQuery.of(context).size.width;
+    final connectivity = Provider.of<ConnectivityModel>(context);
+    final FirebaseModel firebase = Provider.of<FirebaseModel>(context);
 
     return Scaffold(
       backgroundColor: Colors.white,
@@ -64,12 +71,12 @@ class SendCrlvState extends State<SendCrlv> {
                         ),
                         SizedBox(height: screenHeight / 50),
                         Text(
-                          "2. Envie somente a primeira página. Porém, os dados devem estar legíveis",
+                          "2. Envie foto somente da primeira página",
                           style: TextStyle(color: Colors.black, fontSize: 14),
                         ),
                         SizedBox(height: screenHeight / 50),
                         Text(
-                          "3. Você pode enviar ou uma foto do CRLV físico ou o CRLV digital em formato PDF que você pode obter no site do Detran ou através do app gov.br",
+                          "2. Os dados devem estar legíveis",
                           style: TextStyle(color: Colors.black, fontSize: 14),
                         ),
                         SizedBox(height: screenHeight / 25),
@@ -100,7 +107,28 @@ class SendCrlvState extends State<SendCrlv> {
                     child: AppButton(
                       textData: "Enviar CRLV",
                       buttonColor: AppColor.primaryPink,
-                      onTapCallBack: () {},
+                      onTapCallBack: () async {
+                        // make sure user is connected to the internet
+                        if (!connectivity.hasConnection) {
+                          await connectivity.alertWhenOffline(
+                            context,
+                            message:
+                                "Conecte-se à internet para enviar o CRLV.",
+                          );
+                          return;
+                        }
+
+                        // get crlv from camera or gallery
+                        PickedFile crlv = await pickImage(context);
+
+                        // push image to firebase
+                        if (crlv != null) {
+                          firebase.storage.putProfileImage(
+                            uid: firebase.auth.currentUser.uid,
+                            img: img,
+                          );
+                        }
+                      },
                     ),
                   )
                 ],

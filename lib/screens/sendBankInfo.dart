@@ -1,10 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:partner_app/models/connectivity.dart';
 import 'package:partner_app/styles.dart';
 import 'package:partner_app/widgets/appButton.dart';
 import 'package:partner_app/widgets/appInputText.dart';
 import 'package:partner_app/widgets/arrowBackButton.dart';
 import 'package:partner_app/widgets/overallPadding.dart';
+import 'package:provider/provider.dart';
 
 class SendBankInfo extends StatefulWidget {
   static const String routeName = "sendBankInfo";
@@ -15,13 +17,12 @@ class SendBankInfo extends StatefulWidget {
 
 // TODO: lock screen in all screens while submitting info
 // TOOD: display warnings if something goes wrong
-class SendBankInfoState extends State<SendBankInfo> {
+class SendBankInfoState extends State<SendBankInfo> with RouteAware {
   TextEditingController agencyNumberController = TextEditingController();
   TextEditingController agencyDigitController = TextEditingController();
   TextEditingController accountNumberController = TextEditingController();
   TextEditingController accountDigitController = TextEditingController();
   bool agencyNumberIsValid = false;
-  bool agencyDigitIsValid = false;
   bool accountNumberIsValid = false;
   bool accountDigitIsValid = false;
   bool lockScreen = false;
@@ -51,11 +52,6 @@ class SendBankInfoState extends State<SendBankInfo> {
         agencyNumberIsValid = agencyNumberController.text.length > 0;
       });
     });
-    agencyDigitController.addListener(() {
-      setState(() {
-        agencyDigitIsValid = agencyDigitController.text.length > 0;
-      });
-    });
     accountNumberController.addListener(() {
       setState(() {
         accountNumberIsValid = accountNumberController.text.length > 0;
@@ -82,6 +78,8 @@ class SendBankInfoState extends State<SendBankInfo> {
   Widget build(BuildContext context) {
     final screenHeight = MediaQuery.of(context).size.height;
     final screenWidth = MediaQuery.of(context).size.width;
+    final connectivity = Provider.of<ConnectivityModel>(context);
+
     return Scaffold(
       backgroundColor: Colors.white,
       body: OverallPadding(
@@ -91,9 +89,9 @@ class SendBankInfoState extends State<SendBankInfo> {
           children: [
             Row(
               children: [
-                ArrowBackButton(
-                  onTapCallback: () => Navigator.pop(context),
-                ),
+                ArrowBackButton(onTapCallback: () {
+                  Navigator.pop(context);
+                }),
                 Spacer(),
               ],
             ),
@@ -287,7 +285,16 @@ class SendBankInfoState extends State<SendBankInfo> {
                                 ? AppColor.primaryPink
                                 : AppColor.disabled,
                             onTapCallBack: !lockScreen && allFieldsAreValid()
-                                ? () => {print("add")}
+                                ? () async {
+                                    if (!connectivity.hasConnection) {
+                                      await connectivity.alertWhenOffline(
+                                        context,
+                                        message:
+                                            "Conecte-se à internet para adicionar as informações bancárias.",
+                                      );
+                                      return;
+                                    }
+                                  }
                                 : () {},
                           ),
                         )
@@ -303,7 +310,6 @@ class SendBankInfoState extends State<SendBankInfo> {
 
   bool allFieldsAreValid() {
     return agencyNumberIsValid &&
-        agencyDigitIsValid &&
         accountNumberIsValid &&
         accountDigitIsValid &&
         selectedBank != null &&
