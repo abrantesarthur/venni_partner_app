@@ -21,12 +21,13 @@ Future<void> _askPermission(
   );
 }
 
-Future<PickedFile> pickImageFromGallery(BuildContext context) async {
+Future<PickedFile> _pickImageFrom(
+  BuildContext context,
+  ImageSource source,
+) async {
   // try to get image
   try {
-    PickedFile pickedFile = await ImagePicker().getImage(
-      source: ImageSource.gallery,
-    );
+    PickedFile pickedFile = await ImagePicker().getImage(source: source);
     return pickedFile;
   } catch (e) {
     // ask user to update permission in app settings
@@ -38,35 +39,16 @@ Future<PickedFile> pickImageFromGallery(BuildContext context) async {
   return null;
 }
 
-Future<PickedFile> pickImageFromCamera(BuildContext context) async {
-  // request permission
-  PermissionStatus status = await Permission.camera.request();
-
-  // if permission was denied
-  if (status == PermissionStatus.permanentlyDenied ||
-      status == PermissionStatus.restricted ||
-      status == PermissionStatus.denied) {
-    // ask user to update permission in app settings
-    await _askPermission(
-      context,
-      "Permitir Acesso à Câmera",
-    );
-    return null;
-  }
-
-  // if permission was greanted
-  if (status == PermissionStatus.granted) {
-    // get image
-    return await ImagePicker().getImage(
-      source: ImageSource.camera,
-    );
-  }
-
-  return null;
+Future<PickedFile> pickImageFromGallery(BuildContext context) async {
+  return _pickImageFrom(context, ImageSource.gallery);
 }
 
-Future<PickedFile> pickImage(BuildContext context) async {
-  return await showDialog<PickedFile>(
+Future<PickedFile> pickImageFromCamera(BuildContext context) async {
+  return _pickImageFrom(context, ImageSource.camera);
+}
+
+Future<Future<PickedFile>> pickImage(BuildContext context) async {
+  return showDialog<Future<PickedFile>>(
     context: context,
     builder: (BuildContext context) {
       return AlertDialog(
@@ -78,8 +60,8 @@ Future<PickedFile> pickImage(BuildContext context) async {
               ListTile(
                 onTap: () async {
                   // get image from gallery
-                  PickedFile img = await pickImageFromGallery(context);
-                  Navigator.pop(context, img);
+                  Future<PickedFile> futureImg = pickImageFromGallery(context);
+                  Navigator.pop(context, futureImg);
                 },
                 title: Text("Galeria"),
                 leading: Icon(
@@ -91,8 +73,8 @@ Future<PickedFile> pickImage(BuildContext context) async {
               ListTile(
                 onTap: () async {
                   // get image from camera
-                  PickedFile img = await pickImageFromCamera(context);
-                  Navigator.pop(context, img);
+                  Future<PickedFile> futureImg = pickImageFromCamera(context);
+                  Navigator.pop(context, futureImg);
                 },
                 title: Text("Câmera"),
                 leading: Icon(

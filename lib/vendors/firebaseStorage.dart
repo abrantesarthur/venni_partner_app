@@ -5,7 +5,7 @@ import 'package:path/path.dart' as path;
 import 'dart:io' as dartIo;
 
 extension AppFirebaseStorage on FirebaseStorage {
-  void sendCrlv({
+  Future<void> sendCrlv({
     @required String partnerID,
     @required PickedFile crlv,
   }) async {
@@ -21,7 +21,7 @@ extension AppFirebaseStorage on FirebaseStorage {
     }
   }
 
-  void sendCnh({
+  Future<void> sendCnh({
     @required String partnerID,
     @required PickedFile cnh,
   }) async {
@@ -35,7 +35,7 @@ extension AppFirebaseStorage on FirebaseStorage {
     } catch (e) {}
   }
 
-  void sendPhotoWithCnh({
+  Future<void> sendPhotoWithCnh({
     @required String partnerID,
     @required PickedFile photoWithCnh,
   }) async {
@@ -49,7 +49,7 @@ extension AppFirebaseStorage on FirebaseStorage {
     } catch (e) {}
   }
 
-  void sendProfilePhoto({
+  Future<void> sendProfilePhoto({
     @required String partnerID,
     @required PickedFile profilePhoto,
   }) async {

@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:partner_app/models/connectivity.dart';
 import 'package:partner_app/models/firebase.dart';
+import 'package:partner_app/models/partner.dart';
 import 'package:partner_app/styles.dart';
 import 'package:partner_app/vendors/imagePicker.dart';
 import 'package:partner_app/vendors/firebaseStorage.dart';
@@ -19,6 +20,9 @@ class SendProfilePhoto extends StatefulWidget {
 
 // TODO: update photo
 class SendProfilePhotoState extends State<SendProfilePhoto> {
+  Widget buttonChild;
+  bool lockScreen = false;
+
   @override
   Widget build(BuildContext context) {
     final screenHeight = MediaQuery.of(context).size.height;
@@ -35,7 +39,8 @@ class SendProfilePhotoState extends State<SendProfilePhoto> {
             Row(
               children: [
                 ArrowBackButton(
-                  onTapCallback: () => Navigator.pop(context),
+                  onTapCallback:
+                      lockScreen ? () {} : () => Navigator.pop(context),
                 ),
                 Spacer(),
               ],
@@ -118,18 +123,10 @@ class SendProfilePhotoState extends State<SendProfilePhoto> {
                     child: AppButton(
                       textData: "Enviar Foto",
                       buttonColor: AppColor.primaryPink,
-                      onTapCallBack: () async {
-                        if (!connectivity.hasConnection) {
-                          await connectivity.alertWhenOffline(
-                            context,
-                            message:
-                                "Conecte-se à internet para enviar a foto de perfil.",
-                          );
-                          return;
-                        }
-
-                        await sendProfilePhoto(context);
-                      },
+                      child: buttonChild,
+                      onTapCallBack: lockScreen
+                          ? () {}
+                          : () async => await buttonCallback(context),
                     ),
                   )
                 ],
@@ -141,24 +138,55 @@ class SendProfilePhotoState extends State<SendProfilePhoto> {
     );
   }
 
-  Future<void> sendProfilePhoto(BuildContext context) async {
+  Future<void> buttonCallback(BuildContext context) async {
+    // get relevant models
+    final connectivity = Provider.of<ConnectivityModel>(
+      context,
+      listen: false,
+    );
     final FirebaseModel firebase = Provider.of<FirebaseModel>(
       context,
       listen: false,
     );
+    final PartnerModel partner = Provider.of<PartnerModel>(
+      context,
+      listen: false,
+    );
+
+    // make sure user is connected to the internet
+    if (!connectivity.hasConnection) {
+      await connectivity.alertWhenOffline(
+        context,
+        message: "Conecte-se à internet para enviar o CRLV.",
+      );
+      return;
+    }
 
     // get profilePhoto from camera or gallery
-    PickedFile profilePhoto = await pickImage(context);
+    Future<PickedFile> futureProfilePhoto = await pickImage(context);
 
-    // send profilePhoto to firebase
+    // show progress indicator and lock screen
+    setState(() {
+      buttonChild = CircularProgressIndicator(
+        valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
+      );
+      lockScreen = true;
+    });
+
+    PickedFile profilePhoto = await futureProfilePhoto;
+
     if (profilePhoto != null) {
       try {
-        firebase.storage.sendProfilePhoto(
+        // send profilePhoto to firebase
+        await firebase.storage.sendProfilePhoto(
           partnerID: firebase.auth.currentUser.uid,
           profilePhoto: profilePhoto,
         );
+        // on success, make profilePhoto as submitted and go back to Documents screen
+        partner.updateProfilePhotoSubmitted(true);
+        Navigator.pop(context);
       } catch (e) {
-        // on error, display warning
+        // on failure, display warning
         await showDialog(
           context: context,
           builder: (BuildContext context) {
@@ -182,5 +210,11 @@ class SendProfilePhotoState extends State<SendProfilePhoto> {
         );
       }
     }
+
+    // hide progress indicator
+    setState(() {
+      buttonChild = null;
+      lockScreen = false;
+    });
   }
 }

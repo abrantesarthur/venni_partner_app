@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:partner_app/models/connectivity.dart';
 import 'package:partner_app/models/firebase.dart';
+import 'package:partner_app/models/partner.dart';
 import 'package:partner_app/styles.dart';
 import 'package:partner_app/vendors/imagePicker.dart';
 import 'package:partner_app/vendors/firebaseStorage.dart';
@@ -18,11 +19,13 @@ class SendCrlv extends StatefulWidget {
 }
 
 class SendCrlvState extends State<SendCrlv> {
+  Widget buttonChild;
+  bool lockScreen = false;
+
   @override
   Widget build(BuildContext context) {
     final screenHeight = MediaQuery.of(context).size.height;
     final screenWidth = MediaQuery.of(context).size.width;
-    final connectivity = Provider.of<ConnectivityModel>(context);
 
     return Scaffold(
       backgroundColor: Colors.white,
@@ -34,7 +37,8 @@ class SendCrlvState extends State<SendCrlv> {
             Row(
               children: [
                 ArrowBackButton(
-                  onTapCallback: () => Navigator.pop(context),
+                  onTapCallback:
+                      lockScreen ? () {} : () => Navigator.pop(context),
                 ),
                 Spacer(),
               ],
@@ -107,20 +111,10 @@ class SendCrlvState extends State<SendCrlv> {
                     child: AppButton(
                       textData: "Enviar CRLV",
                       buttonColor: AppColor.primaryPink,
-                      onTapCallBack: () async {
-                        // make sure user is connected to the internet
-                        if (!connectivity.hasConnection) {
-                          await connectivity.alertWhenOffline(
-                            context,
-                            message:
-                                "Conecte-se à internet para enviar o CRLV.",
-                          );
-                          return;
-                        }
-
-                        // push crlv to firebase
-                        await sendCrlv(context);
-                      },
+                      child: buttonChild,
+                      onTapCallBack: lockScreen
+                          ? () {}
+                          : () async => await buttonCallback(context),
                     ),
                   )
                 ],
@@ -132,24 +126,55 @@ class SendCrlvState extends State<SendCrlv> {
     );
   }
 
-  Future<void> sendCrlv(BuildContext context) async {
+  Future<void> buttonCallback(BuildContext context) async {
+    // get relevant models
+    final connectivity = Provider.of<ConnectivityModel>(
+      context,
+      listen: false,
+    );
     final FirebaseModel firebase = Provider.of<FirebaseModel>(
       context,
       listen: false,
     );
+    final PartnerModel partner = Provider.of<PartnerModel>(
+      context,
+      listen: false,
+    );
+
+    // make sure user is connected to the internet
+    if (!connectivity.hasConnection) {
+      await connectivity.alertWhenOffline(
+        context,
+        message: "Conecte-se à internet para enviar o CRLV.",
+      );
+      return;
+    }
 
     // get crlv from camera or gallery
-    PickedFile crlv = await pickImage(context);
+    Future<PickedFile> futureCrlv = await pickImage(context);
 
-    // send crlv to firebase
+    // show progress indicator and lock screen
+    setState(() {
+      buttonChild = CircularProgressIndicator(
+        valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
+      );
+      lockScreen = true;
+    });
+
+    PickedFile crlv = await futureCrlv;
+
     if (crlv != null) {
       try {
-        firebase.storage.sendCrlv(
+        // send crlv to firebase
+        await firebase.storage.sendCrlv(
           partnerID: firebase.auth.currentUser.uid,
           crlv: crlv,
         );
+        // on success, make crlv as submitted and go back to Documents screen
+        partner.updateCrlvSubmitted(true);
+        Navigator.pop(context);
       } catch (e) {
-        // on error, display warning
+        // on failure, display warning
         await showDialog(
           context: context,
           builder: (BuildContext context) {
@@ -173,5 +198,11 @@ class SendCrlvState extends State<SendCrlv> {
         );
       }
     }
+
+    // hide progress indicator
+    setState(() {
+      buttonChild = null;
+      lockScreen = false;
+    });
   }
 }

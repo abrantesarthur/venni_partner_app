@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:partner_app/models/connectivity.dart';
 import 'package:partner_app/models/firebase.dart';
+import 'package:partner_app/models/partner.dart';
 import 'package:partner_app/styles.dart';
 import 'package:partner_app/vendors/imagePicker.dart';
 import 'package:partner_app/vendors/firebaseStorage.dart';
@@ -19,11 +20,13 @@ class SendPhotoWithCnh extends StatefulWidget {
 
 // TODO: update photo
 class SendPhotoWithCnhState extends State<SendPhotoWithCnh> {
+  Widget buttonChild;
+  bool lockScreen = false;
+
   @override
   Widget build(BuildContext context) {
     final screenHeight = MediaQuery.of(context).size.height;
     final screenWidth = MediaQuery.of(context).size.width;
-    final connectivity = Provider.of<ConnectivityModel>(context);
 
     return Scaffold(
       backgroundColor: Colors.white,
@@ -35,7 +38,8 @@ class SendPhotoWithCnhState extends State<SendPhotoWithCnh> {
             Row(
               children: [
                 ArrowBackButton(
-                  onTapCallback: () => Navigator.pop(context),
+                  onTapCallback:
+                      lockScreen ? () {} : () => Navigator.pop(context),
                 ),
                 Spacer(),
               ],
@@ -107,19 +111,11 @@ class SendPhotoWithCnhState extends State<SendPhotoWithCnh> {
                     right: 0,
                     child: AppButton(
                       textData: "Enviar Foto",
+                      child: buttonChild,
                       buttonColor: AppColor.primaryPink,
-                      onTapCallBack: () async {
-                        if (!connectivity.hasConnection) {
-                          await connectivity.alertWhenOffline(
-                            context,
-                            message:
-                                "Conecte-se à internet para enviar a foto.",
-                          );
-                          return;
-                        }
-
-                        await sendPhotoWithCnh(context);
-                      },
+                      onTapCallBack: lockScreen
+                          ? () {}
+                          : () async => await buttonCallback(context),
                     ),
                   )
                 ],
@@ -131,24 +127,55 @@ class SendPhotoWithCnhState extends State<SendPhotoWithCnh> {
     );
   }
 
-  Future<void> sendPhotoWithCnh(BuildContext context) async {
+  Future<void> buttonCallback(BuildContext context) async {
+    // get relevant models
+    final connectivity = Provider.of<ConnectivityModel>(
+      context,
+      listen: false,
+    );
     final FirebaseModel firebase = Provider.of<FirebaseModel>(
       context,
       listen: false,
     );
+    final PartnerModel partner = Provider.of<PartnerModel>(
+      context,
+      listen: false,
+    );
 
-    // get photoWithCnh from camera or gallery
-    PickedFile photoWithCnh = await pickImage(context);
+    // make sure user is connected to the internet
+    if (!connectivity.hasConnection) {
+      await connectivity.alertWhenOffline(
+        context,
+        message: "Conecte-se à internet para enviar o CRLV.",
+      );
+      return;
+    }
 
-    // send photoWithCnh to firebase
+    // get crlv from camera or gallery
+    Future<PickedFile> futurePhotoWithCnh = await pickImage(context);
+
+    // show progress indicator and lock screen
+    setState(() {
+      buttonChild = CircularProgressIndicator(
+        valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
+      );
+      lockScreen = true;
+    });
+
+    PickedFile photoWithCnh = await futurePhotoWithCnh;
+
     if (photoWithCnh != null) {
       try {
-        firebase.storage.sendPhotoWithCnh(
+        // send photoWithCnh to firebase
+        await firebase.storage.sendPhotoWithCnh(
           partnerID: firebase.auth.currentUser.uid,
           photoWithCnh: photoWithCnh,
         );
+        // on success, make photoWithCnh as submitted and go back to Documents screen
+        partner.updatePhotoWithCnhSubmitted(true);
+        Navigator.pop(context);
       } catch (e) {
-        // on error, display warning
+        // on failure, display warning
         await showDialog(
           context: context,
           builder: (BuildContext context) {
@@ -172,5 +199,11 @@ class SendPhotoWithCnhState extends State<SendPhotoWithCnh> {
         );
       }
     }
+
+    // hide progress indicator
+    setState(() {
+      buttonChild = null;
+      lockScreen = false;
+    });
   }
 }

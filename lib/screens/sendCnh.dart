@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:partner_app/models/connectivity.dart';
 import 'package:partner_app/models/firebase.dart';
+import 'package:partner_app/models/partner.dart';
 import 'package:partner_app/styles.dart';
 import 'package:partner_app/vendors/imagePicker.dart';
 import 'package:partner_app/vendors/firebaseStorage.dart';
@@ -18,6 +19,9 @@ class SendCnh extends StatefulWidget {
 }
 
 class SendCnhState extends State<SendCnh> {
+  Widget buttonChild;
+  bool lockScreen = false;
+
   @override
   Widget build(BuildContext context) {
     final screenHeight = MediaQuery.of(context).size.height;
@@ -34,7 +38,8 @@ class SendCnhState extends State<SendCnh> {
             Row(
               children: [
                 ArrowBackButton(
-                  onTapCallback: () => Navigator.pop(context),
+                  onTapCallback:
+                      lockScreen ? () {} : () => Navigator.pop(context),
                 ),
                 Spacer(),
               ],
@@ -107,17 +112,10 @@ class SendCnhState extends State<SendCnh> {
                     child: AppButton(
                       textData: "Enviar CNH",
                       buttonColor: AppColor.primaryPink,
-                      onTapCallBack: () async {
-                        if (!connectivity.hasConnection) {
-                          await connectivity.alertWhenOffline(
-                            context,
-                            message: "Conecte-se à internet para enviar a CNH.",
-                          );
-                          return;
-                        }
-                        // push cnh to firebase
-                        await sendCnh(context);
-                      },
+                      child: buttonChild,
+                      onTapCallBack: lockScreen
+                          ? () {}
+                          : () async => await buttonCallback(context),
                     ),
                   )
                 ],
@@ -129,24 +127,55 @@ class SendCnhState extends State<SendCnh> {
     );
   }
 
-  Future<void> sendCnh(BuildContext context) async {
+  Future<void> buttonCallback(BuildContext context) async {
+    // get relevant models
+    final connectivity = Provider.of<ConnectivityModel>(
+      context,
+      listen: false,
+    );
     final FirebaseModel firebase = Provider.of<FirebaseModel>(
       context,
       listen: false,
     );
+    final PartnerModel partner = Provider.of<PartnerModel>(
+      context,
+      listen: false,
+    );
+
+    // make sure user is connected to the internet
+    if (!connectivity.hasConnection) {
+      await connectivity.alertWhenOffline(
+        context,
+        message: "Conecte-se à internet para enviar o CRLV.",
+      );
+      return;
+    }
 
     // get cnh from camera or gallery
-    PickedFile cnh = await pickImage(context);
+    Future<PickedFile> futureCnh = await pickImage(context);
 
-    // send crlv to firebase
+    // show progress indicator and lock screen
+    setState(() {
+      buttonChild = CircularProgressIndicator(
+        valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
+      );
+      lockScreen = true;
+    });
+
+    PickedFile cnh = await futureCnh;
+
     if (cnh != null) {
       try {
-        firebase.storage.sendCnh(
+        // send cnh to firebase
+        await firebase.storage.sendCnh(
           partnerID: firebase.auth.currentUser.uid,
           cnh: cnh,
         );
+        // on success, make cnh as submitted and go back to Documents screen
+        partner.updateCnhSubmitted(true);
+        Navigator.pop(context);
       } catch (e) {
-        // on error, display warning
+        // on failure, display warning
         await showDialog(
           context: context,
           builder: (BuildContext context) {
@@ -170,5 +199,11 @@ class SendCnhState extends State<SendCnh> {
         );
       }
     }
+
+    // hide progress indicator
+    setState(() {
+      buttonChild = null;
+      lockScreen = false;
+    });
   }
 }

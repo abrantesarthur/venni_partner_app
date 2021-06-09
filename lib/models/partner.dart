@@ -24,6 +24,11 @@ class PartnerModel extends ChangeNotifier {
   String _denialReason;
   String _lockReason;
   Vehicle _vehicle;
+  bool _crlvSubmitted;
+  bool _cnhSubmitted;
+  bool _photoWithCnhSubmitted;
+  bool _profilePhotoSubmitted;
+  bool _bankInfoSubmitted;
 
   // getters
   String get id => _id;
@@ -41,6 +46,36 @@ class PartnerModel extends ChangeNotifier {
   String get denialReason => _denialReason;
   String get lockReason => _lockReason;
   Vehicle get vehicle => _vehicle;
+  bool get crlvSubmitted => _crlvSubmitted;
+  bool get cnhSubmitted => _cnhSubmitted;
+  bool get photoWithCnhSubmitted => _photoWithCnhSubmitted;
+  bool get profilePhotoSubmitted => _profilePhotoSubmitted;
+  bool get bankInfoSubmitted => _bankInfoSubmitted;
+
+  void updateCrlvSubmitted(bool value) {
+    _crlvSubmitted = value;
+    notifyListeners();
+  }
+
+  void updateCnhSubmitted(bool value) {
+    _cnhSubmitted = value;
+    notifyListeners();
+  }
+
+  void updatePhotoWithCnhSubmitted(bool value) {
+    _photoWithCnhSubmitted = value;
+    notifyListeners();
+  }
+
+  void updateProfilePhotoSubmitted(bool value) {
+    _profilePhotoSubmitted = value;
+    notifyListeners();
+  }
+
+  void updateBankInfoSubmitted(bool value) {
+    _bankInfoSubmitted = value;
+    notifyListeners();
+  }
 
   void fromPartnerInterface(PartnerInterface pi) {
     if (pi != null) {
