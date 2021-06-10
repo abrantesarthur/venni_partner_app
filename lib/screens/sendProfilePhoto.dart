@@ -6,6 +6,7 @@ import 'package:partner_app/models/partner.dart';
 import 'package:partner_app/styles.dart';
 import 'package:partner_app/vendors/imagePicker.dart';
 import 'package:partner_app/vendors/firebaseStorage.dart';
+import 'package:partner_app/vendors/firebaseDatabase/methods.dart';
 import 'package:partner_app/widgets/appButton.dart';
 import 'package:partner_app/widgets/arrowBackButton.dart';
 import 'package:partner_app/widgets/overallPadding.dart';
@@ -178,12 +179,17 @@ class SendProfilePhotoState extends State<SendProfilePhoto> {
     if (profilePhoto != null) {
       try {
         // send profilePhoto to firebase
-        await firebase.storage.sendProfilePhoto(
+        await firebase.storage.pushProfilePhoto(
           partnerID: firebase.auth.currentUser.uid,
           profilePhoto: profilePhoto,
         );
-        // on success, make profilePhoto as submitted and go back to Documents screen
+        // on success, make profilePhoto as submitted both on firebase and locally
+        await firebase.database.setSubmittedProfilePhoto(
+          partnerID: firebase.auth.currentUser.uid,
+          value: true,
+        );
         partner.updateProfilePhotoSubmitted(true);
+
         Navigator.pop(context);
       } catch (e) {
         // on failure, display warning

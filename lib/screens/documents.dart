@@ -17,7 +17,7 @@ class Documents extends StatefulWidget {
   DocumentsState createState() => DocumentsState();
 }
 
-// TODO: as user sends information, add them under 'Documentos enviados'
+// TODO: make sure Documentos Enviados is properly loaded
 // TODO: implement 'Ajuda': 'chat com supporte' and 'sair'
 // TODO: add lockscreen to all screens
 
@@ -28,6 +28,7 @@ class DocumentsState extends State<Documents> {
   Widget build(BuildContext context) {
     ConnectivityModel connectivity = Provider.of<ConnectivityModel>(context);
     FirebaseModel firebase = Provider.of<FirebaseModel>(context);
+    // must listen!
     PartnerModel partner = Provider.of<PartnerModel>(context);
     final screenHeight = MediaQuery.of(context).size.height;
     final screenWidth = MediaQuery.of(context).size.width;
@@ -80,128 +81,295 @@ class DocumentsState extends State<Documents> {
               ),
             ),
           ),
-          OverallPadding(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  "Bem-vindo(a), " + partner.name,
-                  style: TextStyle(fontSize: 22, fontWeight: FontWeight.w600),
-                ),
-                SizedBox(height: screenHeight / 20),
-                Text(
-                  "Documentos obrigatórios",
-                  style: TextStyle(fontSize: 16, fontWeight: FontWeight.w600),
-                ),
-                SizedBox(height: screenHeight / 40),
-                Text(
-                  "Após o envio dos documentos, analizaremos a sua inscrição em até 48 horas.",
-                  style: TextStyle(fontSize: 16, color: AppColor.disabled),
-                ),
-                SizedBox(height: screenHeight / 40),
-                ListBody(
+          Expanded(
+            child: OverallPadding(
+              child: SingleChildScrollView(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    ListTile(
-                      minLeadingWidth: 0,
-                      contentPadding: EdgeInsets.all(0),
-                      onTap: () async {
-                        Navigator.pushNamed(context, SendCrlv.routeName);
-                      },
-                      title: Text(
-                        "Certificado de Registro e Licensiamento de Veículo (CRLV)",
-                        style: TextStyle(
-                            fontSize: 16, fontWeight: FontWeight.w600),
-                      ),
-                      leading: Icon(Icons.description, color: Colors.black),
-                      trailing: Icon(
-                        Icons.keyboard_arrow_right,
-                        color: AppColor.disabled,
-                      ),
+                    Text(
+                      "Bem-vindo(a), " + partner.name,
+                      style:
+                          TextStyle(fontSize: 22, fontWeight: FontWeight.w600),
                     ),
-                    Divider(color: Colors.black, thickness: 0.1),
-                    ListTile(
-                      minLeadingWidth: 0,
-                      contentPadding: EdgeInsets.all(0),
-                      onTap: () async {
-                        Navigator.pushNamed(context, SendCnh.routeName);
-                      },
-                      title: Text(
-                        "Carteira Nacional de Habilitação com EAR (CNH)",
-                        style: TextStyle(
-                            fontSize: 16, fontWeight: FontWeight.w600),
-                      ),
-                      leading: Icon(Icons.description, color: Colors.black),
-                      trailing: Icon(
-                        Icons.keyboard_arrow_right,
-                        color: AppColor.disabled,
-                      ),
+                    SizedBox(height: screenHeight / 20),
+                    Text(
+                      "Documentos obrigatórios",
+                      style:
+                          TextStyle(fontSize: 16, fontWeight: FontWeight.w600),
                     ),
-                    Divider(color: Colors.black, thickness: 0.1),
-                    ListTile(
-                      minLeadingWidth: 0,
-                      contentPadding: EdgeInsets.all(0),
-                      onTap: () async {
-                        Navigator.pushNamed(
-                          context,
-                          SendPhotoWithCnh.routeName,
-                        );
-                      },
-                      title: Text(
-                        "Foto do Rosto com CNH do Lado",
-                        style: TextStyle(
-                            fontSize: 16, fontWeight: FontWeight.w600),
-                      ),
-                      leading: Icon(Icons.description, color: Colors.black),
-                      trailing: Icon(
-                        Icons.keyboard_arrow_right,
-                        color: AppColor.disabled,
-                      ),
+                    SizedBox(height: screenHeight / 40),
+                    Text(
+                      "Após o envio dos documentos, analizaremos a sua inscrição em até 48 horas.",
+                      style: TextStyle(fontSize: 16, color: AppColor.disabled),
                     ),
-                    Divider(color: Colors.black, thickness: 0.1),
-                    ListTile(
-                      minLeadingWidth: 0,
-                      contentPadding: EdgeInsets.all(0),
-                      onTap: () async {
-                        Navigator.pushNamed(
-                          context,
-                          SendProfilePhoto.routeName,
-                        );
-                      },
-                      title: Text(
-                        "Foto de Perfil",
-                        style: TextStyle(
-                            fontSize: 16, fontWeight: FontWeight.w600),
-                      ),
-                      leading: Icon(Icons.description, color: Colors.black),
-                      trailing: Icon(
-                        Icons.keyboard_arrow_right,
-                        color: AppColor.disabled,
-                      ),
+                    SizedBox(height: screenHeight / 40),
+                    ListBody(
+                      children: [
+                        partner.crlvSubmitted
+                            ? Container()
+                            : Column(
+                                children: [
+                                  ListTile(
+                                    minLeadingWidth: 0,
+                                    contentPadding: EdgeInsets.all(0),
+                                    onTap: () async {
+                                      Navigator.pushNamed(
+                                          context, SendCrlv.routeName);
+                                    },
+                                    title: Text(
+                                      "Certificado de Registro e Licensiamento de Veículo (CRLV)",
+                                      style: TextStyle(
+                                          fontSize: 16,
+                                          fontWeight: FontWeight.w600),
+                                    ),
+                                    leading: Icon(Icons.description,
+                                        color: Colors.black),
+                                    trailing: Icon(
+                                      Icons.keyboard_arrow_right,
+                                      color: AppColor.disabled,
+                                    ),
+                                  ),
+                                  Divider(color: Colors.black, thickness: 0.1),
+                                ],
+                              ),
+                        partner.cnhSubmitted
+                            ? Container()
+                            : Column(
+                                children: [
+                                  ListTile(
+                                    minLeadingWidth: 0,
+                                    contentPadding: EdgeInsets.all(0),
+                                    onTap: () async {
+                                      Navigator.pushNamed(
+                                          context, SendCnh.routeName);
+                                    },
+                                    title: Text(
+                                      "Carteira Nacional de Habilitação com EAR (CNH)",
+                                      style: TextStyle(
+                                          fontSize: 16,
+                                          fontWeight: FontWeight.w600),
+                                    ),
+                                    leading: Icon(Icons.description,
+                                        color: Colors.black),
+                                    trailing: Icon(
+                                      Icons.keyboard_arrow_right,
+                                      color: AppColor.disabled,
+                                    ),
+                                  ),
+                                  Divider(color: Colors.black, thickness: 0.1),
+                                ],
+                              ),
+                        partner.photoWithCnhSubmitted
+                            ? Container()
+                            : Column(
+                                children: [
+                                  ListTile(
+                                    minLeadingWidth: 0,
+                                    contentPadding: EdgeInsets.all(0),
+                                    onTap: () async {
+                                      Navigator.pushNamed(
+                                        context,
+                                        SendPhotoWithCnh.routeName,
+                                      );
+                                    },
+                                    title: Text(
+                                      "Foto do Rosto com CNH do Lado",
+                                      style: TextStyle(
+                                          fontSize: 16,
+                                          fontWeight: FontWeight.w600),
+                                    ),
+                                    leading: Icon(Icons.description,
+                                        color: Colors.black),
+                                    trailing: Icon(
+                                      Icons.keyboard_arrow_right,
+                                      color: AppColor.disabled,
+                                    ),
+                                  ),
+                                  Divider(color: Colors.black, thickness: 0.1),
+                                ],
+                              ),
+                        partner.profilePhotoSubmitted
+                            ? Container()
+                            : Column(
+                                children: [
+                                  ListTile(
+                                    minLeadingWidth: 0,
+                                    contentPadding: EdgeInsets.all(0),
+                                    onTap: () async {
+                                      Navigator.pushNamed(
+                                        context,
+                                        SendProfilePhoto.routeName,
+                                      );
+                                    },
+                                    title: Text(
+                                      "Foto de Perfil",
+                                      style: TextStyle(
+                                          fontSize: 16,
+                                          fontWeight: FontWeight.w600),
+                                    ),
+                                    leading: Icon(Icons.description,
+                                        color: Colors.black),
+                                    trailing: Icon(
+                                      Icons.keyboard_arrow_right,
+                                      color: AppColor.disabled,
+                                    ),
+                                  ),
+                                  Divider(color: Colors.black, thickness: 0.1),
+                                ],
+                              ),
+                        partner.bankInfoSubmitted
+                            ? Container()
+                            : Column(
+                                children: [
+                                  ListTile(
+                                    minLeadingWidth: 0,
+                                    contentPadding: EdgeInsets.all(0),
+                                    onTap: () async {
+                                      Navigator.pushNamed(
+                                        context,
+                                        SendBankInfo.routeName,
+                                      );
+                                    },
+                                    title: Text(
+                                      "Informações bancárias",
+                                      style: TextStyle(
+                                          fontSize: 16,
+                                          fontWeight: FontWeight.w600),
+                                    ),
+                                    leading: Icon(Icons.description,
+                                        color: Colors.black),
+                                    trailing: Icon(
+                                      Icons.keyboard_arrow_right,
+                                      color: AppColor.disabled,
+                                    ),
+                                  ),
+                                ],
+                              ),
+                      ],
                     ),
-                    Divider(color: Colors.black, thickness: 0.1),
-                    ListTile(
-                      minLeadingWidth: 0,
-                      contentPadding: EdgeInsets.all(0),
-                      onTap: () async {
-                        Navigator.pushNamed(
-                          context,
-                          SendBankInfo.routeName,
-                        );
-                      },
-                      title: Text(
-                        "Informações bancárias",
-                        style: TextStyle(
-                            fontSize: 16, fontWeight: FontWeight.w600),
-                      ),
-                      leading: Icon(Icons.description, color: Colors.black),
-                      trailing: Icon(
-                        Icons.keyboard_arrow_right,
-                        color: AppColor.disabled,
-                      ),
+                    SizedBox(height: screenHeight / 40),
+                    Text(
+                      "Documentos enviados",
+                      style:
+                          TextStyle(fontSize: 16, fontWeight: FontWeight.w600),
+                    ),
+                    SizedBox(height: screenHeight / 40),
+                    ListBody(
+                      children: [
+                        ListTile(
+                          minLeadingWidth: 0,
+                          contentPadding: EdgeInsets.all(0),
+                          onTap: () async {
+                            Navigator.pushNamed(context, SendCrlv.routeName);
+                          },
+                          title: Text(
+                            "Certificado de Registro e Licensiamento de Veículo (CRLV)",
+                            style: TextStyle(
+                              fontSize: 16,
+                              fontWeight: FontWeight.w600,
+                              color: AppColor.disabled,
+                            ),
+                          ),
+                          leading: Icon(
+                            Icons.check_circle,
+                            color: AppColor.secondaryGreen.withOpacity(0.5),
+                          ),
+                        ),
+                        Divider(color: Colors.black, thickness: 0.1),
+                        ListTile(
+                          minLeadingWidth: 0,
+                          contentPadding: EdgeInsets.all(0),
+                          onTap: () async {
+                            Navigator.pushNamed(context, SendCnh.routeName);
+                          },
+                          title: Text(
+                            "Carteira Nacional de Habilitação com EAR (CNH)",
+                            style: TextStyle(
+                              fontSize: 16,
+                              fontWeight: FontWeight.w600,
+                              color: AppColor.disabled,
+                            ),
+                          ),
+                          leading: Icon(
+                            Icons.check_circle,
+                            color: AppColor.secondaryGreen.withOpacity(0.5),
+                          ),
+                        ),
+                        Divider(color: Colors.black, thickness: 0.1),
+                        ListTile(
+                          minLeadingWidth: 0,
+                          contentPadding: EdgeInsets.all(0),
+                          onTap: () async {
+                            Navigator.pushNamed(
+                              context,
+                              SendPhotoWithCnh.routeName,
+                            );
+                          },
+                          title: Text(
+                            "Foto do Rosto com CNH do Lado",
+                            style: TextStyle(
+                              fontSize: 16,
+                              fontWeight: FontWeight.w600,
+                              color: AppColor.disabled,
+                            ),
+                          ),
+                          leading: Icon(
+                            Icons.check_circle,
+                            color: AppColor.secondaryGreen.withOpacity(0.5),
+                          ),
+                        ),
+                        Divider(color: Colors.black, thickness: 0.1),
+                        ListTile(
+                          minLeadingWidth: 0,
+                          contentPadding: EdgeInsets.all(0),
+                          onTap: () async {
+                            Navigator.pushNamed(
+                              context,
+                              SendProfilePhoto.routeName,
+                            );
+                          },
+                          title: Text(
+                            "Foto de Perfil",
+                            style: TextStyle(
+                              fontSize: 16,
+                              fontWeight: FontWeight.w600,
+                              color: AppColor.disabled,
+                            ),
+                          ),
+                          leading: Icon(
+                            Icons.check_circle,
+                            color: AppColor.secondaryGreen.withOpacity(0.5),
+                          ),
+                        ),
+                        Divider(color: Colors.black, thickness: 0.1),
+                        ListTile(
+                          minLeadingWidth: 0,
+                          contentPadding: EdgeInsets.all(0),
+                          onTap: () async {
+                            Navigator.pushNamed(
+                              context,
+                              SendBankInfo.routeName,
+                            );
+                          },
+                          title: Text(
+                            "Informações bancárias",
+                            style: TextStyle(
+                              fontSize: 16,
+                              fontWeight: FontWeight.w600,
+                              color: AppColor.disabled,
+                            ),
+                          ),
+                          leading: Icon(
+                            Icons.check_circle,
+                            color: AppColor.secondaryGreen.withOpacity(0.5),
+                          ),
+                        ),
+                      ],
                     ),
                   ],
                 ),
-              ],
+              ),
             ),
           )
         ],

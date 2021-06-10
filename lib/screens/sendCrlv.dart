@@ -6,6 +6,7 @@ import 'package:partner_app/models/partner.dart';
 import 'package:partner_app/styles.dart';
 import 'package:partner_app/vendors/imagePicker.dart';
 import 'package:partner_app/vendors/firebaseStorage.dart';
+import 'package:partner_app/vendors/firebaseDatabase/methods.dart';
 import 'package:partner_app/widgets/appButton.dart';
 import 'package:partner_app/widgets/arrowBackButton.dart';
 import 'package:partner_app/widgets/overallPadding.dart';
@@ -166,12 +167,19 @@ class SendCrlvState extends State<SendCrlv> {
     if (crlv != null) {
       try {
         // send crlv to firebase
-        await firebase.storage.sendCrlv(
+        await firebase.storage.pushCrlv(
           partnerID: firebase.auth.currentUser.uid,
           crlv: crlv,
         );
-        // on success, make crlv as submitted and go back to Documents screen
+
+        // on success, make crlv as submitted both on firebase and locally
+        await firebase.database.setSubmittedCrlv(
+          partnerID: firebase.auth.currentUser.uid,
+          value: true,
+        );
         partner.updateCrlvSubmitted(true);
+
+        // finally, go back to Documents screen
         Navigator.pop(context);
       } catch (e) {
         // on failure, display warning

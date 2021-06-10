@@ -104,7 +104,35 @@ extension GenderExtesion on Gender {
   }
 }
 
+class SubmittedDocuments {
+  final bool cnh;
+  final bool crlv;
+  final bool photoWithCnh;
+  final bool profilePhoto;
+  final bool bankInfo;
 
+  SubmittedDocuments({
+    @required this.cnh,
+    @required this.crlv,
+    @required this.photoWithCnh,
+    @required this.profilePhoto,
+    @required this.bankInfo,
+  });
+
+  factory SubmittedDocuments.fromJson(Map json) {
+    return json == null
+        ? null
+        : SubmittedDocuments(
+            cnh: json["cnh"] == null ? false : json["cnh"],
+            crlv: json["crlv"] == null ? false : json["crlv"],
+            photoWithCnh:
+                json["photo_with_cnh"] == null ? false : json["photo_with_cnh"],
+            profilePhoto:
+                json["profile_photo"] == null ? false : json["profile_photo"],
+            bankInfo: json["bank_info"] == null ? false : json["bank_info"],
+          );
+  }
+}
 
 class PartnerInterface {
   final String id;
@@ -127,6 +155,7 @@ class PartnerInterface {
   final String currentZone;
   final num idleSince;
   final Vehicle vehicle;
+  final SubmittedDocuments submittedDocuments;
 
   PartnerInterface({
     @required this.id,
@@ -149,9 +178,10 @@ class PartnerInterface {
     @required this.currentZone,
     @required this.idleSince,
     @required this.vehicle,
+    @required this.submittedDocuments,
   });
 
-  // TODO: test this shit
+  // TODO: test the shit out of this
   factory PartnerInterface.fromJson(Map json) {
     if (json == null) {
       return null;
@@ -171,6 +201,9 @@ class PartnerInterface {
         : double.parse(json["current_longitude"]);
     num idleSince =
         json["idle_since"] == null ? null : int.parse(json["idle_since"]);
+    SubmittedDocuments submittedDocuments = json["submitted_documents"] == null
+        ? null
+        : SubmittedDocuments.fromJson(json["submitted_documents"]);
 
     return PartnerInterface(
       id: json["uid"],
@@ -193,6 +226,97 @@ class PartnerInterface {
       currentZone: json["currentZone"],
       idleSince: idleSince,
       vehicle: Vehicle.fromJson(json["vehicle"]),
+      submittedDocuments: submittedDocuments,
     );
+  }
+
+  // TODO: test
+  Map<String, dynamic> toJson() {
+    Map<String, dynamic> json = {};
+    if (this.id != null) {
+      json["uid"] = this.id;
+    }
+    if (this.name != null) {
+      json["name"] = this.name;
+    }
+    if (this.lastName != null) {
+      json["last_name"] = this.lastName;
+    }
+    if (this.cpf != null) {
+      json["cpf"] = this.cpf;
+    }
+    if (this.gender != null) {
+      json["gender"] = this.gender.toString().substring(7);
+    }
+    if (this.memberSince != null) {
+      json["member_since"] = this.memberSince.toString();
+    }
+    if (this.phoneNumber != null) {
+      json["phone_number"] = this.phoneNumber;
+    }
+    if (this.rating != null) {
+      json["rating"] = this.rating.toString();
+    }
+    if (this.totalTrips != null) {
+      json["total_trips"] = this.totalTrips.toString();
+    }
+    if (this.pagarmeReceiverID != null) {
+      json["pagarme_receiver_id"] = this.pagarmeReceiverID;
+    }
+    if (this.partnerStatus != null) {
+      json["partner_status"] = this.partnerStatus.toString().substring(14);
+    }
+    if (this.accountStatus != null) {
+      json["account_status"] = this.accountStatus.toString().substring(14);
+    }
+    if (this.denialReason != null) {
+      json["denial_reason"] = this.denialReason;
+    }
+    if (this.lockReason != null) {
+      json["lock_reason"] = this.lockReason;
+    }
+    if (this.currentClientID != null) {
+      json["current_client_id"] = this.currentClientID;
+    }
+    if (this.currentLatitude != null) {
+      json["current_latitude"] = this.currentLatitude.toString();
+    }
+    if (this.currentLongitude != null) {
+      json["current_longitude"] = this.currentLongitude.toString();
+    }
+    if (this.currentZone != null) {
+      json["current_zone"] = this.currentZone;
+    }
+    if (this.idleSince != null) {
+      json["idleSince"] = this.idleSince.toString();
+    }
+    if (this.vehicle != null) {
+      json["vehicle"] = {
+        "brand": this.vehicle.brand,
+        "model": this.vehicle.model,
+        "year": this.vehicle.year,
+        "plate": this.vehicle.plate,
+      };
+    }
+    if (this.submittedDocuments != null) {
+      json["submitted_documents"] = {
+        "cnh": this.submittedDocuments.cnh == null
+            ? false
+            : this.submittedDocuments.cnh,
+        "crlv": this.submittedDocuments.crlv == null
+            ? false
+            : this.submittedDocuments.crlv,
+        "photo_with_cnh": this.submittedDocuments.photoWithCnh == null
+            ? false
+            : this.submittedDocuments.photoWithCnh,
+        "profile_photo": this.submittedDocuments.profilePhoto == null
+            ? false
+            : this.submittedDocuments.profilePhoto,
+        "bank_info": this.submittedDocuments.bankInfo == null
+            ? false
+            : this.submittedDocuments.profilePhoto,
+      };
+    }
+    return json;
   }
 }

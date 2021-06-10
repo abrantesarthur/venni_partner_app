@@ -6,6 +6,7 @@ import 'package:partner_app/models/partner.dart';
 import 'package:partner_app/styles.dart';
 import 'package:partner_app/vendors/imagePicker.dart';
 import 'package:partner_app/vendors/firebaseStorage.dart';
+import 'package:partner_app/vendors/firebaseDatabase/methods.dart';
 import 'package:partner_app/widgets/appButton.dart';
 import 'package:partner_app/widgets/arrowBackButton.dart';
 import 'package:partner_app/widgets/overallPadding.dart';
@@ -167,12 +168,19 @@ class SendCnhState extends State<SendCnh> {
     if (cnh != null) {
       try {
         // store cnh in firebase storage
-        await firebase.storage.sendCnh(
+        await firebase.storage.pushCnh(
           partnerID: firebase.auth.currentUser.uid,
           cnh: cnh,
         );
-        // on success, make cnh as submitted and go back to Documents screen
+
+        // on success, make cnh as submitted both on firebase database and locally
+        await firebase.database.setSubmittedCnh(
+          partnerID: firebase.auth.currentUser.uid,
+          value: true,
+        );
         partner.updateCnhSubmitted(true);
+
+        // finally,  go back to Documents screen
         Navigator.pop(context);
       } catch (e) {
         // on failure, display warning

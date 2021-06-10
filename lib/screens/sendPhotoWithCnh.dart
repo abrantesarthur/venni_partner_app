@@ -6,6 +6,7 @@ import 'package:partner_app/models/partner.dart';
 import 'package:partner_app/styles.dart';
 import 'package:partner_app/vendors/imagePicker.dart';
 import 'package:partner_app/vendors/firebaseStorage.dart';
+import 'package:partner_app/vendors/firebaseDatabase/methods.dart';
 import 'package:partner_app/widgets/appButton.dart';
 import 'package:partner_app/widgets/arrowBackButton.dart';
 import 'package:partner_app/widgets/overallPadding.dart';
@@ -167,12 +168,17 @@ class SendPhotoWithCnhState extends State<SendPhotoWithCnh> {
     if (photoWithCnh != null) {
       try {
         // send photoWithCnh to firebase
-        await firebase.storage.sendPhotoWithCnh(
+        await firebase.storage.pushPhotoWithCnh(
           partnerID: firebase.auth.currentUser.uid,
           photoWithCnh: photoWithCnh,
         );
-        // on success, make photoWithCnh as submitted and go back to Documents screen
+        // on success, make photoWithCnh as submitted both on firebase and locally
+        await firebase.database.setSubmittedPhotoWithCnh(
+          partnerID: firebase.auth.currentUser.uid,
+          value: true,
+        );
         partner.updatePhotoWithCnhSubmitted(true);
+
         Navigator.pop(context);
       } catch (e) {
         // on failure, display warning

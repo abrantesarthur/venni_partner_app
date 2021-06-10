@@ -41,6 +41,8 @@ extension AppFirebaseAuth on FirebaseAuth {
         userCredential.user.uid,
       );
 
+      print(partnerInterface == null);
+
       // if user already has a partner account
       if (partnerInterface != null) {
         // update partner model
