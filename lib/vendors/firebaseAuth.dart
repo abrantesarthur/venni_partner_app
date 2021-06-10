@@ -161,10 +161,10 @@ extension AppFirebaseAuth on FirebaseAuth {
       }
       await credential.user.updateProfile(displayName: displayName);
 
-      // create partner entry in database
+      // create partner entry in database with some of the fields set
       final partner = this.currentUser;
       try {
-        await firebase.database.createPartner(partner.uid, {
+        await firebase.database.createPartner(PartnerInterface.fromJson({
           "uid": partner.uid,
           "name": partner.displayName.split(" ").first,
           "last_name": partner.displayName
@@ -173,7 +173,7 @@ extension AppFirebaseAuth on FirebaseAuth {
           "gender": gender.toString().substring(7),
           "phone_number": partner.phoneNumber,
           "account_status": "pending_documents",
-        });
+        }));
       } catch (e) {
         throw FirebaseAuthException(code: "database-failure");
       }

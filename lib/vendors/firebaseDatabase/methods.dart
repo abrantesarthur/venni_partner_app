@@ -107,12 +107,48 @@ extension AppFirebaseDatabase on FirebaseDatabase {
     return null;
   }
 
-  Future<void> createPartner(
-    String id,
-    Map<String, dynamic> data,
-  ) async {
+  // {
+  //         "uid": partner.uid,
+  //         "name": partner.displayName.split(" ").first,
+  //         "last_name": partner.displayName
+  //             .substring(partner.displayName.indexOf(" ") + 1),
+  //         "cpf": cpf,
+  //         "gender": gender.toString().substring(7),
+  //         "phone_number": partner.phoneNumber,
+  //         "account_status": "pending_documents",
+  //       }
+
+  Future<void> createPartner(PartnerInterface partner) async {
     try {
-      await this.reference().child("partners").child(id).set(data);
+      await this.reference().child("partners").child(partner.id).set({
+        "uid": partner.id,
+        "name": partner.name,
+        "last_name": partner.lastName,
+        "cpf": partner.cpf,
+        "gender": partner.gender?.toString()?.substring(7),
+        "member_since": partner.memberSince?.toString(),
+        "phone_number": partner.phoneNumber,
+        "rating": partner.rating?.toString(),
+        "total_trips": partner.totalTrips?.toString(),
+        "pagarme_receiver_id": partner.pagarmeReceiverID,
+        "partner_status":
+            partner.partnerStatus?.toString(), // TODO: get substring
+        "account_status":
+            partner.accountStatus?.toString(), // TODO: get substring
+        "denial_reason": partner.denialReason,
+        "lock_reason": partner.lockReason,
+        "current_client_id": partner.currentClientID,
+        "current_latitude": partner.currentLatitude?.toString(),
+        "current_longitude": partner.currentLongitude?.toString(),
+        "current_zone": partner.currentZone,
+        "idle_since": partner.idleSince?.toString(),
+        "vehicle": {
+          "brand": partner.vehicle?.brand,
+          "model": partner.vehicle?.model,
+          "year": partner.vehicle?.year,
+          "plate": partner.vehicle?.plate,
+        }
+      });
     } catch (e) {
       throw e;
     }

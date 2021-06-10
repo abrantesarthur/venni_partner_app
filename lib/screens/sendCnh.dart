@@ -166,7 +166,7 @@ class SendCnhState extends State<SendCnh> {
 
     if (cnh != null) {
       try {
-        // send cnh to firebase
+        // store cnh in firebase storage
         await firebase.storage.sendCnh(
           partnerID: firebase.auth.currentUser.uid,
           cnh: cnh,
