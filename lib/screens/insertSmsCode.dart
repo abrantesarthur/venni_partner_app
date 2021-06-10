@@ -249,6 +249,9 @@ class InsertSmsCodeState extends State<InsertSmsCode> {
   // During verification, a CircularProgressIndicator widget
   // is displayed. Upon success, user is redirected to another screen.
   Future<void> verifySmsCode(BuildContext context) async {
+    // dismiss keyboard
+    FocusScope.of(context).requestFocus(FocusNode());
+
     setState(() {
       warningMessage = null;
       circularButtonCallback = null;

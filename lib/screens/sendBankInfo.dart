@@ -15,7 +15,6 @@ class SendBankInfo extends StatefulWidget {
   SendBankInfoState createState() => SendBankInfoState();
 }
 
-// TODO: lock screen in all screens while submitting info
 // TOOD: display warnings if something goes wrong
 class SendBankInfoState extends State<SendBankInfo> with RouteAware {
   TextEditingController agencyNumberController = TextEditingController();

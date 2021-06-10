@@ -226,6 +226,9 @@ class InsertPasswordState extends State<InsertPassword> {
     FirebaseModel firebase,
     PartnerModel partner,
   ) async {
+    // dismiss keyboard
+    FocusScope.of(context).requestFocus(FocusNode());
+
     // if the user already has a client account
     if (firebase.hasClientAccount) {
       // make sure they've entered a valid password
