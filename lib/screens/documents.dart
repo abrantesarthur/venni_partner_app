@@ -6,8 +6,10 @@ import 'package:partner_app/screens/sendCrlv.dart';
 import 'package:partner_app/screens/sendPhotoWithCnh.dart';
 import 'package:partner_app/screens/sendProfilePhoto.dart';
 import 'package:partner_app/styles.dart';
+import 'package:partner_app/utils/utils.dart';
 import 'package:partner_app/widgets/overallPadding.dart';
 import 'package:provider/provider.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 class Documents extends StatefulWidget {
   static const routeName = "Documents";
@@ -414,9 +416,7 @@ Future<dynamic> _showHelpDialog(BuildContext context) {
           child: ListBody(
             children: [
               ListTile(
-                onTap: () async {
-                  // TODO: open whatsapp
-                },
+                onTap: () async => await _openWhatsapp(context),
                 title: Text("Chat com o suporte"),
                 leading: Icon(
                   Icons.question_answer,
@@ -436,4 +436,17 @@ Future<dynamic> _showHelpDialog(BuildContext context) {
       );
     },
   );
+}
+
+Future<void> _openWhatsapp(BuildContext context) async {
+  String _whatsappUrl = "https://wa.me/5538999455370";
+  if (await canLaunch(_whatsappUrl)) {
+    await launch(_whatsappUrl);
+  } else {
+    showOkDialog(
+      context,
+      "Falha ao abrir whatsapp",
+      "Tente novamente mais tarde",
+    );
+  }
 }

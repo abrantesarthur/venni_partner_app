@@ -7,6 +7,7 @@ import 'package:flutter/services.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:partner_app/styles.dart';
+import 'package:partner_app/widgets/okDialog.dart';
 
 extension CPFExtension on String {
   // expects format xxxxxxxxxxx
@@ -278,4 +279,19 @@ class MaskedInputFormatter extends TextInputFormatter {
       selection: new TextSelection.collapsed(offset: newText.toString().length),
     );
   }
+}
+
+Future<T> showOkDialog<T>(
+  BuildContext context,
+  String title,
+  String content,
+) async {
+  return await showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return OkDialog(
+          title: title,
+          content: content,
+        );
+      });
 }
