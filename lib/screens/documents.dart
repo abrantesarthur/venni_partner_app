@@ -93,18 +93,25 @@ class DocumentsState extends State<Documents> {
                       style:
                           TextStyle(fontSize: 22, fontWeight: FontWeight.w600),
                     ),
-                    SizedBox(height: screenHeight / 20),
-                    Text(
-                      "Documentos obrigatórios",
-                      style:
-                          TextStyle(fontSize: 16, fontWeight: FontWeight.w600),
-                    ),
-                    SizedBox(height: screenHeight / 40),
-                    Text(
-                      "Após o envio dos documentos, analizaremos a sua inscrição em até 48 horas.",
-                      style: TextStyle(fontSize: 16, color: AppColor.disabled),
-                    ),
-                    SizedBox(height: screenHeight / 40),
+                    partner.allDocumentsSubmitted
+                        ? Container()
+                        : Column(
+                            children: [
+                              SizedBox(height: screenHeight / 20),
+                              Text(
+                                "Documentos obrigatórios",
+                                style: TextStyle(
+                                    fontSize: 16, fontWeight: FontWeight.w600),
+                              ),
+                              SizedBox(height: screenHeight / 40),
+                              Text(
+                                "Após o envio dos documentos, analizaremos a sua inscrição em até 48 horas.",
+                                style: TextStyle(
+                                    fontSize: 16, color: AppColor.disabled),
+                              ),
+                              SizedBox(height: screenHeight / 40),
+                            ],
+                          ),
                     ListBody(
                       children: [
                         partner.crlvSubmitted
