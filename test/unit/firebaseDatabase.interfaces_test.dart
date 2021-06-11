@@ -261,6 +261,32 @@ void main() {
       expect(ba.documentNumber, equals("00000000000"));
       expect(ba.legalName, equals("Fulano de Tal"));
     });
+
+    test("toJson", () {
+      Map originalJson = {
+        "bank_code": "000",
+        "agency": "0000",
+        "agency_dv": "0",
+        "account": "00000",
+        "account_dv": "0",
+        "type": "conta_corrente",
+        "document_number": "00000000000",
+      };
+
+      BankAccount ba = BankAccount.fromJson(originalJson);
+
+      Map producedJson = ba.toJson();
+
+      expect(producedJson["bank_code"], equals(originalJson["bank_code"]));
+      expect(producedJson["agency"], equals(originalJson["agency"]));
+      expect(producedJson["agency_dv"], equals(originalJson["agency_dv"]));
+      expect(producedJson["account"], equals(originalJson["account"]));
+      expect(producedJson["account_dv"], equals(originalJson["account_dv"]));
+      expect(producedJson["type"], equals(originalJson["type"]));
+      expect(producedJson["document_number"],
+          equals(originalJson["document_number"]));
+      expect(producedJson["legal_name"], isNull);
+    });
   });
 
   group("PartnerInterface", () {
@@ -376,6 +402,65 @@ void main() {
       expect(pi.bankAccount.type, equals(BankAccountType.conta_corrente));
       expect(pi.bankAccount.legalName, equals("Fulano de Tal"));
     });
+
+    test("toJson", () {
+      String now = "111111111111";
+      Map originalJson = {
+        "uid": "id",
+        "name": "name",
+        "last_name": "last_name",
+        "cpf": "cpf",
+        "gender": "masculino",
+        "member_since": now,
+        "phone_number": "+5538999999999",
+        "total_trips": "100",
+        "pagarme_receiver_id": "pagarme_receiver_id",
+        "partner_status": "available",
+        "account_status": "pending_documents",
+        "denial_reason": "denial_reason",
+        "current_client_id": "current_client_id",
+        "current_latitude": "11.1111",
+        "current_longitude": "22.2222",
+        "current_zone": "AA",
+        "idle_since": now,
+        "vehicle": {
+          "brand": "honda",
+          "year": 2020,
+          "model": "CG150",
+          "plate": "AAA0000"
+        },
+        "submitted_documents": {
+          "cnh": true,
+          "crlv": true,
+          "photo_with_cnh": true,
+          "profile_photo": true,
+          "bank_account": true,
+        },
+        "bank_account": {
+          "bank_code": "000",
+          "agency": "0000",
+          "agency_dv": "0",
+          "account": "00000",
+          "account_dv": "0",
+          "type": "conta_corrente",
+          "legal_name": "Fulano de Tal",
+        }
+      };
+
+      PartnerInterface pi = PartnerInterface.fromJson(originalJson);
+
+      Map producedJson = pi.toJson();
+
+      expect(producedJson["uid"], equals(originalJson["uid"]));
+      expect(producedJson["name"], equals(originalJson["name"]));
+      expect(producedJson["last_name"], equals(originalJson["last_name"]));
+      expect(producedJson["cpf"], equals(originalJson["cpf"]));
+      expect(producedJson["gender"], equals(originalJson["gender"]));
+      expect(
+          producedJson["member_since"], equals(originalJson["member_since"]));
+      expect(
+          producedJson["phone_number"], equals(originalJson["phone_number"]));
+      expect(producedJson["rating"], isNull);
+    });
   });
 }
-// test gender, partner_status, account_status. Everything else really
