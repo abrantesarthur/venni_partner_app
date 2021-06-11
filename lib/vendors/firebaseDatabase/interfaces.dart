@@ -176,6 +176,36 @@ class BankAccount {
             legalName: json["legal_name"],
           );
   }
+
+  Map<String, String> toJson() {
+    Map<String, String> map = {};
+    if (this.bankCode != null) {
+      map["bank_code"] = this.bankCode;
+    }
+    if (this.agency != null) {
+      map["agency"] = this.agency;
+    }
+    if (this.agencyDv != null) {
+      map["agency_dv"] = this.agencyDv;
+    }
+    if (this.account != null) {
+      map["account"] = this.account;
+    }
+    if (this.accountDv != null) {
+      map["account_dv"] = this.accountDv;
+    }
+    // TODO: make sure this is correct
+    if (this.type != null) {
+      map["type"] = this.type.toString().substring(15);
+    }
+    if (this.documentNumber != null) {
+      map["document_number"] = this.documentNumber;
+    }
+    if (this.legalName != null) {
+      map["legal_name"] = this.legalName;
+    }
+    return map;
+  }
 }
 
 class PartnerInterface {
@@ -371,7 +401,7 @@ class PartnerInterface {
         "agency_dv": this.bankAccount.agencyDv,
         "account": this.bankAccount.account,
         "account_dv": this.bankAccount.accountDv,
-        "type": this.bankAccount.type,
+        "type": this.bankAccount.type.toString().substring(15),
         "document_number": this.bankAccount.documentNumber,
         "legal_name": this.bankAccount.legalName,
       };

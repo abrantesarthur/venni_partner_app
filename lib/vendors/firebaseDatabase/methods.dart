@@ -120,9 +120,9 @@ extension AppFirebaseDatabase on FirebaseDatabase {
     }
   }
 
-  Future<void> setBankInfo({
+  Future<void> setBankAccount({
     @required partnerID,
-    @required bool value,
+    @required BankAccount bankAccount,
   }) async {
     try {
       await this
@@ -131,7 +131,7 @@ extension AppFirebaseDatabase on FirebaseDatabase {
           .child(partnerID)
           .child("submitted_documents")
           .child("bank_info")
-          .set(value);
+          .set(bankAccount.toJson());
     } catch (e) {
       throw e;
     }
