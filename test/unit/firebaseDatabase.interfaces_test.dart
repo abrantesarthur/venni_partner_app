@@ -222,6 +222,47 @@ void main() {
     });
   });
 
+  group("BankAccount", () {
+    test("fromJson with null json", () {
+      BankAccount ba = BankAccount.fromJson(null);
+      expect(ba, isNull);
+    });
+
+    test("fromJson with empty json", () {
+      BankAccount ba = BankAccount.fromJson({});
+      expect(ba, isNotNull);
+      expect(ba.bankCode, isNull);
+      expect(ba.agency, isNull);
+      expect(ba.agencyDv, isNull);
+      expect(ba.account, isNull);
+      expect(ba.accountDv, isNull);
+      expect(ba.type, isNull);
+      expect(ba.documentNumber, isNull);
+      expect(ba.legalName, isNull);
+    });
+    test("fromJson with valid json", () {
+      BankAccount ba = BankAccount.fromJson({
+        "bank_code": "000",
+        "agency": "0000",
+        "agency_dv": "0",
+        "account": "00000",
+        "account_dv": "0",
+        "type": "conta_corrente",
+        "document_number": "00000000000",
+        "legal_name": "Fulano de Tal",
+      });
+      expect(ba, isNotNull);
+      expect(ba.bankCode, equals("000"));
+      expect(ba.agency, equals("0000"));
+      expect(ba.agencyDv, equals("0"));
+      expect(ba.account, equals("00000"));
+      expect(ba.accountDv, equals("0"));
+      expect(ba.type, equals(BankAccountType.conta_corrente));
+      expect(ba.documentNumber, equals("00000000000"));
+      expect(ba.legalName, equals("Fulano de Tal"));
+    });
+  });
+
   group("PartnerInterface", () {
     test("fromJson with null json", () {
       PartnerInterface pi = PartnerInterface.fromJson(null);
