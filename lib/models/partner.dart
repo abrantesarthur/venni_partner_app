@@ -121,7 +121,7 @@ class PartnerModel extends ChangeNotifier {
           : pi.submittedDocuments.profilePhoto;
       _bankAccountSubmitted = pi.submittedDocuments == null
           ? false
-          : pi.submittedDocuments.bankInfo;
+          : pi.submittedDocuments.bankAccount;
       _allDocumentsSubmitted = _cnhSubmitted &&
           _crlvSubmitted &&
           _photoWithCnhSubmitted &&

@@ -25,6 +25,10 @@ extension PartnerStatusExtension on PartnerStatus {
         return null;
     }
   }
+
+  String getString() {
+    return this.toString().substring(14);
+  }
 }
 
 enum AccountStatus {
@@ -37,6 +41,7 @@ enum AccountStatus {
 }
 
 extension AccountStatusExtension on AccountStatus {
+  // TODO: test
   static AccountStatus fromString(String s) {
     if (s == null) {
       return null;
@@ -56,6 +61,25 @@ extension AccountStatusExtension on AccountStatus {
         return AccountStatus.locked;
       default:
         return null;
+    }
+  }
+
+  String getString() {
+    switch (this) {
+      case AccountStatus.pendingDocuments:
+        return "pending_documents";
+      case AccountStatus.pendingApproval:
+        return "pending_approval";
+      case AccountStatus.grantedInterview:
+        return "granted_interview";
+      case AccountStatus.approved:
+        return "approved";
+      case AccountStatus.deniedApproval:
+        return "denied_approval";
+      case AccountStatus.locked:
+        return "locked";
+      default:
+        return "";
     }
   }
 }
@@ -102,6 +126,10 @@ extension GenderExtesion on Gender {
         return null;
     }
   }
+
+  String getString() {
+    return this.toString().substring(7);
+  }
 }
 
 class SubmittedDocuments {
@@ -109,14 +137,14 @@ class SubmittedDocuments {
   final bool crlv;
   final bool photoWithCnh;
   final bool profilePhoto;
-  final bool bankInfo;
+  final bool bankAccount;
 
   SubmittedDocuments({
     @required this.cnh,
     @required this.crlv,
     @required this.photoWithCnh,
     @required this.profilePhoto,
-    @required this.bankInfo,
+    @required this.bankAccount,
   });
 
   factory SubmittedDocuments.fromJson(Map json) {
@@ -129,7 +157,7 @@ class SubmittedDocuments {
                 json["photo_with_cnh"] == null ? false : json["photo_with_cnh"],
             profilePhoto:
                 json["profile_photo"] == null ? false : json["profile_photo"],
-            bankInfo:
+            bankAccount:
                 json["bank_account"] == null ? false : json["bank_account"],
           );
   }
@@ -352,7 +380,7 @@ class PartnerInterface {
       currentClientID: json["current_client_id"],
       currentLatitude: currentLatitude,
       currentLongitude: currentLongitude,
-      currentZone: json["currentZone"],
+      currentZone: json["current_zone"],
       idleSince: idleSince,
       vehicle: Vehicle.fromJson(json["vehicle"]),
       submittedDocuments: submittedDocuments,
@@ -376,7 +404,7 @@ class PartnerInterface {
       json["cpf"] = this.cpf;
     }
     if (this.gender != null) {
-      json["gender"] = this.gender.toString().substring(7);
+      json["gender"] = this.gender.getString();
     }
     if (this.memberSince != null) {
       json["member_since"] = this.memberSince.toString();
@@ -394,10 +422,10 @@ class PartnerInterface {
       json["pagarme_receiver_id"] = this.pagarmeReceiverID;
     }
     if (this.partnerStatus != null) {
-      json["partner_status"] = this.partnerStatus.toString().substring(14);
+      json["partner_status"] = this.partnerStatus.getString();
     }
     if (this.accountStatus != null) {
-      json["account_status"] = this.accountStatus.toString().substring(14);
+      json["account_status"] = this.accountStatus.getString();
     }
     if (this.denialReason != null) {
       json["denial_reason"] = this.denialReason;
@@ -442,7 +470,7 @@ class PartnerInterface {
         "profile_photo": this.submittedDocuments.profilePhoto == null
             ? false
             : this.submittedDocuments.profilePhoto,
-        "bank_account": this.submittedDocuments.bankInfo == null
+        "bank_account": this.submittedDocuments.bankAccount == null
             ? false
             : this.submittedDocuments.profilePhoto,
       };
@@ -454,7 +482,7 @@ class PartnerInterface {
         "agency_dv": this.bankAccount.agencyDv,
         "account": this.bankAccount.account,
         "account_dv": this.bankAccount.accountDv,
-        "type": this.bankAccount.type.toString().substring(15),
+        "type": this.bankAccount.type.getString(),
         "document_number": this.bankAccount.documentNumber,
         "legal_name": this.bankAccount.legalName,
       };
