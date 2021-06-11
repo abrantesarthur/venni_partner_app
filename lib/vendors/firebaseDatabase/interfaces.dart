@@ -129,7 +129,8 @@ class SubmittedDocuments {
                 json["photo_with_cnh"] == null ? false : json["photo_with_cnh"],
             profilePhoto:
                 json["profile_photo"] == null ? false : json["profile_photo"],
-            bankInfo: json["bank_info"] == null ? false : json["bank_info"],
+            bankInfo:
+                json["bank_account"] == null ? false : json["bank_account"],
           );
   }
 }
@@ -170,6 +171,20 @@ extension BankAccountTypeExtension on BankAccountType {
   String getString() {
     return this.toString().substring(16);
   }
+
+  static BankAccountType fromString(String s) {
+    switch (s) {
+      case "conta_corrente":
+        return BankAccountType.conta_corrente;
+      case "conta_poupanca":
+        return BankAccountType.conta_poupanca;
+      case "conta_corrente_conjunta":
+        return BankAccountType.conta_corrente_conjunta;
+      case "conta_poupanca_conjunta":
+        return BankAccountType.conta_poupanca_conjunta;
+      default:
+    }
+  }
 }
 
 Map<BankAccountType, String> accountTypeMap = {
@@ -209,7 +224,7 @@ class BankAccount {
             agencyDv: json["agency_dv"],
             account: json["account"],
             accountDv: json["account_dv"],
-            type: json["type"],
+            type: BankAccountTypeExtension.fromString(json["type"]),
             documentNumber: json["document_number"],
             legalName: json["legal_name"],
           );

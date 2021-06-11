@@ -9,7 +9,9 @@ extension AppFirebaseDatabase on FirebaseDatabase {
       DataSnapshot snapshot =
           await this.reference().child("partners").child(pilotID).once();
       return PartnerInterface.fromJson(snapshot.value);
-    } catch (_) {}
+    } catch (e) {
+      print(e);
+    }
     return null;
   }
 

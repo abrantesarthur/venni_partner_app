@@ -19,7 +19,6 @@ class SendProfilePhoto extends StatefulWidget {
   SendProfilePhotoState createState() => SendProfilePhotoState();
 }
 
-// TODO: update photo
 class SendProfilePhotoState extends State<SendProfilePhoto> {
   Widget buttonChild;
   bool lockScreen = false;
@@ -28,7 +27,6 @@ class SendProfilePhotoState extends State<SendProfilePhoto> {
   Widget build(BuildContext context) {
     final screenHeight = MediaQuery.of(context).size.height;
     final screenWidth = MediaQuery.of(context).size.width;
-    final connectivity = Provider.of<ConnectivityModel>(context);
 
     return Scaffold(
       backgroundColor: Colors.white,

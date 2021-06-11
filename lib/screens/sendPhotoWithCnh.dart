@@ -19,7 +19,6 @@ class SendPhotoWithCnh extends StatefulWidget {
   SendPhotoWithCnhState createState() => SendPhotoWithCnhState();
 }
 
-// TODO: update photo
 class SendPhotoWithCnhState extends State<SendPhotoWithCnh> {
   Widget buttonChild;
   bool lockScreen = false;

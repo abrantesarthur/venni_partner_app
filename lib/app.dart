@@ -56,7 +56,6 @@ class _AppState extends State<App> {
   // }
 
   Future<void> initializeApp() async {
-    // TODO: load user info or think about how to store in device (like credit card, photo, trip-request etc)
     // TODO: decide whether to set firebase.database.setPersistenceEnabled(true)
     await initializeFlutterFire();
   }
@@ -105,22 +104,14 @@ class _AppState extends State<App> {
   // TODO: Find a way of using xcode flavors so that it's not necessary to manually switch bundle id in xcode when running in dev or prod.
   // TODO: make sure that phone authentication works in android in both development and production mode
   // TODO: add lockScreen variable to all relevant screens
-  // TODO: get google api key from the environment in AppDelegate.swift
   // TODO: think about callign directions API only in backend
   // TODO: load user position here, instead of home
-  // TODO: make sure client cannot write to database (cloud functions do that)
-  // TODO: change the database rules to not allow anyone to edit it
   // TODO: when deploying the app, register a release certificate fingerprint
   //    in firebase instead of the debug certificate fingerprint
   //    (https://developers.google.com/android/guides/client-auth)
   // TODO: persist authentication state https://firebase.flutter.dev/docs/auth/usage
-  // TODO: change navigation transitions
-  // TODO: do integration testing
-  // TODO: review entire user registration flow
   // TODO: overflow happens if a "O email já está sendo usado." warning happens
   // TODO:  make sure that user logs out when account is deleted or disactivated in firebase
-  // TODO: decide on which logos to use
-  // TODO: implement prod flavor https://medium.com/@animeshjain/build-flavors-in-flutter-android-and-ios-with-different-firebase-projects-per-flavor-27c5c5dac10b
 
   @override
   Widget build(BuildContext context) {
