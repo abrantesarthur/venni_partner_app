@@ -17,7 +17,7 @@ class Documents extends StatefulWidget {
   DocumentsState createState() => DocumentsState();
 }
 
-// TODO: make sure Documentos Enviados is properly loaded
+// TODO: hide 'Documentos obrigatórios' when all documents have been submitted. Similar for 'Documentos enviados'
 // TODO: implement 'Ajuda': 'chat com supporte' and 'sair'
 // TODO: add lockscreen to all screens
 
@@ -255,6 +255,16 @@ class DocumentsState extends State<Documents> {
                           TextStyle(fontSize: 16, fontWeight: FontWeight.w600),
                     ),
                     SizedBox(height: screenHeight / 40),
+                    Column(
+                      children: [
+                        Text(
+                          "Estamos analizando suas informações. Entraremos em contato pelo email e telefone informados em até 48 horas após o envio.",
+                          style:
+                              TextStyle(fontSize: 16, color: AppColor.disabled),
+                        ),
+                        SizedBox(height: screenHeight / 40),
+                      ],
+                    ),
                     ListBody(
                       children: [
                         partner.crlvSubmitted

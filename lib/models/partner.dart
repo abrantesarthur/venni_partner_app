@@ -24,11 +24,12 @@ class PartnerModel extends ChangeNotifier {
   String _denialReason;
   String _lockReason;
   Vehicle _vehicle;
-  bool _crlvSubmitted;
-  bool _cnhSubmitted;
-  bool _photoWithCnhSubmitted;
-  bool _profilePhotoSubmitted;
-  bool _bankInfoSubmitted;
+  bool _crlvSubmitted = false;
+  bool _cnhSubmitted = false;
+  bool _photoWithCnhSubmitted = false;
+  bool _profilePhotoSubmitted = false;
+  bool _bankInfoSubmitted = false;
+  bool _allDocumentsSubmitted = false;
 
   // getters
   String get id => _id;
@@ -51,30 +52,44 @@ class PartnerModel extends ChangeNotifier {
   bool get photoWithCnhSubmitted => _photoWithCnhSubmitted;
   bool get profilePhotoSubmitted => _profilePhotoSubmitted;
   bool get bankInfoSubmitted => _bankInfoSubmitted;
+  bool get allDocumentsSubmitted => _allDocumentsSubmitted;
 
   void updateCrlvSubmitted(bool value) {
     _crlvSubmitted = value;
+    _updateAllDocumentsSubmitted();
     notifyListeners();
   }
 
   void updateCnhSubmitted(bool value) {
     _cnhSubmitted = value;
+    _updateAllDocumentsSubmitted();
     notifyListeners();
   }
 
   void updatePhotoWithCnhSubmitted(bool value) {
     _photoWithCnhSubmitted = value;
+    _updateAllDocumentsSubmitted();
     notifyListeners();
   }
 
   void updateProfilePhotoSubmitted(bool value) {
     _profilePhotoSubmitted = value;
+    _updateAllDocumentsSubmitted();
     notifyListeners();
   }
 
   void updateBankInfoSubmitted(bool value) {
     _bankInfoSubmitted = value;
+    _updateAllDocumentsSubmitted();
     notifyListeners();
+  }
+
+  void _updateAllDocumentsSubmitted() {
+    _allDocumentsSubmitted = _cnhSubmitted &&
+        _crlvSubmitted &&
+        _photoWithCnhSubmitted &&
+        _profilePhotoSubmitted &&
+        _bankInfoSubmitted;
   }
 
   void fromPartnerInterface(PartnerInterface pi) {
@@ -107,6 +122,11 @@ class PartnerModel extends ChangeNotifier {
       _bankInfoSubmitted = pi.submittedDocuments == null
           ? false
           : pi.submittedDocuments.bankInfo;
+      _allDocumentsSubmitted = _cnhSubmitted &&
+          _crlvSubmitted &&
+          _photoWithCnhSubmitted &&
+          _profilePhotoSubmitted &&
+          _bankInfoSubmitted;
 
       notifyListeners();
     }
