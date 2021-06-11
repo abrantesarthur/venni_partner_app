@@ -212,7 +212,7 @@ void main() {
 
     test("getString", () {
       BankAccountType bat = BankAccountType.conta_corrente;
-      expect(bat.getString(), equals("mascuconta_correntelino"));
+      expect(bat.getString(), equals("conta_corrente"));
       bat = BankAccountType.conta_poupanca;
       expect(bat.getString(), equals("conta_poupanca"));
       bat = BankAccountType.conta_corrente_conjunta;
