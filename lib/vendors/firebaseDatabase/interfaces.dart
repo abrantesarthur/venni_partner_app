@@ -183,6 +183,7 @@ extension BankAccountTypeExtension on BankAccountType {
       case "conta_poupanca_conjunta":
         return BankAccountType.conta_poupanca_conjunta;
       default:
+        return null;
     }
   }
 }

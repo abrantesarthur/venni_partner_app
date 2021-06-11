@@ -58,7 +58,6 @@ extension AppFirebaseAuth on FirebaseAuth {
           );
         } else {
           // otherwise, push documents screen
-          // TODO: pass partnerModel so documents knows what to render
           Navigator.pushNamed(context, Documents.routeName);
         }
       } else if (firebase.hasClientAccount) {
