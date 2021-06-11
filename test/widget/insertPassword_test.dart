@@ -50,9 +50,19 @@ void main() {
             gender: Gender.masculino,
             cpf: "00000000000",
           ),
+          onGenerateRoute: (RouteSettings settings) {
+            // if Documents is pushed
+            if (settings.name == Documents.routeName) {
+              return MaterialPageRoute(builder: (context) {
+                return Documents(
+                  firebase: mockFirebaseModel,
+                );
+              });
+            }
+            return null;
+          },
           routes: {
             Start.routeName: (context) => Start(),
-            Documents.routeName: (context) => Documents(),
           },
           navigatorObservers: [mockNavigatorObserver],
         ),

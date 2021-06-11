@@ -287,6 +287,17 @@ void main() {
         ],
         builder: (context, child) => MaterialApp(
           home: InsertPhone(),
+          onGenerateRoute: (RouteSettings settings) {
+            // if Documents is pushed
+            if (settings.name == Documents.routeName) {
+              return MaterialPageRoute(builder: (context) {
+                return Documents(
+                  firebase: mockFirebaseModel,
+                );
+              });
+            }
+            return null;
+          },
           routes: {
             Home.routeName: (context) => Home(),
             InsertEmail.routeName: (context) => InsertEmail(
@@ -296,7 +307,6 @@ void main() {
                   userCredential: mockUserCredential,
                   userEmail: "example@provider.com",
                 ),
-            Documents.routeName: (context) => Documents(),
           },
           // mockNavigatorObserver will receive all navigation events
           navigatorObservers: [mockNavigatorObserver],

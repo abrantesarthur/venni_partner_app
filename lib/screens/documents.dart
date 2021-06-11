@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:partner_app/models/firebase.dart';
 import 'package:partner_app/models/partner.dart';
 import 'package:partner_app/screens/sendBankAccount.dart';
 import 'package:partner_app/screens/sendCnh.dart';
@@ -11,8 +12,18 @@ import 'package:partner_app/widgets/overallPadding.dart';
 import 'package:provider/provider.dart';
 import 'package:url_launcher/url_launcher.dart';
 
+class DocumentsArguments {
+  final FirebaseModel firebase;
+
+  DocumentsArguments({@required this.firebase});
+}
+
 class Documents extends StatefulWidget {
   static const routeName = "Documents";
+  final FirebaseModel firebase;
+
+  Documents({@required this.firebase});
+
   @override
   DocumentsState createState() => DocumentsState();
 }
@@ -22,6 +33,19 @@ class Documents extends StatefulWidget {
 
 class DocumentsState extends State<Documents> {
   bool _hasConnection;
+
+  @override
+  void initState() {
+    super.initState();
+
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      // add listener to FirebaseModel so user is redirected to Start when logs out
+      _firebaseListener = () {
+        _signOut(context);
+      };
+      widget.firebase.addListener(_firebaseListener);
+    });
+  }
 
   @override
   Widget build(BuildContext context) {

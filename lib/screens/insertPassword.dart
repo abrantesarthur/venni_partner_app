@@ -352,7 +352,11 @@ class InsertPasswordState extends State<InsertPassword> {
           // push pending documents screen. After all, user has just created
           // a partner account and thus has 'pending_documents' accountStatus
           SchedulerBinding.instance.addPostFrameCallback((_) {
-            Navigator.pushNamed(context, Documents.routeName);
+            Navigator.pushNamed(
+              context,
+              Documents.routeName,
+              arguments: DocumentsArguments(firebase: firebase),
+            );
           });
           return Container();
         }

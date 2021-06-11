@@ -58,7 +58,11 @@ extension AppFirebaseAuth on FirebaseAuth {
           );
         } else {
           // otherwise, push documents screen
-          Navigator.pushNamed(context, Documents.routeName);
+          Navigator.pushNamed(
+            context,
+            Documents.routeName,
+            arguments: DocumentsArguments(firebase: firebase),
+          );
         }
       } else if (firebase.hasClientAccount) {
         // if user already has a client account, skip insertEmail and push

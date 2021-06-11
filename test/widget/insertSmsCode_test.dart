@@ -254,6 +254,17 @@ void main() {
             phoneNumber: "+55 (38) 99999-9999",
             mode: InsertSmsCodeMode.insertNewPhone,
           ),
+          onGenerateRoute: (RouteSettings settings) {
+            // if Documents is pushed
+            if (settings.name == Documents.routeName) {
+              return MaterialPageRoute(builder: (context) {
+                return Documents(
+                  firebase: mockFirebaseModel,
+                );
+              });
+            }
+            return null;
+          },
           routes: {
             Home.routeName: (context) => Home(),
             Start.routeName: (context) => Start(),
@@ -264,7 +275,6 @@ void main() {
                   userCredential: mockUserCredential,
                   userEmail: "example@provider.com",
                 ),
-            Documents.routeName: (context) => Documents(),
           },
           navigatorObservers: [mockNavigatorObserver],
         ),
@@ -578,6 +588,17 @@ void main() {
               phoneNumber: "+55 (38) 99999-9999",
               mode: InsertSmsCodeMode.insertNewPhone,
             ),
+            onGenerateRoute: (RouteSettings settings) {
+              // if Documents is pushed
+              if (settings.name == Documents.routeName) {
+                return MaterialPageRoute(builder: (context) {
+                  return Documents(
+                    firebase: mockFirebaseModel,
+                  );
+                });
+              }
+              return null;
+            },
             routes: {
               Home.routeName: (context) => Home(),
               Start.routeName: (context) => Start(),
@@ -588,7 +609,6 @@ void main() {
                     userCredential: mockUserCredential,
                     userEmail: "example@provider.com",
                   ),
-              Documents.routeName: (context) => Documents(),
             },
             navigatorObservers: [mockNavigatorObserver],
           ),

@@ -1,3 +1,5 @@
+import 'dart:html';
+
 import 'package:cloud_functions/cloud_functions.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_core/firebase_core.dart';
@@ -259,6 +261,16 @@ class _AppState extends State<App> {
                 });
               }
 
+              // if Documents is pushed
+              if (settings.name == Documents.routeName) {
+                final DocumentsArguments args = settings.arguments;
+                return MaterialPageRoute(builder: (context) {
+                  return Documents(
+                    firebase: args.firebase,
+                  );
+                });
+              }
+
               assert(false, 'Need to implement ${settings.name}');
               return null;
             },
@@ -273,7 +285,6 @@ class _AppState extends State<App> {
               Home.routeName: (context) => Home(),
               Start.routeName: (context) => Start(),
               InsertPhone.routeName: (context) => InsertPhone(),
-              Documents.routeName: (context) => Documents(),
               SendCrlv.routeName: (context) => SendCrlv(),
               SendCnh.routeName: (context) => SendCnh(),
               SendPhotoWithCnh.routeName: (context) => SendPhotoWithCnh(),
