@@ -143,6 +143,12 @@ enum Banks {
   Hsbc,
 }
 
+extension BanksExtension on Banks {
+  String getCode() {
+    return bankMap[this].substring(0, 3);
+  }
+}
+
 Map<Banks, String> bankMap = {
   Banks.BancoDoBrasil: "001 - Banco do Brasil",
   Banks.Santander: "033 - Santander",
@@ -157,6 +163,12 @@ enum BankAccountType {
   conta_poupanca,
   conta_corrente_conjunta,
   conta_poupanca_conjunta,
+}
+
+extension BankAccountTypeExtension on BankAccountType {
+  String getString() {
+    return this.toString().substring(16);
+  }
 }
 
 Map<BankAccountType, String> accountTypeMap = {

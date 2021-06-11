@@ -281,12 +281,14 @@ class SendBankInfoState extends State<SendBankInfo> with RouteAware {
                                       return;
                                     }
 
-                                    print(selectedBank.toString());
+                                    String bankCode = selectedBank.getCode();
+
+                                    print(bankCode);
                                     print(agencyController.text);
                                     print(agencyDvController.text);
                                     print(accountController.text);
                                     print(accountDvController.text);
-                                    print(selectedAccountType.toString());
+                                    print(selectedAccountType.getString());
                                   }
                                 : () {},
                           ),
