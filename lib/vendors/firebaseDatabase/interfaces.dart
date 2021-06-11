@@ -110,7 +110,7 @@ class Vehicle {
 
 enum Gender { masculino, feminino, outro }
 
-extension GenderExtesion on Gender {
+extension GenderExtension on Gender {
   static Gender fromString(String s) {
     if (s == null) {
       return null;
@@ -367,7 +367,7 @@ class PartnerInterface {
       name: json["name"],
       lastName: json["last_name"],
       cpf: json["cpf"],
-      gender: GenderExtesion.fromString(json["gender"]),
+      gender: GenderExtension.fromString(json["gender"]),
       memberSince: memberSince,
       phoneNumber: json["phone_number"],
       rating: rating,

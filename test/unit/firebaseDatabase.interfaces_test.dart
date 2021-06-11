@@ -36,6 +36,108 @@ void main() {
     });
   });
 
+  group("AccountStatus", () {
+    test("fromString with null string", () {
+      AccountStatus acs = AccountStatusExtension.fromString(null);
+      expect(acs, isNull);
+    });
+
+    test("fromString with empty string", () {
+      AccountStatus acs = AccountStatusExtension.fromString("");
+      expect(acs, isNull);
+    });
+
+    test("fromString with valid string", () {
+      AccountStatus acs =
+          AccountStatusExtension.fromString("pending_documents");
+      expect(acs, equals(AccountStatus.pendingDocuments));
+      acs = AccountStatusExtension.fromString("pending_approval");
+      expect(acs, equals(AccountStatus.pendingApproval));
+      acs = AccountStatusExtension.fromString("granted_interview");
+      expect(acs, equals(AccountStatus.grantedInterview));
+      acs = AccountStatusExtension.fromString("approved");
+      expect(acs, equals(AccountStatus.approved));
+      acs = AccountStatusExtension.fromString("denied_approval");
+      expect(acs, equals(AccountStatus.deniedApproval));
+      acs = AccountStatusExtension.fromString("locked");
+      expect(acs, equals(AccountStatus.locked));
+    });
+
+    test("getString", () {
+      AccountStatus acs = AccountStatus.pendingApproval;
+      expect(acs.getString(), equals("pending_approval"));
+      acs = AccountStatus.pendingDocuments;
+      expect(acs.getString(), equals("pending_documents"));
+      acs = AccountStatus.grantedInterview;
+      expect(acs.getString(), equals("granted_interview"));
+      acs = AccountStatus.approved;
+      expect(acs.getString(), equals("approved"));
+      acs = AccountStatus.deniedApproval;
+      expect(acs.getString(), equals("denied_approval"));
+      acs = AccountStatus.locked;
+      expect(acs.getString(), equals("locked"));
+    });
+  });
+
+  group("Vehicle", () {
+    test("fromJson with null json", () {
+      Vehicle v = Vehicle.fromJson(null);
+      expect(v, isNull);
+    });
+
+    test("fromJson with empty json", () {
+      Vehicle v = Vehicle.fromJson({});
+      expect(v, isNotNull);
+      expect(v.brand, isNull);
+      expect(v.year, isNull);
+      expect(v.model, isNull);
+      expect(v.plate, isNull);
+    });
+    test("fromJson with valid json", () {
+      Vehicle v = Vehicle.fromJson({
+        "brand": "brand",
+        "year": 2020,
+        "model": "model",
+        "plate": "plate",
+      });
+      expect(v, isNotNull);
+      expect(v.brand, equals("brand"));
+      expect(v.year, equals(2020));
+      expect(v.model, equals("model"));
+      expect(v.plate, equals("plate"));
+    });
+  });
+
+  group("Gender", () {
+    test("fromString with null string", () {
+      Gender g = GenderExtension.fromString(null);
+      expect(g, isNull);
+    });
+
+    test("fromString with empty string", () {
+      Gender g = GenderExtension.fromString("");
+      expect(g, isNull);
+    });
+
+    test("fromString with valid string", () {
+      Gender g = GenderExtension.fromString("masculino");
+      expect(g, equals(Gender.masculino));
+      g = GenderExtension.fromString("feminino");
+      expect(g, equals(Gender.feminino));
+      g = GenderExtension.fromString("outro");
+      expect(g, equals(Gender.outro));
+    });
+
+    test("getString", () {
+      Gender g = Gender.masculino;
+      expect(g.getString(), equals("masculino"));
+      g = Gender.feminino;
+      expect(g.getString(), equals("feminino"));
+      g = Gender.outro;
+      expect(g.getString(), equals("outro"));
+    });
+  });
+
   group("PartnerInterface", () {
     test("fromJson with null json", () {
       PartnerInterface pi = PartnerInterface.fromJson(null);
