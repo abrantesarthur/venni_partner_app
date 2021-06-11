@@ -112,7 +112,7 @@ extension AppFirebaseDatabase on FirebaseDatabase {
           .child("partners")
           .child(partnerID)
           .child("submitted_documents")
-          .child("bank_info")
+          .child("bank_account")
           .set(value);
     } catch (e) {
       throw e;
