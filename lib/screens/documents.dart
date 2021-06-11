@@ -6,6 +6,7 @@ import 'package:partner_app/screens/sendCnh.dart';
 import 'package:partner_app/screens/sendCrlv.dart';
 import 'package:partner_app/screens/sendPhotoWithCnh.dart';
 import 'package:partner_app/screens/sendProfilePhoto.dart';
+import 'package:partner_app/screens/start.dart';
 import 'package:partner_app/styles.dart';
 import 'package:partner_app/utils/utils.dart';
 import 'package:partner_app/widgets/overallPadding.dart';
@@ -33,6 +34,7 @@ class Documents extends StatefulWidget {
 
 class DocumentsState extends State<Documents> {
   bool _hasConnection;
+  var _firebaseListener;
 
   @override
   void initState() {
@@ -45,6 +47,19 @@ class DocumentsState extends State<Documents> {
       };
       widget.firebase.addListener(_firebaseListener);
     });
+  }
+
+  @override
+  void dispose() {
+    widget.firebase.removeListener(_firebaseListener);
+    super.dispose();
+  }
+
+  // push start screen when user logs out
+  void _signOut(BuildContext context) {
+    if (!widget.firebase.hasClientAccount) {
+      Navigator.pushNamedAndRemoveUntil(context, Start.routeName, (_) => false);
+    }
   }
 
   @override
@@ -432,6 +447,7 @@ class DocumentsState extends State<Documents> {
 }
 
 Future<dynamic> _showHelpDialog(BuildContext context) {
+  FirebaseModel firebase = Provider.of<FirebaseModel>(context, listen: false);
   return showDialog(
     context: context,
     builder: (BuildContext context) {
@@ -450,7 +466,13 @@ Future<dynamic> _showHelpDialog(BuildContext context) {
               Divider(color: Colors.black, thickness: 0.1),
               ListTile(
                 onTap: () async {
-                  // TODO: logout
+                  await showYesNoDialog(
+                    context,
+                    title: "Deseja sair?",
+                    onPressedYes: () async {
+                      await firebase.auth.signOut();
+                    },
+                  );
                 },
                 title: Text("sair"),
               ),
