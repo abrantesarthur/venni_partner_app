@@ -170,6 +170,58 @@ void main() {
     });
   });
 
+  group("Banks", () {
+    test("getCode", () {
+      Banks b = Banks.BancoDoBrasil;
+      expect(b.getCode(), equals("001"));
+      b = Banks.Santander;
+      expect(b.getCode(), equals("033"));
+      b = Banks.Caixa;
+      expect(b.getCode(), equals("104"));
+      b = Banks.Bradesco;
+      expect(b.getCode(), equals("237"));
+      b = Banks.Itau;
+      expect(b.getCode(), equals("341"));
+      b = Banks.Hsbc;
+      expect(b.getCode(), equals("399"));
+    });
+  });
+
+  group("BankAccountType", () {
+    test("fromString with null string", () {
+      BankAccountType bat = BankAccountTypeExtension.fromString(null);
+      expect(bat, isNull);
+    });
+
+    test("fromString with empty string", () {
+      BankAccountType bat = BankAccountTypeExtension.fromString("");
+      expect(bat, isNull);
+    });
+
+    test("fromString with valid string", () {
+      BankAccountType bat =
+          BankAccountTypeExtension.fromString("conta_corrente");
+      expect(bat, equals(BankAccountType.conta_corrente));
+      bat = BankAccountTypeExtension.fromString("conta_poupanca");
+      expect(bat, equals(BankAccountType.conta_poupanca));
+      bat = BankAccountTypeExtension.fromString("conta_corrente_conjunta");
+      expect(bat, equals(BankAccountType.conta_corrente_conjunta));
+      bat = BankAccountTypeExtension.fromString("conta_poupanca_conjunta");
+      expect(bat, equals(BankAccountType.conta_poupanca_conjunta));
+    });
+
+    test("getString", () {
+      BankAccountType bat = BankAccountType.conta_corrente;
+      expect(bat.getString(), equals("mascuconta_correntelino"));
+      bat = BankAccountType.conta_poupanca;
+      expect(bat.getString(), equals("conta_poupanca"));
+      bat = BankAccountType.conta_corrente_conjunta;
+      expect(bat.getString(), equals("conta_corrente_conjunta"));
+      bat = BankAccountType.conta_poupanca_conjunta;
+      expect(bat.getString(), equals("conta_poupanca_conjunta"));
+    });
+  });
+
   group("PartnerInterface", () {
     test("fromJson with null json", () {
       PartnerInterface pi = PartnerInterface.fromJson(null);
