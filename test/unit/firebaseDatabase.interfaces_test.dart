@@ -2,6 +2,40 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:partner_app/vendors/firebaseDatabase/interfaces.dart';
 
 void main() {
+  group("PartnerStatus", () {
+    test("fromString with null string", () {
+      PartnerStatus ps = PartnerStatusExtension.fromString(null);
+      expect(ps, isNull);
+    });
+
+    test("fromString with empty string", () {
+      PartnerStatus ps = PartnerStatusExtension.fromString("");
+      expect(ps, isNull);
+    });
+
+    test("fromString with valid string", () {
+      PartnerStatus ps = PartnerStatusExtension.fromString("available");
+      expect(ps, equals(PartnerStatus.available));
+      ps = PartnerStatusExtension.fromString("unavailable");
+      expect(ps, equals(PartnerStatus.unavailable));
+      ps = PartnerStatusExtension.fromString("busy");
+      expect(ps, equals(PartnerStatus.busy));
+      ps = PartnerStatusExtension.fromString("requested");
+      expect(ps, equals(PartnerStatus.requested));
+    });
+
+    test("getString", () {
+      PartnerStatus ps = PartnerStatus.available;
+      expect(ps.getString(), equals("available"));
+      ps = PartnerStatus.unavailable;
+      expect(ps.getString(), equals("unavailable"));
+      ps = PartnerStatus.busy;
+      expect(ps.getString(), equals("busy"));
+      ps = PartnerStatus.requested;
+      expect(ps.getString(), equals("requested"));
+    });
+  });
+
   group("PartnerInterface", () {
     test("fromJson with null json", () {
       PartnerInterface pi = PartnerInterface.fromJson(null);
