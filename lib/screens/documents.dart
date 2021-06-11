@@ -257,114 +257,125 @@ class DocumentsState extends State<Documents> {
                     SizedBox(height: screenHeight / 40),
                     ListBody(
                       children: [
-                        ListTile(
-                          minLeadingWidth: 0,
-                          contentPadding: EdgeInsets.all(0),
-                          onTap: () async {
-                            Navigator.pushNamed(context, SendCrlv.routeName);
-                          },
-                          title: Text(
-                            "Certificado de Registro e Licensiamento de Veículo (CRLV)",
-                            style: TextStyle(
-                              fontSize: 16,
-                              fontWeight: FontWeight.w600,
-                              color: AppColor.disabled,
-                            ),
-                          ),
-                          leading: Icon(
-                            Icons.check_circle,
-                            color: AppColor.secondaryGreen.withOpacity(0.5),
-                          ),
-                        ),
-                        Divider(color: Colors.black, thickness: 0.1),
-                        ListTile(
-                          minLeadingWidth: 0,
-                          contentPadding: EdgeInsets.all(0),
-                          onTap: () async {
-                            Navigator.pushNamed(context, SendCnh.routeName);
-                          },
-                          title: Text(
-                            "Carteira Nacional de Habilitação com EAR (CNH)",
-                            style: TextStyle(
-                              fontSize: 16,
-                              fontWeight: FontWeight.w600,
-                              color: AppColor.disabled,
-                            ),
-                          ),
-                          leading: Icon(
-                            Icons.check_circle,
-                            color: AppColor.secondaryGreen.withOpacity(0.5),
-                          ),
-                        ),
-                        Divider(color: Colors.black, thickness: 0.1),
-                        ListTile(
-                          minLeadingWidth: 0,
-                          contentPadding: EdgeInsets.all(0),
-                          onTap: () async {
-                            Navigator.pushNamed(
-                              context,
-                              SendPhotoWithCnh.routeName,
-                            );
-                          },
-                          title: Text(
-                            "Foto do Rosto com CNH do Lado",
-                            style: TextStyle(
-                              fontSize: 16,
-                              fontWeight: FontWeight.w600,
-                              color: AppColor.disabled,
-                            ),
-                          ),
-                          leading: Icon(
-                            Icons.check_circle,
-                            color: AppColor.secondaryGreen.withOpacity(0.5),
-                          ),
-                        ),
-                        Divider(color: Colors.black, thickness: 0.1),
-                        ListTile(
-                          minLeadingWidth: 0,
-                          contentPadding: EdgeInsets.all(0),
-                          onTap: () async {
-                            Navigator.pushNamed(
-                              context,
-                              SendProfilePhoto.routeName,
-                            );
-                          },
-                          title: Text(
-                            "Foto de Perfil",
-                            style: TextStyle(
-                              fontSize: 16,
-                              fontWeight: FontWeight.w600,
-                              color: AppColor.disabled,
-                            ),
-                          ),
-                          leading: Icon(
-                            Icons.check_circle,
-                            color: AppColor.secondaryGreen.withOpacity(0.5),
-                          ),
-                        ),
-                        Divider(color: Colors.black, thickness: 0.1),
-                        ListTile(
-                          minLeadingWidth: 0,
-                          contentPadding: EdgeInsets.all(0),
-                          onTap: () async {
-                            Navigator.pushNamed(
-                              context,
-                              SendBankInfo.routeName,
-                            );
-                          },
-                          title: Text(
-                            "Informações bancárias",
-                            style: TextStyle(
-                              fontSize: 16,
-                              fontWeight: FontWeight.w600,
-                              color: AppColor.disabled,
-                            ),
-                          ),
-                          leading: Icon(
-                            Icons.check_circle,
-                            color: AppColor.secondaryGreen.withOpacity(0.5),
-                          ),
-                        ),
+                        partner.crlvSubmitted
+                            ? Column(
+                                children: [
+                                  ListTile(
+                                    minLeadingWidth: 0,
+                                    contentPadding: EdgeInsets.all(0),
+                                    title: Text(
+                                      "Certificado de Registro e Licensiamento de Veículo (CRLV)",
+                                      style: TextStyle(
+                                        fontSize: 16,
+                                        fontWeight: FontWeight.w600,
+                                        color: AppColor.disabled,
+                                      ),
+                                    ),
+                                    leading: Icon(
+                                      Icons.check_circle,
+                                      color: AppColor.secondaryGreen
+                                          .withOpacity(0.5),
+                                    ),
+                                  ),
+                                  Divider(color: Colors.black, thickness: 0.1),
+                                ],
+                              )
+                            : Container(),
+                        partner.cnhSubmitted
+                            ? Column(
+                                children: [
+                                  ListTile(
+                                    minLeadingWidth: 0,
+                                    contentPadding: EdgeInsets.all(0),
+                                    title: Text(
+                                      "Carteira Nacional de Habilitação com EAR (CNH)",
+                                      style: TextStyle(
+                                        fontSize: 16,
+                                        fontWeight: FontWeight.w600,
+                                        color: AppColor.disabled,
+                                      ),
+                                    ),
+                                    leading: Icon(
+                                      Icons.check_circle,
+                                      color: AppColor.secondaryGreen
+                                          .withOpacity(0.5),
+                                    ),
+                                  ),
+                                  Divider(color: Colors.black, thickness: 0.1),
+                                ],
+                              )
+                            : Container(),
+                        partner.photoWithCnhSubmitted
+                            ? Column(
+                                children: [
+                                  ListTile(
+                                    minLeadingWidth: 0,
+                                    contentPadding: EdgeInsets.all(0),
+                                    title: Text(
+                                      "Foto do Rosto com CNH do Lado",
+                                      style: TextStyle(
+                                        fontSize: 16,
+                                        fontWeight: FontWeight.w600,
+                                        color: AppColor.disabled,
+                                      ),
+                                    ),
+                                    leading: Icon(
+                                      Icons.check_circle,
+                                      color: AppColor.secondaryGreen
+                                          .withOpacity(0.5),
+                                    ),
+                                  ),
+                                  Divider(color: Colors.black, thickness: 0.1),
+                                ],
+                              )
+                            : Container(),
+                        partner.profilePhotoSubmitted
+                            ? Column(
+                                children: [
+                                  ListTile(
+                                    minLeadingWidth: 0,
+                                    contentPadding: EdgeInsets.all(0),
+                                    title: Text(
+                                      "Foto de Perfil",
+                                      style: TextStyle(
+                                        fontSize: 16,
+                                        fontWeight: FontWeight.w600,
+                                        color: AppColor.disabled,
+                                      ),
+                                    ),
+                                    leading: Icon(
+                                      Icons.check_circle,
+                                      color: AppColor.secondaryGreen
+                                          .withOpacity(0.5),
+                                    ),
+                                  ),
+                                  Divider(color: Colors.black, thickness: 0.1),
+                                ],
+                              )
+                            : Container(),
+                        partner.bankInfoSubmitted
+                            ? Column(
+                                children: [
+                                  ListTile(
+                                    minLeadingWidth: 0,
+                                    contentPadding: EdgeInsets.all(0),
+                                    title: Text(
+                                      "Informações bancárias",
+                                      style: TextStyle(
+                                        fontSize: 16,
+                                        fontWeight: FontWeight.w600,
+                                        color: AppColor.disabled,
+                                      ),
+                                    ),
+                                    leading: Icon(
+                                      Icons.check_circle,
+                                      color: AppColor.secondaryGreen
+                                          .withOpacity(0.5),
+                                    ),
+                                  ),
+                                ],
+                              )
+                            : Container(),
                       ],
                     ),
                   ],
