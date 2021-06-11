@@ -111,8 +111,9 @@ class InsertEmailState extends State<InsertEmail> {
         context,
         InsertName.routeName,
         arguments: InsertNameArguments(
-            userCredential: widget.userCredential,
-            userEmail: emailTextEditingController.text),
+          userCredential: widget.userCredential,
+          userEmail: emailTextEditingController.text.trim(),
+        ),
       );
     }
   }

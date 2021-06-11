@@ -233,7 +233,7 @@ class InsertPasswordState extends State<InsertPassword> {
     if (firebase.hasClientAccount) {
       // make sure they've entered a valid password
       CheckPasswordResponse cpr = await firebase.auth.checkPassword(
-        passwordTextEditingController.text,
+        passwordTextEditingController.text.trim(),
       );
       if (cpr != null && !cpr.successful) {
         // if not, display appropriate warning and return false
@@ -290,7 +290,7 @@ class InsertPasswordState extends State<InsertPassword> {
           firebase,
           widget.userCredential,
           email: widget.userEmail,
-          password: passwordTextEditingController.text,
+          password: passwordTextEditingController.text.trim(),
           displayName: widget.name + " " + widget.surname,
           cpf: widget.cpf,
           gender: widget.gender,
