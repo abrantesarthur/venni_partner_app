@@ -41,7 +41,6 @@ enum AccountStatus {
 }
 
 extension AccountStatusExtension on AccountStatus {
-  // TODO: test
   static AccountStatus fromString(String s) {
     if (s == null) {
       return null;
@@ -195,7 +194,6 @@ enum BankAccountType {
 }
 
 extension BankAccountTypeExtension on BankAccountType {
-  // TODO: make sure this is correct
   String getString() {
     return this.toString().substring(16);
   }
@@ -338,7 +336,6 @@ class PartnerInterface {
     @required this.bankAccount,
   });
 
-  // TODO: test the shit out of this
   factory PartnerInterface.fromJson(Map json) {
     if (json == null) {
       return null;
@@ -388,7 +385,6 @@ class PartnerInterface {
     );
   }
 
-  // TODO: test
   Map<String, dynamic> toJson() {
     Map<String, dynamic> json = {};
     if (this.id != null) {
