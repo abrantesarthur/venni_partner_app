@@ -83,6 +83,7 @@ class DocumentsState extends State<Documents> {
           ),
           Expanded(
             child: OverallPadding(
+              top: screenHeight / 30,
               child: SingleChildScrollView(
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
@@ -244,27 +245,30 @@ class DocumentsState extends State<Documents> {
                                       color: AppColor.disabled,
                                     ),
                                   ),
+                                  Divider(color: Colors.black, thickness: 0.1),
                                 ],
                               ),
                       ],
                     ),
-                    SizedBox(height: screenHeight / 40),
+                    SizedBox(height: screenHeight / 20),
                     Text(
                       "Documentos enviados",
                       style:
                           TextStyle(fontSize: 16, fontWeight: FontWeight.w600),
                     ),
                     SizedBox(height: screenHeight / 40),
-                    Column(
-                      children: [
-                        Text(
-                          "Estamos analizando suas informações. Entraremos em contato pelo email e telefone informados em até 48 horas após o envio.",
-                          style:
-                              TextStyle(fontSize: 16, color: AppColor.disabled),
-                        ),
-                        SizedBox(height: screenHeight / 40),
-                      ],
-                    ),
+                    partner.allDocumentsSubmitted
+                        ? Column(
+                            children: [
+                              Text(
+                                "Estamos analizando suas informações. Entraremos em contato pelo email e telefone informados em até 48 horas após o envio.",
+                                style: TextStyle(
+                                    fontSize: 16, color: AppColor.disabled),
+                              ),
+                              SizedBox(height: screenHeight / 40),
+                            ],
+                          )
+                        : Container(),
                     ListBody(
                       children: [
                         partner.crlvSubmitted
