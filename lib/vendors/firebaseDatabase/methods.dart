@@ -13,7 +13,6 @@ extension AppFirebaseDatabase on FirebaseDatabase {
     return null;
   }
 
-  // TODO: test this
   Future<void> createPartner(PartnerInterface partner) async {
     try {
       await this

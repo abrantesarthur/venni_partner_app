@@ -1,6 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:partner_app/models/connectivity.dart';
-import 'package:partner_app/models/firebase.dart';
 import 'package:partner_app/models/partner.dart';
 import 'package:partner_app/screens/sendBankInfo.dart';
 import 'package:partner_app/screens/sendCnh.dart';
@@ -17,7 +15,6 @@ class Documents extends StatefulWidget {
   DocumentsState createState() => DocumentsState();
 }
 
-// TODO: hide 'Documentos obrigatórios' when all documents have been submitted. Similar for 'Documentos enviados'
 // TODO: implement 'Ajuda': 'chat com supporte' and 'sair'
 // TODO: add lockscreen to all screens
 
@@ -26,9 +23,6 @@ class DocumentsState extends State<Documents> {
 
   @override
   Widget build(BuildContext context) {
-    ConnectivityModel connectivity = Provider.of<ConnectivityModel>(context);
-    FirebaseModel firebase = Provider.of<FirebaseModel>(context);
-    // must listen!
     PartnerModel partner = Provider.of<PartnerModel>(context);
     final screenHeight = MediaQuery.of(context).size.height;
     final screenWidth = MediaQuery.of(context).size.width;
@@ -96,6 +90,7 @@ class DocumentsState extends State<Documents> {
                     partner.allDocumentsSubmitted
                         ? Container()
                         : Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
                               SizedBox(height: screenHeight / 20),
                               Text(
