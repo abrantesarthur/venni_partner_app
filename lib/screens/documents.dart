@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:partner_app/models/partner.dart';
-import 'package:partner_app/screens/sendBankInfo.dart';
+import 'package:partner_app/screens/sendBankAccount.dart';
 import 'package:partner_app/screens/sendCnh.dart';
 import 'package:partner_app/screens/sendCrlv.dart';
 import 'package:partner_app/screens/sendPhotoWithCnh.dart';
@@ -231,7 +231,7 @@ class DocumentsState extends State<Documents> {
                                     onTap: () async {
                                       Navigator.pushNamed(
                                         context,
-                                        SendBankInfo.routeName,
+                                        SendBankAccount.routeName,
                                       );
                                     },
                                     title: Text(

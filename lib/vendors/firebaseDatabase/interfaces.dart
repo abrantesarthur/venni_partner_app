@@ -441,7 +441,7 @@ class PartnerInterface {
         "profile_photo": this.submittedDocuments.profilePhoto == null
             ? false
             : this.submittedDocuments.profilePhoto,
-        "bank_info": this.submittedDocuments.bankInfo == null
+        "bank_account": this.submittedDocuments.bankInfo == null
             ? false
             : this.submittedDocuments.profilePhoto,
       };

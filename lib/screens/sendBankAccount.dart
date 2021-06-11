@@ -12,15 +12,15 @@ import 'package:partner_app/widgets/arrowBackButton.dart';
 import 'package:partner_app/widgets/overallPadding.dart';
 import 'package:provider/provider.dart';
 
-class SendBankInfo extends StatefulWidget {
-  static const String routeName = "sendBankInfo";
+class SendBankAccount extends StatefulWidget {
+  static const String routeName = "sendBankAccount";
 
   @override
-  SendBankInfoState createState() => SendBankInfoState();
+  SendBankAccountState createState() => SendBankAccountState();
 }
 
 // TOOD: display warnings if something goes wrong
-class SendBankInfoState extends State<SendBankInfo> with RouteAware {
+class SendBankAccountState extends State<SendBankAccount> with RouteAware {
   TextEditingController agencyController = TextEditingController();
   TextEditingController agencyDvController = TextEditingController();
   TextEditingController accountController = TextEditingController();
