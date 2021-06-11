@@ -147,11 +147,11 @@ void main() {
     test("fromJson with empty json", () {
       SubmittedDocuments sd = SubmittedDocuments.fromJson({});
       expect(sd, isNotNull);
-      expect(sd.cnh, isNull);
-      expect(sd.crlv, isNull);
-      expect(sd.photoWithCnh, isNull);
-      expect(sd.profilePhoto, isNull);
-      expect(sd.bankAccount, isNull);
+      expect(sd.cnh, isFalse);
+      expect(sd.crlv, isFalse);
+      expect(sd.photoWithCnh, isFalse);
+      expect(sd.profilePhoto, isFalse);
+      expect(sd.bankAccount, isFalse);
     });
     test("fromJson with valid json", () {
       SubmittedDocuments sd = SubmittedDocuments.fromJson({
@@ -162,11 +162,11 @@ void main() {
         "bank_account": true,
       });
       expect(sd, isNotNull);
-      expect(sd.cnh, equals(true));
-      expect(sd.crlv, equals(2020));
-      expect(sd.photoWithCnh, equals(true));
-      expect(sd.profilePhoto, equals(true));
-      expect(sd.bankAccount, equals(true));
+      expect(sd.cnh, isTrue);
+      expect(sd.crlv, isTrue);
+      expect(sd.photoWithCnh, isTrue);
+      expect(sd.profilePhoto, isTrue);
+      expect(sd.bankAccount, isTrue);
     });
   });
 
