@@ -138,6 +138,38 @@ void main() {
     });
   });
 
+  group("SubmittedDocuments", () {
+    test("fromJson with null json", () {
+      SubmittedDocuments sd = SubmittedDocuments.fromJson(null);
+      expect(sd, isNull);
+    });
+
+    test("fromJson with empty json", () {
+      SubmittedDocuments sd = SubmittedDocuments.fromJson({});
+      expect(sd, isNotNull);
+      expect(sd.cnh, isNull);
+      expect(sd.crlv, isNull);
+      expect(sd.photoWithCnh, isNull);
+      expect(sd.profilePhoto, isNull);
+      expect(sd.bankAccount, isNull);
+    });
+    test("fromJson with valid json", () {
+      SubmittedDocuments sd = SubmittedDocuments.fromJson({
+        "cnh": true,
+        "crlv": true,
+        "photo_with_cnh": true,
+        "profile_photo": true,
+        "bank_account": true,
+      });
+      expect(sd, isNotNull);
+      expect(sd.cnh, equals(true));
+      expect(sd.crlv, equals(2020));
+      expect(sd.photoWithCnh, equals(true));
+      expect(sd.profilePhoto, equals(true));
+      expect(sd.bankAccount, equals(true));
+    });
+  });
+
   group("PartnerInterface", () {
     test("fromJson with null json", () {
       PartnerInterface pi = PartnerInterface.fromJson(null);
