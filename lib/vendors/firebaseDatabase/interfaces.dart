@@ -134,12 +134,37 @@ class SubmittedDocuments {
   }
 }
 
+enum Banks {
+  BancoDoBrasil,
+  Santander,
+  Caixa,
+  Bradesco,
+  Itau,
+  Hsbc,
+}
+
+Map<Banks, String> bankMap = {
+  Banks.BancoDoBrasil: "001 - Banco do Brasil",
+  Banks.Santander: "033 - Santander",
+  Banks.Caixa: "104 - Caixa",
+  Banks.Bradesco: "237 - Bradesco",
+  Banks.Itau: "341 - Itaú",
+  Banks.Hsbc: "399 - HSBC",
+};
+
 enum BankAccountType {
   conta_corrente,
   conta_poupanca,
   conta_corrente_conjunta,
   conta_poupanca_conjunta,
 }
+
+Map<BankAccountType, String> accountTypeMap = {
+  BankAccountType.conta_corrente: "Corrente",
+  BankAccountType.conta_poupanca: "Poupança",
+  BankAccountType.conta_corrente_conjunta: "Corrente Conjunta",
+  BankAccountType.conta_poupanca_conjunta: "Poupança Conjunta",
+};
 
 class BankAccount {
   final String bankCode; // 3 chars max, all numbers

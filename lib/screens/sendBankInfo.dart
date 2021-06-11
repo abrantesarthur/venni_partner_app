@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:partner_app/models/connectivity.dart';
+import 'package:partner_app/models/firebase.dart';
+import 'package:partner_app/vendors/firebaseDatabase/interfaces.dart';
 import 'package:partner_app/styles.dart';
 import 'package:partner_app/widgets/appButton.dart';
 import 'package:partner_app/widgets/appInputText.dart';
@@ -17,48 +19,32 @@ class SendBankInfo extends StatefulWidget {
 
 // TOOD: display warnings if something goes wrong
 class SendBankInfoState extends State<SendBankInfo> with RouteAware {
-  TextEditingController agencyNumberController = TextEditingController();
-  TextEditingController agencyDigitController = TextEditingController();
-  TextEditingController accountNumberController = TextEditingController();
-  TextEditingController accountDigitController = TextEditingController();
-  bool agencyNumberIsValid = false;
-  bool accountNumberIsValid = false;
-  bool accountDigitIsValid = false;
+  TextEditingController agencyController = TextEditingController();
+  TextEditingController agencyDvController = TextEditingController();
+  TextEditingController accountController = TextEditingController();
+  TextEditingController accountDvController = TextEditingController();
+  bool agencyIsValid = false;
+  bool accountIsValid = false;
+  bool accountDvIsValid = false;
   bool lockScreen = false;
   Banks selectedBank;
-  AccountTypes selectedAccountType;
-
-  Map<Banks, String> bankMap = {
-    Banks.BancoDoBrasil: "001 - Banco do Brasil",
-    Banks.Santander: "033 - Santander",
-    Banks.Caixa: "104 - Caixa",
-    Banks.Bradesco: "237 - Bradesco",
-    Banks.Itau: "341 - Itaú",
-    Banks.Hsbc: "399 - HSBC",
-  };
-
-  Map<AccountTypes, String> accountTypeMap = {
-    AccountTypes.Corrente: "Corrente",
-    AccountTypes.Poupanca: "Poupança",
-    AccountTypes.CorrenteConjunta: "Corrente Conjunta",
-    AccountTypes.PoupancaConjunta: "Poupança Conjunta",
-  };
+  BankAccountType selectedAccountType;
 
   @override
   void initState() {
-    agencyNumberController.addListener(() {
+    agencyController.addListener(() {
       setState(() {
-        agencyNumberIsValid = agencyNumberController.text.length > 0;
+        agencyIsValid = agencyController.text.length > 0;
       });
     });
-    accountNumberController.addListener(() {
+    accountController.addListener(() {
       setState(() {
-        accountNumberIsValid = accountNumberController.text.length > 0;
+        accountIsValid = accountController.text.length > 0;
       });
     });
-    accountDigitController.addListener(() {
+    accountDvController.addListener(() {
       setState(() {
-        accountDigitIsValid = accountDigitController.text.length > 0;
+        accountDvIsValid = accountDvController.text.length > 0;
       });
     });
     super.initState();
@@ -66,10 +52,10 @@ class SendBankInfoState extends State<SendBankInfo> with RouteAware {
 
   @override
   void dispose() {
-    agencyNumberController.dispose();
-    agencyDigitController.dispose();
-    accountNumberController.dispose();
-    accountDigitController.dispose();
+    agencyController.dispose();
+    agencyDvController.dispose();
+    accountController.dispose();
+    accountDvController.dispose();
     super.dispose();
   }
 
@@ -78,6 +64,7 @@ class SendBankInfoState extends State<SendBankInfo> with RouteAware {
     final screenHeight = MediaQuery.of(context).size.height;
     final screenWidth = MediaQuery.of(context).size.width;
     final connectivity = Provider.of<ConnectivityModel>(context);
+    final firebase = Provider.of<FirebaseModel>(context);
 
     return Scaffold(
       backgroundColor: Colors.white,
@@ -158,9 +145,9 @@ class SendBankInfoState extends State<SendBankInfo> with RouteAware {
                                     });
                                   },
                                   items: bankMap.keys
-                                      .map((key) => DropdownMenuItem(
-                                            child: Text(bankMap[key]),
-                                            value: key,
+                                      .map((bankName) => DropdownMenuItem(
+                                            child: Text(bankMap[bankName]),
+                                            value: bankName,
                                           ))
                                       .toList()),
                             ),
@@ -179,7 +166,7 @@ class SendBankInfoState extends State<SendBankInfo> with RouteAware {
                               ],
                               keyboardType:
                                   TextInputType.numberWithOptions(signed: true),
-                              controller: agencyNumberController,
+                              controller: agencyController,
                               enabled: !lockScreen,
                             ),
                             Spacer(),
@@ -193,7 +180,7 @@ class SendBankInfoState extends State<SendBankInfo> with RouteAware {
                               ],
                               keyboardType:
                                   TextInputType.numberWithOptions(signed: true),
-                              controller: agencyDigitController,
+                              controller: agencyDvController,
                               enabled: !lockScreen,
                             ),
                           ],
@@ -211,7 +198,7 @@ class SendBankInfoState extends State<SendBankInfo> with RouteAware {
                               ],
                               keyboardType:
                                   TextInputType.numberWithOptions(signed: true),
-                              controller: accountNumberController,
+                              controller: accountController,
                               enabled: !lockScreen,
                             ),
                             Spacer(),
@@ -225,7 +212,7 @@ class SendBankInfoState extends State<SendBankInfo> with RouteAware {
                               ],
                               keyboardType:
                                   TextInputType.numberWithOptions(signed: true),
-                              controller: accountDigitController,
+                              controller: accountDvController,
                               enabled: !lockScreen,
                             ),
                           ],
@@ -293,6 +280,13 @@ class SendBankInfoState extends State<SendBankInfo> with RouteAware {
                                       );
                                       return;
                                     }
+
+                                    print(selectedBank.toString());
+                                    print(agencyController.text);
+                                    print(agencyDvController.text);
+                                    print(accountController.text);
+                                    print(accountDvController.text);
+                                    print(selectedAccountType.toString());
                                   }
                                 : () {},
                           ),
@@ -308,26 +302,10 @@ class SendBankInfoState extends State<SendBankInfo> with RouteAware {
   }
 
   bool allFieldsAreValid() {
-    return agencyNumberIsValid &&
-        accountNumberIsValid &&
-        accountDigitIsValid &&
+    return agencyIsValid &&
+        accountIsValid &&
+        accountDvIsValid &&
         selectedBank != null &&
         selectedAccountType != null;
   }
-}
-
-enum Banks {
-  BancoDoBrasil,
-  Santander,
-  Caixa,
-  Bradesco,
-  Itau,
-  Hsbc,
-}
-
-enum AccountTypes {
-  Corrente,
-  Poupanca,
-  CorrenteConjunta,
-  PoupancaConjunta,
 }
