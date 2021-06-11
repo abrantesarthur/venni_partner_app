@@ -219,7 +219,7 @@ class DocumentsState extends State<Documents> {
                                   Divider(color: Colors.black, thickness: 0.1),
                                 ],
                               ),
-                        partner.bankInfoSubmitted
+                        partner.bankAccountSubmitted
                             ? Container()
                             : Column(
                                 children: [
@@ -367,7 +367,7 @@ class DocumentsState extends State<Documents> {
                                 ],
                               )
                             : Container(),
-                        partner.bankInfoSubmitted
+                        partner.bankAccountSubmitted
                             ? Column(
                                 children: [
                                   ListTile(

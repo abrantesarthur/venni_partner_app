@@ -2,7 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:partner_app/models/connectivity.dart';
 import 'package:partner_app/models/firebase.dart';
+import 'package:partner_app/models/partner.dart';
 import 'package:partner_app/vendors/firebaseDatabase/interfaces.dart';
+import 'package:partner_app/vendors/firebaseDatabase/methods.dart';
 import 'package:partner_app/styles.dart';
 import 'package:partner_app/widgets/appButton.dart';
 import 'package:partner_app/widgets/appInputText.dart';
@@ -29,6 +31,7 @@ class SendBankInfoState extends State<SendBankInfo> with RouteAware {
   bool lockScreen = false;
   Banks selectedBank;
   BankAccountType selectedAccountType;
+  Widget buttonChild;
 
   @override
   void initState() {
@@ -63,8 +66,6 @@ class SendBankInfoState extends State<SendBankInfo> with RouteAware {
   Widget build(BuildContext context) {
     final screenHeight = MediaQuery.of(context).size.height;
     final screenWidth = MediaQuery.of(context).size.width;
-    final connectivity = Provider.of<ConnectivityModel>(context);
-    final firebase = Provider.of<FirebaseModel>(context);
 
     return Scaffold(
       backgroundColor: Colors.white,
@@ -267,29 +268,12 @@ class SendBankInfoState extends State<SendBankInfo> with RouteAware {
                           right: 0,
                           child: AppButton(
                             textData: "Adicionar Conta",
+                            child: buttonChild,
                             buttonColor: allFieldsAreValid()
                                 ? AppColor.primaryPink
                                 : AppColor.disabled,
                             onTapCallBack: !lockScreen && allFieldsAreValid()
-                                ? () async {
-                                    if (!connectivity.hasConnection) {
-                                      await connectivity.alertWhenOffline(
-                                        context,
-                                        message:
-                                            "Conecte-se à internet para adicionar as informações bancárias.",
-                                      );
-                                      return;
-                                    }
-
-                                    String bankCode = selectedBank.getCode();
-
-                                    print(bankCode);
-                                    print(agencyController.text);
-                                    print(agencyDvController.text);
-                                    print(accountController.text);
-                                    print(accountDvController.text);
-                                    print(selectedAccountType.getString());
-                                  }
+                                ? () async => await buttonCallback(context)
                                 : () {},
                           ),
                         )
@@ -301,6 +285,86 @@ class SendBankInfoState extends State<SendBankInfo> with RouteAware {
         ),
       ),
     );
+  }
+
+  Future<void> buttonCallback(BuildContext context) async {
+    final connectivity = Provider.of<ConnectivityModel>(context, listen: false);
+    final partner = Provider.of<PartnerModel>(context, listen: false);
+    final firebase = Provider.of<FirebaseModel>(context, listen: false);
+
+    if (!connectivity.hasConnection) {
+      await connectivity.alertWhenOffline(
+        context,
+        message:
+            "Conecte-se à internet para adicionar as informações bancárias.",
+      );
+      return;
+    }
+
+    // show progress indicator and lock screen
+    setState(() {
+      buttonChild = CircularProgressIndicator(
+        valueColor: AlwaysStoppedAnimation<Color>(
+          Colors.white,
+        ),
+      );
+      lockScreen = true;
+    });
+
+    try {
+      // add bank account to firebase
+      await firebase.database.setBankAccount(
+        partnerID: firebase.auth.currentUser.uid,
+        bankAccount: BankAccount(
+          bankCode: selectedBank.getCode(),
+          agency: agencyController.text,
+          agencyDv: agencyController.text ?? "",
+          account: accountController.text,
+          accountDv: accountDvController.text,
+          type: selectedAccountType,
+          documentNumber: partner.cpf,
+          legalName: partner.name + " " + partner.lastName,
+        ),
+      );
+      // mark bank account as submitted on firebase and locally
+      await firebase.database.setSubmittedBankAccount(
+        partnerID: firebase.auth.currentUser.uid,
+        value: true,
+      );
+      partner.updateBankAccountSubmitted(true);
+
+      // go back to documents screen
+      Navigator.pop(context);
+    } catch (e) {
+      // unlock screen and display warning on error
+      setState(() {
+        buttonChild = null;
+        lockScreen = false;
+      });
+      await showDialog(
+        context: context,
+        builder: (BuildContext context) {
+          return AlertDialog(
+            title: Text("Algo deu errado."),
+            content: Text(
+              "Tente novamente.",
+              style: TextStyle(
+                color: AppColor.disabled,
+              ),
+            ),
+            actions: [
+              TextButton(
+                child: Text(
+                  "ok",
+                  style: TextStyle(fontSize: 18),
+                ),
+                onPressed: () => Navigator.pop(context),
+              ),
+            ],
+          );
+        },
+      );
+    }
   }
 
   bool allFieldsAreValid() {

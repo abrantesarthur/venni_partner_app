@@ -166,6 +166,7 @@ enum BankAccountType {
 }
 
 extension BankAccountTypeExtension on BankAccountType {
+  // TODO: make sure this is correct
   String getString() {
     return this.toString().substring(16);
   }
@@ -231,9 +232,8 @@ class BankAccount {
     if (this.accountDv != null) {
       map["account_dv"] = this.accountDv;
     }
-    // TODO: make sure this is correct
     if (this.type != null) {
-      map["type"] = this.type.toString().substring(15);
+      map["type"] = this.type.getString();
     }
     if (this.documentNumber != null) {
       map["document_number"] = this.documentNumber;

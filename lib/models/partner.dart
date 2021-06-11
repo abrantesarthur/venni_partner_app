@@ -28,7 +28,7 @@ class PartnerModel extends ChangeNotifier {
   bool _cnhSubmitted = false;
   bool _photoWithCnhSubmitted = false;
   bool _profilePhotoSubmitted = false;
-  bool _bankInfoSubmitted = false;
+  bool _bankAccountSubmitted = false;
   bool _allDocumentsSubmitted = false;
 
   // getters
@@ -51,7 +51,7 @@ class PartnerModel extends ChangeNotifier {
   bool get cnhSubmitted => _cnhSubmitted;
   bool get photoWithCnhSubmitted => _photoWithCnhSubmitted;
   bool get profilePhotoSubmitted => _profilePhotoSubmitted;
-  bool get bankInfoSubmitted => _bankInfoSubmitted;
+  bool get bankAccountSubmitted => _bankAccountSubmitted;
   bool get allDocumentsSubmitted => _allDocumentsSubmitted;
 
   void updateCrlvSubmitted(bool value) {
@@ -78,8 +78,8 @@ class PartnerModel extends ChangeNotifier {
     notifyListeners();
   }
 
-  void updateBankInfoSubmitted(bool value) {
-    _bankInfoSubmitted = value;
+  void updateBankAccountSubmitted(bool value) {
+    _bankAccountSubmitted = value;
     _updateAllDocumentsSubmitted();
     notifyListeners();
   }
@@ -89,7 +89,7 @@ class PartnerModel extends ChangeNotifier {
         _crlvSubmitted &&
         _photoWithCnhSubmitted &&
         _profilePhotoSubmitted &&
-        _bankInfoSubmitted;
+        _bankAccountSubmitted;
   }
 
   void fromPartnerInterface(PartnerInterface pi) {
@@ -119,14 +119,14 @@ class PartnerModel extends ChangeNotifier {
       _profilePhotoSubmitted = pi.submittedDocuments == null
           ? false
           : pi.submittedDocuments.profilePhoto;
-      _bankInfoSubmitted = pi.submittedDocuments == null
+      _bankAccountSubmitted = pi.submittedDocuments == null
           ? false
           : pi.submittedDocuments.bankInfo;
       _allDocumentsSubmitted = _cnhSubmitted &&
           _crlvSubmitted &&
           _photoWithCnhSubmitted &&
           _profilePhotoSubmitted &&
-          _bankInfoSubmitted;
+          _bankAccountSubmitted;
 
       notifyListeners();
     }
