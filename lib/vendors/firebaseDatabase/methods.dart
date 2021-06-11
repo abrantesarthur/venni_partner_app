@@ -119,4 +119,21 @@ extension AppFirebaseDatabase on FirebaseDatabase {
       throw e;
     }
   }
+
+  Future<void> setBankInfo({
+    @required partnerID,
+    @required bool value,
+  }) async {
+    try {
+      await this
+          .reference()
+          .child("partners")
+          .child(partnerID)
+          .child("submitted_documents")
+          .child("bank_info")
+          .set(value);
+    } catch (e) {
+      throw e;
+    }
+  }
 }

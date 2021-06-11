@@ -29,8 +29,8 @@ class SendBankInfoState extends State<SendBankInfo> with RouteAware {
   AccountTypes selectedAccountType;
 
   Map<Banks, String> bankMap = {
-    Banks.BancoDoBrasil: "1 - Banco do Brasil",
-    Banks.Santander: "33 - Santander",
+    Banks.BancoDoBrasil: "001 - Banco do Brasil",
+    Banks.Santander: "033 - Santander",
     Banks.Caixa: "104 - Caixa",
     Banks.Bradesco: "237 - Bradesco",
     Banks.Itau: "341 - Itaú",
@@ -108,7 +108,7 @@ class SendBankInfoState extends State<SendBankInfo> with RouteAware {
               "Usaremos a conta cadastrada para depositar os pagamentos referentes às corridas pagas com cartão de crédito pelos clientes",
               style: TextStyle(color: Colors.black, fontSize: 14),
             ),
-            SizedBox(height: screenHeight / 25),
+            SizedBox(height: screenHeight / 50),
             Expanded(
               child: Stack(
                 children: [

@@ -134,6 +134,50 @@ class SubmittedDocuments {
   }
 }
 
+enum BankAccountType {
+  conta_corrente,
+  conta_poupanca,
+  conta_corrente_conjunta,
+  conta_poupanca_conjunta,
+}
+
+class BankAccount {
+  final String bankCode; // 3 chars max, all numbers
+  final String agency; // 4 chars max, all numbers
+  final String agencyDv; // optional
+  final String account;
+  final String accountDv;
+  final BankAccountType type;
+  final String documentNumber;
+  final String legalName;
+
+  BankAccount({
+    @required this.bankCode,
+    @required this.agency,
+    @required this.agencyDv,
+    @required this.account,
+    @required this.accountDv,
+    @required this.type,
+    @required this.documentNumber,
+    @required this.legalName,
+  });
+
+  factory BankAccount.fromJson(Map json) {
+    return json == null
+        ? null
+        : BankAccount(
+            bankCode: json["bank_code"],
+            agency: json["agency"],
+            agencyDv: json["agency_dv"],
+            account: json["account"],
+            accountDv: json["account_dv"],
+            type: json["type"],
+            documentNumber: json["document_number"],
+            legalName: json["legal_name"],
+          );
+  }
+}
+
 class PartnerInterface {
   final String id;
   final String name;
@@ -156,6 +200,7 @@ class PartnerInterface {
   final num idleSince;
   final Vehicle vehicle;
   final SubmittedDocuments submittedDocuments;
+  final BankAccount bankAccount;
 
   PartnerInterface({
     @required this.id,
@@ -179,6 +224,7 @@ class PartnerInterface {
     @required this.idleSince,
     @required this.vehicle,
     @required this.submittedDocuments,
+    @required this.bankAccount,
   });
 
   // TODO: test the shit out of this
@@ -201,9 +247,9 @@ class PartnerInterface {
         : double.parse(json["current_longitude"]);
     num idleSince =
         json["idle_since"] == null ? null : int.parse(json["idle_since"]);
-    SubmittedDocuments submittedDocuments = json["submitted_documents"] == null
-        ? null
-        : SubmittedDocuments.fromJson(json["submitted_documents"]);
+    SubmittedDocuments submittedDocuments =
+        SubmittedDocuments.fromJson(json["submitted_documents"]);
+    BankAccount bankAccount = BankAccount.fromJson(json["bank_account"]);
 
     return PartnerInterface(
       id: json["uid"],
@@ -227,6 +273,7 @@ class PartnerInterface {
       idleSince: idleSince,
       vehicle: Vehicle.fromJson(json["vehicle"]),
       submittedDocuments: submittedDocuments,
+      bankAccount: bankAccount,
     );
   }
 
@@ -315,6 +362,18 @@ class PartnerInterface {
         "bank_info": this.submittedDocuments.bankInfo == null
             ? false
             : this.submittedDocuments.profilePhoto,
+      };
+    }
+    if (this.bankAccount != null) {
+      json["bank_account"] = {
+        "bank_code": this.bankAccount.bankCode,
+        "agency": this.bankAccount.agency,
+        "agency_dv": this.bankAccount.agencyDv,
+        "account": this.bankAccount.account,
+        "account_dv": this.bankAccount.accountDv,
+        "type": this.bankAccount.type,
+        "document_number": this.bankAccount.documentNumber,
+        "legal_name": this.bankAccount.legalName,
       };
     }
     return json;
