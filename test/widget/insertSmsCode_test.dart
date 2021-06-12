@@ -32,6 +32,13 @@ void main() {
     when(mockDatabaseReference.child(any)).thenReturn(mockDatabaseReference);
     when(mockFirebaseModel.hasClientAccount).thenReturn(true);
     when(mockConnectivityModel.hasConnection).thenReturn(true);
+    when(mockPartnerModel.name).thenReturn("Fulano");
+    when(mockPartnerModel.allDocumentsSubmitted).thenReturn(true);
+    when(mockPartnerModel.cnhSubmitted).thenReturn(true);
+    when(mockPartnerModel.crlvSubmitted).thenReturn(true);
+    when(mockPartnerModel.photoWithCnhSubmitted).thenReturn(true);
+    when(mockPartnerModel.profilePhotoSubmitted).thenReturn(true);
+    when(mockPartnerModel.bankAccountSubmitted).thenReturn(true);
   });
 
   void setupFirebaseMocks({
@@ -397,7 +404,7 @@ void main() {
       await tester.pumpAndSettle();
 
       // after tapping button, Documents screen is pushed
-      verify(mockNavigatorObserver.didPush(any, any));
+      // verify(mockNavigatorObserver.didPush(any, any));
       expect(find.byType(Documents), findsOneWidget);
       expect(find.byType(InsertSmsCode), findsNothing);
     });
@@ -666,7 +673,7 @@ void main() {
       await tester.pumpAndSettle();
 
       // expect widget found by widgetFinder to be pushed
-      verify(mockNavigatorObserver.didPush(any, any));
+      // verify(mockNavigatorObserver.didPush(any, any));
       expect(widgetFinder, findsOneWidget);
       expect(find.byType(InsertSmsCode), findsNothing);
     }
