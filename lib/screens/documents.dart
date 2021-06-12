@@ -29,11 +29,7 @@ class Documents extends StatefulWidget {
   DocumentsState createState() => DocumentsState();
 }
 
-// TODO: implement 'Ajuda': 'chat com supporte' and 'sair'
-// TODO: add lockscreen to all screens
-
 class DocumentsState extends State<Documents> {
-  bool _hasConnection;
   var _firebaseListener;
 
   @override
