@@ -4,6 +4,7 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:mockito/mockito.dart';
 import 'package:partner_app/models/connectivity.dart';
 import 'package:partner_app/models/firebase.dart';
+import 'package:partner_app/models/partner.dart';
 import 'package:partner_app/screens/documents.dart';
 import 'package:partner_app/screens/insertPassword.dart';
 import 'package:partner_app/screens/start.dart';
@@ -28,7 +29,17 @@ void main() {
     when(mockConnectivityModel.hasConnection).thenReturn(true);
     when(mockFirebaseDatabase.reference()).thenReturn(mockDatabaseReference);
     when(mockDatabaseReference.child(any)).thenReturn(mockDatabaseReference);
+    when(mockDatabaseReference.once())
+        .thenAnswer((_) => Future.value(mockDataSnapshot));
+    when(mockDataSnapshot.value).thenReturn({});
     when(mockDatabaseReference.remove()).thenAnswer((_) => Future.value());
+    when(mockPartnerModel.name).thenReturn("Fulano");
+    when(mockPartnerModel.allDocumentsSubmitted).thenReturn(true);
+    when(mockPartnerModel.cnhSubmitted).thenReturn(true);
+    when(mockPartnerModel.crlvSubmitted).thenReturn(true);
+    when(mockPartnerModel.photoWithCnhSubmitted).thenReturn(true);
+    when(mockPartnerModel.profilePhotoSubmitted).thenReturn(true);
+    when(mockPartnerModel.bankAccountSubmitted).thenReturn(true);
   });
 
   Future<void> pumpWidget(WidgetTester tester) async {
@@ -40,6 +51,8 @@ void main() {
           ChangeNotifierProvider<ConnectivityModel>(
             create: (context) => mockConnectivityModel,
           ),
+          ChangeNotifierProvider<PartnerModel>(
+              create: (context) => mockPartnerModel),
         ],
         builder: (context, child) => MaterialApp(
           home: InsertPassword(
@@ -50,9 +63,19 @@ void main() {
             gender: Gender.masculino,
             cpf: "00000000000",
           ),
+          onGenerateRoute: (RouteSettings settings) {
+            // if Documents is pushed
+            if (settings.name == Documents.routeName) {
+              return MaterialPageRoute(builder: (context) {
+                return Documents(
+                  firebase: mockFirebaseModel,
+                );
+              });
+            }
+            return null;
+          },
           routes: {
             Start.routeName: (context) => Start(),
-            Documents.routeName: (context) => Documents(),
           },
           navigatorObservers: [mockNavigatorObserver],
         ),
@@ -294,7 +317,6 @@ void main() {
       await tester.pumpAndSettle();
 
       // expect Documents to be pushed
-      verify(mockNavigatorObserver.didPush(any, any));
       expect(find.byType(Documents), findsOneWidget);
     }
 

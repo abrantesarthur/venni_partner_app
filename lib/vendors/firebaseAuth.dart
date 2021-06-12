@@ -26,7 +26,7 @@ extension AppFirebaseAuth on FirebaseAuth {
           await firebaseAuth.signInWithCredential(credential);
 
       // however, we only consider the user to be registered as a pilot, if they
-      // have an entry in pilots database. It may also be the case that the user
+      // have an entry in partners database. It may also be the case that the user
       // already has an account throught the client app (e.g., firebase.isRegistered
       // is true and they have a displayName). In those cases, we use some of
       // their already provided information (phone number, email and password).
@@ -58,8 +58,11 @@ extension AppFirebaseAuth on FirebaseAuth {
           );
         } else {
           // otherwise, push documents screen
-          // TODO: pass partnerModel so documents knows what to render
-          Navigator.pushNamed(context, Documents.routeName);
+          Navigator.pushReplacementNamed(
+            context,
+            Documents.routeName,
+            arguments: DocumentsArguments(firebase: firebase),
+          );
         }
       } else if (firebase.hasClientAccount) {
         // if user already has a client account, skip insertEmail and push
@@ -93,8 +96,10 @@ extension AppFirebaseAuth on FirebaseAuth {
     } else if (e.code == "too-many-requests") {
       warningMessage =
           "Ops, número de tentativas excedidas. Tente novamente em alguns minutos.";
+    } else if (e.code == "network-request-failed") {
+      warningMessage =
+          "Você está offline. Conecte-se à internet e tente novamente.";
     } else {
-      print(e.code);
       warningMessage = "Ops, algo deu errado. Tente novamente mais tarde.";
     }
     return warningMessage;
@@ -159,10 +164,10 @@ extension AppFirebaseAuth on FirebaseAuth {
       }
       await credential.user.updateProfile(displayName: displayName);
 
-      // create partner entry in database
+      // create partner entry in database with some of the fields set
       final partner = this.currentUser;
       try {
-        await firebase.database.createPartner(partner.uid, {
+        await firebase.database.createPartner(PartnerInterface.fromJson({
           "uid": partner.uid,
           "name": partner.displayName.split(" ").first,
           "last_name": partner.displayName
@@ -171,7 +176,7 @@ extension AppFirebaseAuth on FirebaseAuth {
           "gender": gender.toString().substring(7),
           "phone_number": partner.phoneNumber,
           "account_status": "pending_documents",
-        });
+        }));
       } catch (e) {
         throw FirebaseAuthException(code: "database-failure");
       }

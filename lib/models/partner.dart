@@ -24,6 +24,12 @@ class PartnerModel extends ChangeNotifier {
   String _denialReason;
   String _lockReason;
   Vehicle _vehicle;
+  bool _crlvSubmitted = false;
+  bool _cnhSubmitted = false;
+  bool _photoWithCnhSubmitted = false;
+  bool _profilePhotoSubmitted = false;
+  bool _bankAccountSubmitted = false;
+  bool _allDocumentsSubmitted = false;
 
   // getters
   String get id => _id;
@@ -41,6 +47,50 @@ class PartnerModel extends ChangeNotifier {
   String get denialReason => _denialReason;
   String get lockReason => _lockReason;
   Vehicle get vehicle => _vehicle;
+  bool get crlvSubmitted => _crlvSubmitted;
+  bool get cnhSubmitted => _cnhSubmitted;
+  bool get photoWithCnhSubmitted => _photoWithCnhSubmitted;
+  bool get profilePhotoSubmitted => _profilePhotoSubmitted;
+  bool get bankAccountSubmitted => _bankAccountSubmitted;
+  bool get allDocumentsSubmitted => _allDocumentsSubmitted;
+
+  void updateCrlvSubmitted(bool value) {
+    _crlvSubmitted = value;
+    _updateAllDocumentsSubmitted();
+    notifyListeners();
+  }
+
+  void updateCnhSubmitted(bool value) {
+    _cnhSubmitted = value;
+    _updateAllDocumentsSubmitted();
+    notifyListeners();
+  }
+
+  void updatePhotoWithCnhSubmitted(bool value) {
+    _photoWithCnhSubmitted = value;
+    _updateAllDocumentsSubmitted();
+    notifyListeners();
+  }
+
+  void updateProfilePhotoSubmitted(bool value) {
+    _profilePhotoSubmitted = value;
+    _updateAllDocumentsSubmitted();
+    notifyListeners();
+  }
+
+  void updateBankAccountSubmitted(bool value) {
+    _bankAccountSubmitted = value;
+    _updateAllDocumentsSubmitted();
+    notifyListeners();
+  }
+
+  void _updateAllDocumentsSubmitted() {
+    _allDocumentsSubmitted = _cnhSubmitted &&
+        _crlvSubmitted &&
+        _photoWithCnhSubmitted &&
+        _profilePhotoSubmitted &&
+        _bankAccountSubmitted;
+  }
 
   void fromPartnerInterface(PartnerInterface pi) {
     if (pi != null) {
@@ -59,6 +109,25 @@ class PartnerModel extends ChangeNotifier {
       _denialReason = pi.denialReason;
       _lockReason = pi.lockReason;
       _vehicle = pi.vehicle;
+      _cnhSubmitted =
+          pi.submittedDocuments == null ? false : pi.submittedDocuments.cnh;
+      _crlvSubmitted =
+          pi.submittedDocuments == null ? false : pi.submittedDocuments.crlv;
+      _photoWithCnhSubmitted = pi.submittedDocuments == null
+          ? false
+          : pi.submittedDocuments.photoWithCnh;
+      _profilePhotoSubmitted = pi.submittedDocuments == null
+          ? false
+          : pi.submittedDocuments.profilePhoto;
+      _bankAccountSubmitted = pi.submittedDocuments == null
+          ? false
+          : pi.submittedDocuments.bankAccount;
+      _allDocumentsSubmitted = _cnhSubmitted &&
+          _crlvSubmitted &&
+          _photoWithCnhSubmitted &&
+          _profilePhotoSubmitted &&
+          _bankAccountSubmitted;
+
       notifyListeners();
     }
   }

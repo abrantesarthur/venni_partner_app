@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:partner_app/widgets/appInputText.dart';
 
-// TODO: test changes
 class AppInputPassword extends StatefulWidget {
   final bool enabled;
   final bool obscurePassword;

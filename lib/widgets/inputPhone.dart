@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:partner_app/widgets/appInputText.dart';
 
-// TODO: write tests
 class InputPhone extends StatelessWidget {
   final Function onSubmittedCallback;
   final TextEditingController controller;

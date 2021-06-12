@@ -32,6 +32,13 @@ void main() {
     when(mockDatabaseReference.child(any)).thenReturn(mockDatabaseReference);
     when(mockFirebaseModel.hasClientAccount).thenReturn(true);
     when(mockConnectivityModel.hasConnection).thenReturn(true);
+    when(mockPartnerModel.name).thenReturn("Fulano");
+    when(mockPartnerModel.allDocumentsSubmitted).thenReturn(true);
+    when(mockPartnerModel.cnhSubmitted).thenReturn(true);
+    when(mockPartnerModel.crlvSubmitted).thenReturn(true);
+    when(mockPartnerModel.photoWithCnhSubmitted).thenReturn(true);
+    when(mockPartnerModel.profilePhotoSubmitted).thenReturn(true);
+    when(mockPartnerModel.bankAccountSubmitted).thenReturn(true);
   });
 
   void setupFirebaseMocks({
@@ -287,6 +294,17 @@ void main() {
         ],
         builder: (context, child) => MaterialApp(
           home: InsertPhone(),
+          onGenerateRoute: (RouteSettings settings) {
+            // if Documents is pushed
+            if (settings.name == Documents.routeName) {
+              return MaterialPageRoute(builder: (context) {
+                return Documents(
+                  firebase: mockFirebaseModel,
+                );
+              });
+            }
+            return null;
+          },
           routes: {
             Home.routeName: (context) => Home(),
             InsertEmail.routeName: (context) => InsertEmail(
@@ -296,7 +314,6 @@ void main() {
                   userCredential: mockUserCredential,
                   userEmail: "example@provider.com",
                 ),
-            Documents.routeName: (context) => Documents(),
           },
           // mockNavigatorObserver will receive all navigation events
           navigatorObservers: [mockNavigatorObserver],
@@ -367,7 +384,6 @@ void main() {
       await tester.pumpAndSettle();
 
       // after tapping button, we are go to Home
-      verify(mockNavigatorObserver.didPush(any, any));
       expect(find.byType(InsertPhone), findsNothing);
       expect(find.byType(Home), findsOneWidget);
     });
@@ -409,7 +425,6 @@ void main() {
       await tester.pumpAndSettle();
 
       // after tapping button, we are go to Home
-      verify(mockNavigatorObserver.didPush(any, any));
       expect(find.byType(InsertPhone), findsNothing);
       expect(find.byType(Documents), findsOneWidget);
     });

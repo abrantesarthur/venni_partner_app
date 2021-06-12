@@ -40,3 +40,5 @@ MockPartnerInterface mockPartnerInterface = MockPartnerInterface();
 MockConnectivityModel mockConnectivityModel = MockConnectivityModel();
 MockDataSnapshot mockDataSnapshot = MockDataSnapshot();
 MockDatabaseReference mockDatabaseReference = MockDatabaseReference();
+
+void main() {}

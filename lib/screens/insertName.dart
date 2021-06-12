@@ -91,8 +91,8 @@ class InsertNameState extends State<InsertName> {
       InsertAditionalInfo.routeName,
       arguments: InsertAditionalInfoArguments(
         userCredential: widget.userCredential,
-        name: nameTextEditingController.text,
-        surname: surnameTextEditingController.text,
+        name: nameTextEditingController.text.trim(),
+        surname: surnameTextEditingController.text.trim(),
         userEmail: widget.userEmail,
       ),
     );

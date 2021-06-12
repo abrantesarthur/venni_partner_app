@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/scheduler.dart';
 import 'package:partner_app/models/connectivity.dart';
 import 'package:partner_app/models/firebase.dart';
+import 'package:partner_app/models/partner.dart';
 import 'package:partner_app/vendors/firebaseDatabase/methods.dart';
 import 'package:partner_app/screens/documents.dart';
 import 'package:partner_app/screens/splash.dart';
@@ -221,14 +222,18 @@ class InsertPasswordState extends State<InsertPassword> {
   // If the user already has a client account, registerUser makes sure they enter
   // a correct password. If so, it updates their name and other entered information.
   // If the user is registering for the first time, it just creates their account
-  Future<bool> registerUser(BuildContext context) async {
-    FirebaseModel firebase = Provider.of<FirebaseModel>(context, listen: false);
+  Future<bool> registerUser(
+    FirebaseModel firebase,
+    PartnerModel partner,
+  ) async {
+    // dismiss keyboard
+    FocusScope.of(context).requestFocus(FocusNode());
 
     // if the user already has a client account
     if (firebase.hasClientAccount) {
       // make sure they've entered a valid password
       CheckPasswordResponse cpr = await firebase.auth.checkPassword(
-        passwordTextEditingController.text,
+        passwordTextEditingController.text.trim(),
       );
       if (cpr != null && !cpr.successful) {
         // if not, display appropriate warning and return false
@@ -258,6 +263,19 @@ class InsertPasswordState extends State<InsertPassword> {
           gender: widget.gender,
         );
 
+        // we enforce a variant that, by the time Documents is pushed, PartnerModel
+        // must have been updated with the user information
+        // try getting partner credentials
+        PartnerInterface partnerInterface =
+            await firebase.database.getPilotFromID(
+          widget.userCredential.user.uid,
+        );
+        PartnerModel partner = Provider.of<PartnerModel>(
+          context,
+          listen: false,
+        );
+        partner.fromPartnerInterface(partnerInterface);
+
         return true;
       } on FirebaseAuthException catch (e) {
         await handleRegistrationFailure(firebase, e);
@@ -271,12 +289,27 @@ class InsertPasswordState extends State<InsertPassword> {
         await firebase.auth.createPartner(
           firebase,
           widget.userCredential,
-          email: widget.userEmail,
-          password: passwordTextEditingController.text,
           displayName: widget.name + " " + widget.surname,
           cpf: widget.cpf,
           gender: widget.gender,
+          email: widget.userEmail,
+          password: passwordTextEditingController.text.trim(),
         );
+
+        // TODO: delete client that is created;
+
+        // we enforce a variant that, by the time Documents is pushed, PartnerModel
+        // must have been updated with the user information
+        // try getting partner credentials
+        PartnerInterface partnerInterface =
+            await firebase.database.getPilotFromID(
+          widget.userCredential.user.uid,
+        );
+        PartnerModel partner = Provider.of<PartnerModel>(
+          context,
+          listen: false,
+        );
+        partner.fromPartnerInterface(partnerInterface);
         return true;
       } on FirebaseAuthException catch (e) {
         await handleRegistrationFailure(firebase, e);
@@ -287,8 +320,14 @@ class InsertPasswordState extends State<InsertPassword> {
 
   // buttonCallback tries signing user up by adding remainig data to its credential
   void buttonCallback(BuildContext context) async {
+    FirebaseModel firebase = Provider.of<FirebaseModel>(context, listen: false);
+    PartnerModel partner = Provider.of<PartnerModel>(context, listen: false);
+
     setState(() {
-      successfullyRegisteredUser = registerUser(context);
+      successfullyRegisteredUser = registerUser(
+        firebase,
+        partner,
+      );
     });
   }
 
@@ -315,7 +354,11 @@ class InsertPasswordState extends State<InsertPassword> {
           // push pending documents screen. After all, user has just created
           // a partner account and thus has 'pending_documents' accountStatus
           SchedulerBinding.instance.addPostFrameCallback((_) {
-            Navigator.pushNamed(context, Documents.routeName);
+            Navigator.pushReplacementNamed(
+              context,
+              Documents.routeName,
+              arguments: DocumentsArguments(firebase: firebase),
+            );
           });
           return Container();
         }
@@ -324,7 +367,7 @@ class InsertPasswordState extends State<InsertPassword> {
         if (snapshot.connectionState == ConnectionState.waiting) {
           // show loading screen
           return Splash(
-              text: "Criando conta",
+              text: "Criando conta de parceiro(a)",
               child: CircularProgressIndicator(
                 valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
               ));
