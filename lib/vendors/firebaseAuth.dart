@@ -58,7 +58,7 @@ extension AppFirebaseAuth on FirebaseAuth {
           );
         } else {
           // otherwise, push documents screen
-          Navigator.pushNamed(
+          Navigator.pushReplacementNamed(
             context,
             Documents.routeName,
             arguments: DocumentsArguments(firebase: firebase),

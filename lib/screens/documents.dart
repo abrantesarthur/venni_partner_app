@@ -64,6 +64,7 @@ class DocumentsState extends State<Documents> {
 
   @override
   Widget build(BuildContext context) {
+    print("build documents");
     PartnerModel partner = Provider.of<PartnerModel>(context);
     final screenHeight = MediaQuery.of(context).size.height;
     final screenWidth = MediaQuery.of(context).size.width;

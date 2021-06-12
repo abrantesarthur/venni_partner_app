@@ -21,10 +21,10 @@ class SendBankAccount extends StatefulWidget {
 
 // TOOD: display warnings if something goes wrong
 class SendBankAccountState extends State<SendBankAccount> with RouteAware {
-  TextEditingController agencyController = TextEditingController();
-  TextEditingController agencyDvController = TextEditingController();
-  TextEditingController accountController = TextEditingController();
-  TextEditingController accountDvController = TextEditingController();
+  TextEditingController agencyController;
+  TextEditingController agencyDvController;
+  TextEditingController accountController;
+  TextEditingController accountDvController;
   bool agencyIsValid = false;
   bool accountIsValid = false;
   bool accountDvIsValid = false;
@@ -35,6 +35,10 @@ class SendBankAccountState extends State<SendBankAccount> with RouteAware {
 
   @override
   void initState() {
+    agencyController = TextEditingController();
+    agencyDvController = TextEditingController();
+    accountController = TextEditingController();
+    accountDvController = TextEditingController();
     agencyController.addListener(() {
       setState(() {
         agencyIsValid = agencyController.text.length > 0;
@@ -64,6 +68,7 @@ class SendBankAccountState extends State<SendBankAccount> with RouteAware {
 
   @override
   Widget build(BuildContext context) {
+    print("build sendBankInfo");
     final screenHeight = MediaQuery.of(context).size.height;
     final screenWidth = MediaQuery.of(context).size.width;
 

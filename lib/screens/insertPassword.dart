@@ -289,12 +289,14 @@ class InsertPasswordState extends State<InsertPassword> {
         await firebase.auth.createPartner(
           firebase,
           widget.userCredential,
-          email: widget.userEmail,
-          password: passwordTextEditingController.text.trim(),
           displayName: widget.name + " " + widget.surname,
           cpf: widget.cpf,
           gender: widget.gender,
+          email: widget.userEmail,
+          password: passwordTextEditingController.text.trim(),
         );
+
+        // TODO: delete client that is created;
 
         // we enforce a variant that, by the time Documents is pushed, PartnerModel
         // must have been updated with the user information
@@ -352,7 +354,7 @@ class InsertPasswordState extends State<InsertPassword> {
           // push pending documents screen. After all, user has just created
           // a partner account and thus has 'pending_documents' accountStatus
           SchedulerBinding.instance.addPostFrameCallback((_) {
-            Navigator.pushNamed(
+            Navigator.pushReplacementNamed(
               context,
               Documents.routeName,
               arguments: DocumentsArguments(firebase: firebase),
