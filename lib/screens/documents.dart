@@ -50,6 +50,7 @@ class DocumentsState extends State<Documents> {
         AccountStatus accountStatus = AccountStatusExtension.fromString(
           e.snapshot.value,
         );
+        print(accountStatus);
         // update partner model accordingly
         widget.partner.updateAccountStatus(accountStatus);
       },
@@ -148,9 +149,7 @@ class DocumentsState extends State<Documents> {
                       style:
                           TextStyle(fontSize: 22, fontWeight: FontWeight.w600),
                     ),
-                    partner.allDocumentsSubmitted ||
-                            partner.accountStatus !=
-                                AccountStatus.pendingDocuments
+                    partner.accountStatus != AccountStatus.pendingDocuments
                         ? Container()
                         : Column(
                             crossAxisAlignment: CrossAxisAlignment.start,
@@ -322,7 +321,7 @@ class DocumentsState extends State<Documents> {
                           TextStyle(fontSize: 16, fontWeight: FontWeight.w600),
                     ),
                     SizedBox(height: screenHeight / 40),
-                    partner.allDocumentsSubmitted
+                    partner.accountStatus == AccountStatus.pendingApproval
                         ? Column(
                             children: [
                               Text(
