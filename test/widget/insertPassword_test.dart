@@ -69,6 +69,7 @@ void main() {
               return MaterialPageRoute(builder: (context) {
                 return Documents(
                   firebase: mockFirebaseModel,
+                  partner: mockPartnerModel,
                 );
               });
             }

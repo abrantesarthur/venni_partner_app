@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:partner_app/models/firebase.dart';
 import 'package:partner_app/models/partner.dart';
@@ -7,6 +9,8 @@ import 'package:partner_app/screens/sendCrlv.dart';
 import 'package:partner_app/screens/sendPhotoWithCnh.dart';
 import 'package:partner_app/screens/sendProfilePhoto.dart';
 import 'package:partner_app/screens/start.dart';
+import 'package:partner_app/vendors/firebaseDatabase/interfaces.dart';
+import 'package:partner_app/vendors/firebaseDatabase/methods.dart';
 import 'package:partner_app/styles.dart';
 import 'package:partner_app/utils/utils.dart';
 import 'package:partner_app/widgets/overallPadding.dart';
@@ -15,26 +19,41 @@ import 'package:url_launcher/url_launcher.dart';
 
 class DocumentsArguments {
   final FirebaseModel firebase;
+  final PartnerModel partner;
 
-  DocumentsArguments({@required this.firebase});
+  DocumentsArguments({@required this.firebase, @required this.partner});
 }
 
 class Documents extends StatefulWidget {
   static const routeName = "Documents";
   final FirebaseModel firebase;
+  final PartnerModel partner;
 
-  Documents({@required this.firebase});
+  Documents({@required this.firebase, @required this.partner});
 
   @override
   DocumentsState createState() => DocumentsState();
 }
 
 class DocumentsState extends State<Documents> {
+  StreamSubscription accountStatusSubscription;
   var _firebaseListener;
 
   @override
   void initState() {
     super.initState();
+
+    // subscribe to changes in account_status so UI is updated appropriately
+    accountStatusSubscription = widget.firebase.database.onAccountStatusUpdate(
+      widget.firebase.auth.currentUser.uid,
+      (e) {
+        AccountStatus accountStatus = AccountStatusExtension.fromString(
+          e.snapshot.value,
+        );
+        // update partner model accordingly
+        widget.partner.updateAccountStatus(accountStatus);
+      },
+    );
 
     WidgetsBinding.instance.addPostFrameCallback((_) {
       // add listener to FirebaseModel so user is redirected to Start when logs out
@@ -48,6 +67,9 @@ class DocumentsState extends State<Documents> {
   @override
   void dispose() {
     widget.firebase.removeListener(_firebaseListener);
+    if (accountStatusSubscription != null) {
+      accountStatusSubscription.cancel();
+    }
     super.dispose();
   }
 
@@ -60,10 +82,11 @@ class DocumentsState extends State<Documents> {
 
   @override
   Widget build(BuildContext context) {
-    print("build documents");
     PartnerModel partner = Provider.of<PartnerModel>(context);
     final screenHeight = MediaQuery.of(context).size.height;
     final screenWidth = MediaQuery.of(context).size.width;
+
+    print("BUILD");
 
     return Scaffold(
       body: Column(
@@ -125,7 +148,9 @@ class DocumentsState extends State<Documents> {
                       style:
                           TextStyle(fontSize: 22, fontWeight: FontWeight.w600),
                     ),
-                    partner.allDocumentsSubmitted
+                    partner.allDocumentsSubmitted ||
+                            partner.accountStatus !=
+                                AccountStatus.pendingDocuments
                         ? Container()
                         : Column(
                             crossAxisAlignment: CrossAxisAlignment.start,

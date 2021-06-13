@@ -335,6 +335,7 @@ class InsertPasswordState extends State<InsertPassword> {
   Widget build(BuildContext context) {
     screenHeight = MediaQuery.of(context).size.height;
     FirebaseModel firebase = Provider.of<FirebaseModel>(context, listen: false);
+    PartnerModel partner = Provider.of<PartnerModel>(context, listen: false);
     ConnectivityModel connectivity = Provider.of<ConnectivityModel>(
       context,
       listen: false,
@@ -357,7 +358,10 @@ class InsertPasswordState extends State<InsertPassword> {
             Navigator.pushReplacementNamed(
               context,
               Documents.routeName,
-              arguments: DocumentsArguments(firebase: firebase),
+              arguments: DocumentsArguments(
+                firebase: firebase,
+                partner: partner,
+              ),
             );
           });
           return Container();

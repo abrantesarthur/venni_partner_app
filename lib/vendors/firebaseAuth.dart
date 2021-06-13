@@ -61,7 +61,7 @@ extension AppFirebaseAuth on FirebaseAuth {
           Navigator.pushReplacementNamed(
             context,
             Documents.routeName,
-            arguments: DocumentsArguments(firebase: firebase),
+            arguments: DocumentsArguments(firebase: firebase, partner: partner),
           );
         }
       } else if (firebase.hasClientAccount) {

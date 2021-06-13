@@ -265,6 +265,7 @@ class _AppState extends State<App> {
                 return MaterialPageRoute(builder: (context) {
                   return Documents(
                     firebase: args.firebase,
+                    partner: args.partner,
                   );
                 });
               }
