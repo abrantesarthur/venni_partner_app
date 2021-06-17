@@ -1,5 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:partner_app/models/connectivity.dart';
+import 'package:partner_app/models/firebase.dart';
+import 'package:partner_app/models/partner.dart';
+import 'package:partner_app/screens/menu.dart';
+import 'package:partner_app/styles.dart';
+import 'package:partner_app/widgets/menuButton.dart';
+import 'package:partner_app/widgets/overallPadding.dart';
 import 'package:provider/provider.dart';
 
 class Home extends StatefulWidget {
@@ -14,6 +20,9 @@ class HomeState extends State<Home> with WidgetsBindingObserver {
   @override
   Widget build(BuildContext context) {
     ConnectivityModel connectivity = Provider.of<ConnectivityModel>(context);
+    FirebaseModel firebase = Provider.of<FirebaseModel>(context);
+    PartnerModel partner = Provider.of<PartnerModel>(context);
+    GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
 
     // if connectivity has changed
     if (_hasConnection != connectivity.hasConnection) {
@@ -21,14 +30,35 @@ class HomeState extends State<Home> with WidgetsBindingObserver {
       _hasConnection = connectivity.hasConnection;
       // if connectivity changed from offline to online
       if (connectivity.hasConnection) {
-        // download user data
-        //  user.downloadData(firebase);
+        // download partner data
+        try {
+          partner.downloadData(firebase, notify: false);
+        } catch (_) {}
       }
     }
 
     return Scaffold(
+      key: _scaffoldKey,
+      drawer: Menu(),
       body: Stack(
-        children: [Center(child: Text("home"))],
+        children: [
+          Container(
+            color: AppColor.primaryPink,
+            child: Center(
+              child: Text(
+                "homee",
+                style: TextStyle(color: Colors.white),
+              ),
+            ),
+          ),
+          Positioned(
+            child: OverallPadding(
+              child: MenuButton(onPressed: () {
+                _scaffoldKey.currentState.openDrawer();
+              }),
+            ),
+          ),
+        ],
       ),
     );
   }

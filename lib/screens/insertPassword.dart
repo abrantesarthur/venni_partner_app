@@ -267,7 +267,7 @@ class InsertPasswordState extends State<InsertPassword> {
         // must have been updated with the user information
         // try getting partner credentials
         PartnerInterface partnerInterface =
-            await firebase.database.getPilotFromID(
+            await firebase.database.getPartnerFromID(
           widget.userCredential.user.uid,
         );
         PartnerModel partner = Provider.of<PartnerModel>(
@@ -302,7 +302,7 @@ class InsertPasswordState extends State<InsertPassword> {
         // must have been updated with the user information
         // try getting partner credentials
         PartnerInterface partnerInterface =
-            await firebase.database.getPilotFromID(
+            await firebase.database.getPartnerFromID(
           widget.userCredential.user.uid,
         );
         PartnerModel partner = Provider.of<PartnerModel>(

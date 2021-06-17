@@ -35,23 +35,17 @@ extension AppFirebaseAuth on FirebaseAuth {
         listen: false,
       );
 
-      // try getting partner credentials
-      PartnerInterface partnerInterface =
-          await firebase.database.getPilotFromID(
-        userCredential.user.uid,
+      // try download partner data
+      PartnerModel partner = Provider.of<PartnerModel>(
+        context,
+        listen: false,
       );
+      await partner.downloadData(firebase);
 
       // if user already has a partner account
-      if (partnerInterface != null) {
-        // update partner model
-        PartnerModel partner = Provider.of<PartnerModel>(
-          context,
-          listen: false,
-        );
-        partner.fromPartnerInterface(partnerInterface);
-
+      if (partner.id != null) {
         // if accountStatus is 'approved', push Home screen
-        if (partnerInterface.accountStatus == AccountStatus.approved) {
+        if (partner.accountStatus == AccountStatus.approved) {
           Navigator.pushReplacementNamed(
             context,
             Home.routeName,

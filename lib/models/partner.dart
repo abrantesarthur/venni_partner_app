@@ -1,5 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:partner_app/models/firebase.dart';
 import 'package:partner_app/vendors/firebaseDatabase/interfaces.dart';
+import 'package:partner_app/vendors/firebaseDatabase/methods.dart';
+import 'package:partner_app/vendors/firebaseStorage.dart';
 
 class ProfileImage {
   final ImageProvider<Object> file;
@@ -24,6 +27,7 @@ class PartnerModel extends ChangeNotifier {
   String _denialReason;
   String _lockReason;
   Vehicle _vehicle;
+  ProfileImage _profileImage;
   bool _crlvSubmitted = false;
   bool _cnhSubmitted = false;
   bool _photoWithCnhSubmitted = false;
@@ -46,6 +50,7 @@ class PartnerModel extends ChangeNotifier {
   String get denialReason => _denialReason;
   String get lockReason => _lockReason;
   Vehicle get vehicle => _vehicle;
+  ProfileImage get profileImage => _profileImage;
   bool get crlvSubmitted => _crlvSubmitted;
   bool get cnhSubmitted => _cnhSubmitted;
   bool get photoWithCnhSubmitted => _photoWithCnhSubmitted;
@@ -82,7 +87,35 @@ class PartnerModel extends ChangeNotifier {
     notifyListeners();
   }
 
-  void fromPartnerInterface(PartnerInterface pi) {
+  void setProfileImage(
+    ProfileImage img, {
+    bool notify = true,
+  }) {
+    _profileImage = img;
+    if (notify) {
+      notifyListeners();
+    }
+  }
+
+  Future<void> downloadData(
+    FirebaseModel firebase, {
+    bool notify = true,
+  }) async {
+    // download partner profile photo
+    firebase.storage
+        .getPartnerProfilePicture(firebase.auth.currentUser.uid)
+        .then((value) => this.setProfileImage(value, notify: notify));
+
+    // get partner data
+    PartnerInterface partnerInterface =
+        await firebase.database.getPartnerFromID(firebase.auth.currentUser.uid);
+    this.fromPartnerInterface(partnerInterface, notify: notify);
+  }
+
+  void fromPartnerInterface(
+    PartnerInterface pi, {
+    bool notify = true,
+  }) {
     if (pi != null) {
       _id = pi.id;
       _name = pi.name;
@@ -112,8 +145,9 @@ class PartnerModel extends ChangeNotifier {
       _bankAccountSubmitted = pi.submittedDocuments == null
           ? false
           : pi.submittedDocuments.bankAccount;
-
-      notifyListeners();
+      if (notify) {
+        notifyListeners();
+      }
     }
   }
 }
