@@ -4,15 +4,14 @@ import 'package:flutter/material.dart';
 import 'package:partner_app/vendors/firebaseDatabase/interfaces.dart';
 
 extension AppFirebaseDatabase on FirebaseDatabase {
-  Future<PartnerInterface> getPilotFromID(String pilotID) async {
+  Future<PartnerInterface> getPartnerFromID(String pilotID) async {
     try {
       DataSnapshot snapshot =
           await this.reference().child("partners").child(pilotID).once();
       return PartnerInterface.fromJson(snapshot.value);
     } catch (e) {
-      print(e);
+      throw (e);
     }
-    return null;
   }
 
   Future<void> createPartner(PartnerInterface partner) async {

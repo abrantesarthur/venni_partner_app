@@ -69,7 +69,6 @@ class SendBankAccountState extends State<SendBankAccount> with RouteAware {
 
   @override
   Widget build(BuildContext context) {
-    print("build sendBankInfo");
     final screenHeight = MediaQuery.of(context).size.height;
     final screenWidth = MediaQuery.of(context).size.width;
 

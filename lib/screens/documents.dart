@@ -53,7 +53,6 @@ class DocumentsState extends State<Documents> {
         AccountStatus accountStatus = AccountStatusExtension.fromString(
           e.snapshot.value,
         );
-        print(accountStatus);
         // update partner model accordingly
         if (accountStatus != null) {
           widget.partner.updateAccountStatus(accountStatus);
@@ -68,7 +67,6 @@ class DocumentsState extends State<Documents> {
       (e) {
         SubmittedDocuments sd = SubmittedDocuments.fromJson(e.snapshot.value);
         if (sd != null) {
-          print(sd.bankAccount);
           widget.partner.updateBankAccountSubmitted(sd.bankAccount);
           widget.partner.updateCnhSubmitted(sd.cnh);
           widget.partner.updateCrlvSubmitted(sd.crlv);

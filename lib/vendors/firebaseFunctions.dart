@@ -3,7 +3,6 @@ import 'package:partner_app/vendors/firebaseDatabase/interfaces.dart';
 
 extension AppFirebaseFunctions on FirebaseFunctions {
   Future<BankAccount> createBankAccount(BankAccount bankAccount) async {
-    print("createBankAccount");
     Map<String, String> data = {
       "bank_code": bankAccount.bankCode,
       "agency": bankAccount.agency,
@@ -24,7 +23,6 @@ extension AppFirebaseFunctions on FirebaseFunctions {
         return BankAccount.fromJson(result.data);
       }
     } catch (e) {
-      print(e);
       throw e;
     }
     return null;
