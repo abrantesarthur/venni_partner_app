@@ -30,10 +30,11 @@ void main() {
     when(mockFirebaseModel.database).thenReturn(mockFirebaseDatabase);
     when(mockFirebaseDatabase.reference()).thenReturn(mockDatabaseReference);
     when(mockDatabaseReference.child(any)).thenReturn(mockDatabaseReference);
+    when(mockDatabaseReference.onValue).thenAnswer((_) => mockEvent);
+    when(mockEvent.listen(any)).thenAnswer((_) => mockStreamSubscription);
     when(mockFirebaseModel.hasClientAccount).thenReturn(true);
     when(mockConnectivityModel.hasConnection).thenReturn(true);
     when(mockPartnerModel.name).thenReturn("Fulano");
-    when(mockPartnerModel.allDocumentsSubmitted).thenReturn(true);
     when(mockPartnerModel.cnhSubmitted).thenReturn(true);
     when(mockPartnerModel.crlvSubmitted).thenReturn(true);
     when(mockPartnerModel.photoWithCnhSubmitted).thenReturn(true);

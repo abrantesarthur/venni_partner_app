@@ -51,8 +51,8 @@ void main() {
       AccountStatus acs =
           AccountStatusExtension.fromString("pending_documents");
       expect(acs, equals(AccountStatus.pendingDocuments));
-      acs = AccountStatusExtension.fromString("pending_approval");
-      expect(acs, equals(AccountStatus.pendingApproval));
+      acs = AccountStatusExtension.fromString("pending_review");
+      expect(acs, equals(AccountStatus.pendingReview));
       acs = AccountStatusExtension.fromString("granted_interview");
       expect(acs, equals(AccountStatus.grantedInterview));
       acs = AccountStatusExtension.fromString("approved");
@@ -64,8 +64,8 @@ void main() {
     });
 
     test("getString", () {
-      AccountStatus acs = AccountStatus.pendingApproval;
-      expect(acs.getString(), equals("pending_approval"));
+      AccountStatus acs = AccountStatus.pendingReview;
+      expect(acs.getString(), equals("pending_review"));
       acs = AccountStatus.pendingDocuments;
       expect(acs.getString(), equals("pending_documents"));
       acs = AccountStatus.grantedInterview;

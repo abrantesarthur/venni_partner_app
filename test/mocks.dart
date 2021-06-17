@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter/material.dart';
@@ -16,6 +18,11 @@ class MockFirebaseModel extends Mock implements FirebaseModel {}
 class MockDatabaseReference extends Mock implements DatabaseReference {}
 
 class MockDataSnapshot extends Mock implements DataSnapshot {}
+
+class MockEvent extends Mock implements Stream<Event> {}
+
+class MockStreamSubscription extends Mock implements StreamSubscription<Event> {
+}
 
 class MockNavigatorObserver extends Mock implements NavigatorObserver {}
 
@@ -40,5 +47,7 @@ MockPartnerInterface mockPartnerInterface = MockPartnerInterface();
 MockConnectivityModel mockConnectivityModel = MockConnectivityModel();
 MockDataSnapshot mockDataSnapshot = MockDataSnapshot();
 MockDatabaseReference mockDatabaseReference = MockDatabaseReference();
+MockEvent mockEvent = MockEvent();
+MockStreamSubscription mockStreamSubscription = MockStreamSubscription();
 
 void main() {}

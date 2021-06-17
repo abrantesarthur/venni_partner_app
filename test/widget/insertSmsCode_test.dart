@@ -30,10 +30,11 @@ void main() {
     when(mockFirebaseModel.database).thenReturn(mockFirebaseDatabase);
     when(mockFirebaseDatabase.reference()).thenReturn(mockDatabaseReference);
     when(mockDatabaseReference.child(any)).thenReturn(mockDatabaseReference);
+    when(mockDatabaseReference.onValue).thenAnswer((_) => mockEvent);
+    when(mockEvent.listen(any)).thenAnswer((_) => mockStreamSubscription);
     when(mockFirebaseModel.hasClientAccount).thenReturn(true);
     when(mockConnectivityModel.hasConnection).thenReturn(true);
     when(mockPartnerModel.name).thenReturn("Fulano");
-    when(mockPartnerModel.allDocumentsSubmitted).thenReturn(true);
     when(mockPartnerModel.cnhSubmitted).thenReturn(true);
     when(mockPartnerModel.crlvSubmitted).thenReturn(true);
     when(mockPartnerModel.photoWithCnhSubmitted).thenReturn(true);
@@ -366,7 +367,6 @@ void main() {
       await tester.pumpAndSettle();
 
       // after tapping button, Home screen is pushed
-      verify(mockNavigatorObserver.didPush(any, any));
       expect(find.byType(Home), findsOneWidget);
       expect(find.byType(InsertSmsCode), findsNothing);
     });
@@ -405,7 +405,6 @@ void main() {
       await tester.pumpAndSettle();
 
       // after tapping button, Documents screen is pushed
-      // verify(mockNavigatorObserver.didPush(any, any));
       expect(find.byType(Documents), findsOneWidget);
       expect(find.byType(InsertSmsCode), findsNothing);
     });

@@ -28,13 +28,14 @@ void main() {
     when(mockFirebaseModel.hasClientAccount).thenReturn(false);
     when(mockConnectivityModel.hasConnection).thenReturn(true);
     when(mockFirebaseDatabase.reference()).thenReturn(mockDatabaseReference);
+    when(mockDatabaseReference.onValue).thenAnswer((_) => mockEvent);
+    when(mockEvent.listen(any)).thenAnswer((_) => mockStreamSubscription);
     when(mockDatabaseReference.child(any)).thenReturn(mockDatabaseReference);
     when(mockDatabaseReference.once())
         .thenAnswer((_) => Future.value(mockDataSnapshot));
     when(mockDataSnapshot.value).thenReturn({});
     when(mockDatabaseReference.remove()).thenAnswer((_) => Future.value());
     when(mockPartnerModel.name).thenReturn("Fulano");
-    when(mockPartnerModel.allDocumentsSubmitted).thenReturn(true);
     when(mockPartnerModel.cnhSubmitted).thenReturn(true);
     when(mockPartnerModel.crlvSubmitted).thenReturn(true);
     when(mockPartnerModel.photoWithCnhSubmitted).thenReturn(true);

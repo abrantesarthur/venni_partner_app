@@ -33,7 +33,7 @@ extension PartnerStatusExtension on PartnerStatus {
 
 enum AccountStatus {
   pendingDocuments,
-  pendingApproval,
+  pendingReview,
   grantedInterview,
   approved,
   deniedApproval,
@@ -48,8 +48,8 @@ extension AccountStatusExtension on AccountStatus {
     switch (s) {
       case "pending_documents":
         return AccountStatus.pendingDocuments;
-      case "pending_approval":
-        return AccountStatus.pendingApproval;
+      case "pending_review":
+        return AccountStatus.pendingReview;
       case "granted_interview":
         return AccountStatus.grantedInterview;
       case "approved":
@@ -67,8 +67,8 @@ extension AccountStatusExtension on AccountStatus {
     switch (this) {
       case AccountStatus.pendingDocuments:
         return "pending_documents";
-      case AccountStatus.pendingApproval:
-        return "pending_approval";
+      case AccountStatus.pendingReview:
+        return "pending_review";
       case AccountStatus.grantedInterview:
         return "granted_interview";
       case AccountStatus.approved:
@@ -222,6 +222,7 @@ Map<BankAccountType, String> accountTypeMap = {
 };
 
 class BankAccount {
+  final int id;
   final String bankCode; // 3 chars max, all numbers
   final String agency; // 4 chars max, all numbers
   final String agencyDv; // optional
@@ -232,9 +233,10 @@ class BankAccount {
   final String legalName;
 
   BankAccount({
+    this.id,
     @required this.bankCode,
     @required this.agency,
-    @required this.agencyDv,
+    this.agencyDv,
     @required this.account,
     @required this.accountDv,
     @required this.type,
@@ -246,6 +248,7 @@ class BankAccount {
     return json == null
         ? null
         : BankAccount(
+            id: json["id"],
             bankCode: json["bank_code"],
             agency: json["agency"],
             agencyDv: json["agency_dv"],
