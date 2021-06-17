@@ -52,7 +52,7 @@ extension AppFirebaseAuth on FirebaseAuth {
 
         // if accountStatus is 'approved', push Home screen
         if (partnerInterface.accountStatus == AccountStatus.approved) {
-          Navigator.pushNamed(
+          Navigator.pushReplacementNamed(
             context,
             Home.routeName,
           );

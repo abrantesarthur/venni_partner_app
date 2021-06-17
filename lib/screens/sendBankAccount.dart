@@ -5,6 +5,7 @@ import 'package:partner_app/models/firebase.dart';
 import 'package:partner_app/models/partner.dart';
 import 'package:partner_app/vendors/firebaseDatabase/interfaces.dart';
 import 'package:partner_app/vendors/firebaseDatabase/methods.dart';
+import 'package:partner_app/vendors/firebaseFunctions.dart';
 import 'package:partner_app/styles.dart';
 import 'package:partner_app/widgets/appButton.dart';
 import 'package:partner_app/widgets/appInputText.dart';
@@ -318,12 +319,11 @@ class SendBankAccountState extends State<SendBankAccount> with RouteAware {
 
     try {
       // add bank account to firebase
-      await firebase.database.setBankAccount(
-        partnerID: firebase.auth.currentUser.uid,
-        bankAccount: BankAccount(
+      await firebase.functions.createBankAccount(
+        BankAccount(
           bankCode: selectedBank.getCode(),
           agency: agencyController.text,
-          agencyDv: agencyController.text ?? "",
+          agencyDv: agencyDvController.text,
           account: accountController.text,
           accountDv: accountDvController.text,
           type: selectedAccountType,
@@ -331,6 +331,7 @@ class SendBankAccountState extends State<SendBankAccount> with RouteAware {
           legalName: partner.name + " " + partner.lastName,
         ),
       );
+
       // mark bank account as submitted on firebase and locally
       await firebase.database.setSubmittedBankAccount(
         partnerID: firebase.auth.currentUser.uid,

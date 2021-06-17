@@ -136,8 +136,8 @@ extension AppFirebaseDatabase on FirebaseDatabase {
     }
   }
 
-   // onAccountStatusUpdate subscribes onData to handle changes in the
-   // account status of partner with uid partnerID
+  // onAccountStatusUpdate subscribes onData to handle changes in the
+  // account status of partner with uid partnerID
   StreamSubscription onAccountStatusUpdate(
     String partnerID,
     void Function(Event) onData,
@@ -147,6 +147,21 @@ extension AppFirebaseDatabase on FirebaseDatabase {
         .child("partners")
         .child(partnerID)
         .child("account_status")
+        .onValue
+        .listen(onData);
+  }
+
+  // onAccountStatusUpdate subscribes onData to handle changes in the
+  // account status of partner with uid partnerID
+  StreamSubscription onSubmittedDocumentsUpdate(
+    String partnerID,
+    void Function(Event) onData,
+  ) {
+    return this
+        .reference()
+        .child("partners")
+        .child(partnerID)
+        .child("submitted_documents")
         .onValue
         .listen(onData);
   }
