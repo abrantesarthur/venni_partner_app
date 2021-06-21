@@ -3,22 +3,20 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_database/firebase_database.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
-import 'package:partner_app/vendors/firebaseDatabase/methods.dart';
 
 class FirebaseModel extends ChangeNotifier {
   FirebaseAuth _firebaseAuth;
   FirebaseDatabase _firebaseDatabase;
   FirebaseStorage _firebaseStorage;
   FirebaseFunctions _firebaseFunctions;
-  bool _hasClientAccount = false;
+  bool _isRegistered = false;
   // bool _isRegisteredAsPartner = false;
 
   FirebaseAuth get auth => _firebaseAuth;
   FirebaseDatabase get database => _firebaseDatabase;
   FirebaseStorage get storage => _firebaseStorage;
   FirebaseFunctions get functions => _firebaseFunctions;
-  bool get hasClientAccount => _hasClientAccount;
-  // bool get isRegisteredAsPartner => _isRegisteredAsPartner;
+  bool get isRegistered => _isRegistered;
 
   FirebaseModel({
     @required FirebaseAuth firebaseAuth,
@@ -31,7 +29,7 @@ class FirebaseModel extends ChangeNotifier {
     _firebaseDatabase = firebaseDatabase;
     _firebaseStorage = firebaseStorage;
     _firebaseFunctions = firebaseFunctions;
-    _hasClientAccount = _userIsRegistered(firebaseAuth.currentUser);
+    _isRegistered = _userIsRegistered(firebaseAuth.currentUser);
     // _userIsRegisteredAsPartner(firebaseAuth.currentUser)
     //     .then((value) => _isRegisteredAsPartner = value);
     // add listener to track changes in user status
@@ -39,7 +37,7 @@ class FirebaseModel extends ChangeNotifier {
     notifyListeners();
   }
 
-  // listenForStatusChanges sets a listener taht responds to changes in user
+  // listenForStatusChanges sets a listener that responds to changes in user
   // login status by modifying the isRegistered and isRegisteredAsAPartner flags
   // and notifying listeners.
   void listenForStatusChanges() {
@@ -58,14 +56,9 @@ class FirebaseModel extends ChangeNotifier {
   }
 
   void _updateIsRegistered(bool ir) {
-    _hasClientAccount = ir;
+    _isRegistered = ir;
     notifyListeners();
   }
-
-  // void _updateIsRegisteredAsPartner(bool ir) {
-  //   _isRegisteredAsPartner = ir;
-  //   notifyListeners();
-  // }
 
   // returns true if user is logged in and has a displayName
   // i.e., either created an account through the user app or
@@ -73,14 +66,4 @@ class FirebaseModel extends ChangeNotifier {
   bool _userIsRegistered(User user) {
     return user != null && user.displayName != null;
   }
-
-  // // returns true if user is logged in an has an entry in pilot's database.
-  // // i.e., definitely created an account in the partner app
-  // Future<bool> _userIsRegisteredAsPartner(User user) async {
-  //   if (user != null && user.uid != null) {
-  //     final pilot = await _firebaseDatabase.getPilotFromID(user.uid);
-  //     return pilot != null;
-  //   }
-  //   return false;
-  // }
 }

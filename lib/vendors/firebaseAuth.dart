@@ -21,6 +21,7 @@ extension AppFirebaseAuth on FirebaseAuth {
     @required Function onExceptionCallback,
   }) async {
     try {
+      print("verificationCompletedCallback");
       // important: if the user doesn't have an account, one will be created
       UserCredential userCredential =
           await firebaseAuth.signInWithCredential(credential);
@@ -35,24 +36,30 @@ extension AppFirebaseAuth on FirebaseAuth {
         listen: false,
       );
 
+      print("got firebase");
+
       // try download partner data
       PartnerModel partner = Provider.of<PartnerModel>(
         context,
         listen: false,
       );
       try {
+        print("about to downlaod partner data");
         await partner.downloadData(firebase);
+        print("downloaded partner data");
       } catch (e) {
         throw FirebaseAuthException(code: "internal-error");
       }
 
       // if user already has a partner account
       if (partner.id != null) {
+        print("partner.id != null");
         // if accountStatus is 'approved', push Home screen
         if (partner.accountStatus == AccountStatus.approved) {
           Navigator.pushReplacementNamed(
             context,
             Home.routeName,
+            arguments: HomeArguments(firebase: firebase),
           );
         } else {
           // otherwise, push documents screen
@@ -62,7 +69,9 @@ extension AppFirebaseAuth on FirebaseAuth {
             arguments: DocumentsArguments(firebase: firebase, partner: partner),
           );
         }
-      } else if (firebase.hasClientAccount) {
+      } else if (firebase.isRegistered) {
+        print("firebase.isRegistered");
+
         // if user already has a client account, skip insertEmail and push
         // inserName screen. After all, they are to keep their login credentials
         // but have the chance of inserting their actual name and other info.
@@ -75,6 +84,7 @@ extension AppFirebaseAuth on FirebaseAuth {
           ),
         );
       } else {
+        print("else");
         // if user has no partner account, push insertEmail
         Navigator.pushNamed(
           context,

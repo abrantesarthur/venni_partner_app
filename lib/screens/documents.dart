@@ -99,7 +99,7 @@ class DocumentsState extends State<Documents> {
 
   // push start screen when user logs out
   void _signOut(BuildContext context) {
-    if (!widget.firebase.hasClientAccount) {
+    if (!widget.firebase.isRegistered) {
       Navigator.pushNamedAndRemoveUntil(context, Start.routeName, (_) => false);
     }
   }
@@ -107,6 +107,7 @@ class DocumentsState extends State<Documents> {
   @override
   Widget build(BuildContext context) {
     PartnerModel partner = Provider.of<PartnerModel>(context);
+    FirebaseModel firebase = Provider.of<FirebaseModel>(context, listen: false);
     final screenHeight = MediaQuery.of(context).size.height;
     final screenWidth = MediaQuery.of(context).size.width;
 
@@ -228,6 +229,9 @@ class DocumentsState extends State<Documents> {
                                           Navigator.pushReplacementNamed(
                                             context,
                                             Home.routeName,
+                                            arguments: HomeArguments(
+                                              firebase: firebase,
+                                            ),
                                           );
                                         }),
                                   ],

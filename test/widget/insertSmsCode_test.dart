@@ -11,6 +11,7 @@ import 'package:partner_app/screens/insertEmail.dart';
 import 'package:partner_app/screens/insertName.dart';
 import 'package:partner_app/screens/start.dart';
 import 'package:partner_app/styles.dart';
+import 'package:partner_app/vendors/firebaseDatabase/interfaces.dart';
 import 'package:partner_app/widgets/appInputText.dart';
 import 'package:partner_app/widgets/circularButton.dart';
 import 'package:partner_app/widgets/warning.dart';
@@ -32,7 +33,7 @@ void main() {
     when(mockDatabaseReference.child(any)).thenReturn(mockDatabaseReference);
     when(mockDatabaseReference.onValue).thenAnswer((_) => mockEvent);
     when(mockEvent.listen(any)).thenAnswer((_) => mockStreamSubscription);
-    when(mockFirebaseModel.hasClientAccount).thenReturn(true);
+    when(mockFirebaseModel.isRegistered).thenReturn(true);
     when(mockConnectivityModel.hasConnection).thenReturn(true);
     when(mockPartnerModel.name).thenReturn("Fulano");
     when(mockPartnerModel.cnhSubmitted).thenReturn(true);
@@ -47,7 +48,7 @@ void main() {
     String verifyPhoneNumberCallbackName,
     bool userHasPartnerAccount,
     bool partnerAccountStatusIsApproved,
-    bool userHasClientAccount,
+    bool userisRegistered,
     bool signInSucceeds,
     FirebaseAuthException verificationCompletedException,
     Function verificationCompletedOnExceptionCallback,
@@ -56,26 +57,24 @@ void main() {
     when(mockUserCredential.user).thenReturn(mockUser);
 
     if (userHasPartnerAccount != null && userHasPartnerAccount) {
-      when(mockDatabaseReference.once()).thenAnswer(
-        (_) => Future.value(mockDataSnapshot),
-      );
+      when(mockPartnerModel.id).thenReturn("partnerID");
       if (partnerAccountStatusIsApproved) {
-        when(mockDataSnapshot.value).thenReturn(
-          {"account_status": "approved"},
+        when(mockPartnerModel.accountStatus).thenReturn(
+          AccountStatus.approved,
         );
       } else {
-        when(mockDataSnapshot.value).thenReturn(
-          {"account_status": "pending_documents"},
+        when(mockPartnerModel.accountStatus).thenReturn(
+          AccountStatus.pendingDocuments,
         );
       }
     } else {
-      when(mockDataSnapshot.value).thenReturn(null);
+      when(mockPartnerModel.id).thenReturn(null);
     }
 
-    if (userHasClientAccount != null && userHasClientAccount) {
-      when(mockFirebaseModel.hasClientAccount).thenReturn(true);
+    if (userisRegistered != null && userisRegistered) {
+      when(mockFirebaseModel.isRegistered).thenReturn(true);
     } else {
-      when(mockFirebaseModel.hasClientAccount).thenReturn(false);
+      when(mockFirebaseModel.isRegistered).thenReturn(false);
     }
 
     // mock FirebaseAuth's signInWithCredential to return mockUserCredential
@@ -275,7 +274,9 @@ void main() {
             return null;
           },
           routes: {
-            Home.routeName: (context) => Home(),
+            Home.routeName: (context) => Home(
+                  firebase: mockFirebaseModel,
+                ),
             Start.routeName: (context) => Start(),
             InsertEmail.routeName: (context) => InsertEmail(
                   userCredential: mockUserCredential,
@@ -303,7 +304,7 @@ void main() {
       // code verification succeeds and user is registered
       setupFirebaseMocks(
         tester: tester,
-        userHasClientAccount: true,
+        userisRegistered: true,
         signInSucceeds: true,
       );
 
@@ -421,7 +422,7 @@ void main() {
       // mockPartnerInterface.accountStatus returns 'AccountStatus.approved'
       setupFirebaseMocks(
         tester: tester,
-        userHasClientAccount: true,
+        userisRegistered: true,
         signInSucceeds: true,
       );
 
@@ -499,7 +500,7 @@ void main() {
       );
       setupFirebaseMocks(
           tester: tester,
-          userHasClientAccount: true,
+          userisRegistered: true,
           verificationCompletedException: e,
           verificationCompletedOnExceptionCallback: (e) => insertSmsCodeState
               .displayErrorMessage(insertSmsCodeState.context, e));
@@ -544,7 +545,7 @@ void main() {
       );
       setupFirebaseMocks(
           tester: tester,
-          userHasClientAccount: true,
+          userisRegistered: true,
           verificationCompletedException: e,
           verificationCompletedOnExceptionCallback: (e) => insertSmsCodeState
               .displayErrorMessage(insertSmsCodeState.context, e));
@@ -608,7 +609,7 @@ void main() {
               return null;
             },
             routes: {
-              Home.routeName: (context) => Home(),
+              Home.routeName: (context) => Home(firebase: mockFirebaseModel),
               Start.routeName: (context) => Start(),
               InsertEmail.routeName: (context) => InsertEmail(
                     userCredential: mockUserCredential,
@@ -629,7 +630,7 @@ void main() {
       Finder widgetFinder, {
       bool userHasPartnerAccount,
       bool partnerAccountStatusIsApproved,
-      bool userHasClientAccount,
+      bool userisRegistered,
     }) async {
       // add insertSmsCode widget to the UI
       await pumpWidget(tester);
@@ -643,7 +644,7 @@ void main() {
         tester: tester,
         userHasPartnerAccount: userHasPartnerAccount,
         partnerAccountStatusIsApproved: partnerAccountStatusIsApproved,
-        userHasClientAccount: userHasClientAccount,
+        userisRegistered: userisRegistered,
         signInSucceeds: true,
         verifyPhoneNumberCallbackName: "verificationCompleted",
       );
@@ -707,7 +708,7 @@ void main() {
       testResendCode(
         tester,
         find.byType(InsertName),
-        userHasClientAccount: true,
+        userisRegistered: true,
       );
     });
 
@@ -735,7 +736,7 @@ void main() {
           FirebaseAuthException(message: "message", code: "any code");
       setupFirebaseMocks(
         tester: tester,
-        userHasClientAccount: true,
+        userisRegistered: true,
         verificationCompletedException: e,
         verificationCompletedOnExceptionCallback: (FirebaseAuthException e) {
           final insertSmsCodeState =

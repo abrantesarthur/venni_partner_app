@@ -13,6 +13,7 @@ import 'package:partner_app/screens/insertName.dart';
 import 'package:partner_app/screens/insertPhone.dart';
 import 'package:partner_app/styles.dart';
 import 'package:partner_app/vendors/firebaseAuth.dart';
+import 'package:partner_app/vendors/firebaseDatabase/interfaces.dart';
 import 'package:partner_app/widgets/appInputText.dart';
 import 'package:partner_app/widgets/circularButton.dart';
 import 'package:partner_app/widgets/inputPhone.dart';
@@ -32,7 +33,7 @@ void main() {
     when(mockDatabaseReference.child(any)).thenReturn(mockDatabaseReference);
     when(mockDatabaseReference.onValue).thenAnswer((_) => mockEvent);
     when(mockEvent.listen(any)).thenAnswer((_) => mockStreamSubscription);
-    when(mockFirebaseModel.hasClientAccount).thenReturn(true);
+    when(mockFirebaseModel.isRegistered).thenReturn(true);
     when(mockConnectivityModel.hasConnection).thenReturn(true);
     when(mockPartnerModel.name).thenReturn("Fulano");
     when(mockPartnerModel.cnhSubmitted).thenReturn(true);
@@ -47,33 +48,31 @@ void main() {
     @required String verifyPhoneNumberCallbackName,
     bool userHasPartnerAccount,
     bool partnerAccountStatusIsApproved,
-    bool userHasClientAccount,
+    bool userisRegistered,
     bool signInSucceeds,
     FirebaseAuthException firebaseAuthException,
   }) {
     when(mockUserCredential.user).thenReturn(mockUser);
 
     if (userHasPartnerAccount != null && userHasPartnerAccount) {
-      when(mockDatabaseReference.once()).thenAnswer(
-        (_) => Future.value(mockDataSnapshot),
-      );
+      when(mockPartnerModel.id).thenReturn("partnerID");
       if (partnerAccountStatusIsApproved) {
-        when(mockDataSnapshot.value).thenReturn(
-          {"account_status": "approved"},
+        when(mockPartnerModel.accountStatus).thenReturn(
+          AccountStatus.approved,
         );
       } else {
-        when(mockDataSnapshot.value).thenReturn(
-          {"account_status": "pending_documents"},
+        when(mockPartnerModel.accountStatus).thenReturn(
+          AccountStatus.pendingDocuments,
         );
       }
     } else {
-      when(mockDataSnapshot.value).thenReturn(null);
+      when(mockPartnerModel.id).thenReturn(null);
     }
 
-    if (userHasClientAccount != null && userHasClientAccount) {
-      when(mockFirebaseModel.hasClientAccount).thenReturn(true);
+    if (userisRegistered != null && userisRegistered) {
+      when(mockFirebaseModel.isRegistered).thenReturn(true);
     } else {
-      when(mockFirebaseModel.hasClientAccount).thenReturn(false);
+      when(mockFirebaseModel.isRegistered).thenReturn(false);
     }
 
     // mock FirebaseAuth's signInWithCredential to return mockUserCredential
@@ -308,7 +307,7 @@ void main() {
             return null;
           },
           routes: {
-            Home.routeName: (context) => Home(),
+            Home.routeName: (context) => Home(firebase: mockFirebaseModel),
             InsertEmail.routeName: (context) => InsertEmail(
                   userCredential: mockUserCredential,
                 ),
@@ -448,7 +447,7 @@ void main() {
         tester: tester,
         verifyPhoneNumberCallbackName: "verificationCompleted",
         userHasPartnerAccount: false,
-        userHasClientAccount: true,
+        userisRegistered: true,
         signInSucceeds: true,
       );
 

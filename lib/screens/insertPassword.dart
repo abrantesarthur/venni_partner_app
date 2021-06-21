@@ -169,7 +169,7 @@ class InsertPasswordState extends State<InsertPassword> {
       await firebase.database.deletePartner(widget.userCredential.user.uid);
 
       // if user did not already have a client account
-      if (!firebase.hasClientAccount) {
+      if (!firebase.isRegistered) {
         // rollback and delete user
         await widget.userCredential.user.delete();
       }
@@ -230,7 +230,7 @@ class InsertPasswordState extends State<InsertPassword> {
     FocusScope.of(context).requestFocus(FocusNode());
 
     // if the user already has a client account
-    if (firebase.hasClientAccount) {
+    if (firebase.isRegistered) {
       // make sure they've entered a valid password
       CheckPasswordResponse cpr = await firebase.auth.checkPassword(
         passwordTextEditingController.text.trim(),
@@ -405,13 +405,13 @@ class InsertPasswordState extends State<InsertPassword> {
                           ),
                           SizedBox(height: screenHeight / 25),
                           Text(
-                            firebase.hasClientAccount
+                            firebase.isRegistered
                                 ? "Insira sua senha"
                                 : "Insira uma senha",
                             style: TextStyle(color: Colors.black, fontSize: 18),
                           ),
                           SizedBox(height: screenHeight / 40),
-                          firebase.hasClientAccount
+                          firebase.isRegistered
                               ? Column(
                                   children: [
                                     Text(
@@ -436,7 +436,7 @@ class InsertPasswordState extends State<InsertPassword> {
                           // has a client account. In that case, he should be
                           // inserting his actual client password, instead of
                           // trying to create a new one.
-                          displayPasswordWarnings && !firebase.hasClientAccount
+                          displayPasswordWarnings && !firebase.isRegistered
                               ? Column(
                                   children: [
                                     SizedBox(height: screenHeight / 40),

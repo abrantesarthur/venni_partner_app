@@ -3,13 +3,23 @@ import 'package:partner_app/models/connectivity.dart';
 import 'package:partner_app/models/firebase.dart';
 import 'package:partner_app/models/partner.dart';
 import 'package:partner_app/screens/menu.dart';
+import 'package:partner_app/screens/start.dart';
 import 'package:partner_app/styles.dart';
 import 'package:partner_app/widgets/menuButton.dart';
 import 'package:partner_app/widgets/overallPadding.dart';
 import 'package:provider/provider.dart';
 
+class HomeArguments {
+  FirebaseModel firebase;
+  HomeArguments({@required this.firebase});
+}
+
 class Home extends StatefulWidget {
   static const routeName = "home";
+  final FirebaseModel firebase;
+
+  Home({@required this.firebase});
+
   @override
   HomeState createState() => HomeState();
 }
@@ -19,6 +29,29 @@ class Home extends StatefulWidget {
 // wallet screen works correclty because recipientID is set.
 class HomeState extends State<Home> with WidgetsBindingObserver {
   bool _hasConnection;
+
+  var _firebaseListener;
+
+  @override
+  void initState() {
+    super.initState();
+
+    // add listeners after tree is built and we have context
+    WidgetsBinding.instance.addPostFrameCallback((_) async {
+      // add listener to FirebaseModel so user is redirected to Start when logs out
+      _firebaseListener = () {
+        _signOut(widget.firebase);
+      };
+      widget.firebase.addListener(_firebaseListener);
+    });
+  }
+
+  @override
+  void dispose() {
+    WidgetsBinding.instance.removeObserver(this);
+    widget.firebase.removeListener(_firebaseListener);
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -64,5 +97,16 @@ class HomeState extends State<Home> with WidgetsBindingObserver {
         ],
       ),
     );
+  }
+
+  // push start screen when user logs out
+  void _signOut(FirebaseModel firebase) {
+    if (!firebase.isRegistered) {
+      Navigator.pushNamedAndRemoveUntil(
+        context,
+        Start.routeName,
+        (_) => false,
+      );
+    }
   }
 }
