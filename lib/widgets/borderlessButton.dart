@@ -12,8 +12,12 @@ class BorderlessButton extends StatelessWidget {
   final IconData iconRight;
   final double iconRightSize;
   final Color iconRightColor;
+  final String primaryTextRight;
+  final Color primaryTextRightColor;
+  final double primaryTextRightSize;
   final double primaryTextSize;
   final double secondaryTextSize;
+  final String secondaryTextRight;
   final Color primaryTextColor;
   final FontWeight primaryTextWeight;
   final double paddingTop;
@@ -35,6 +39,10 @@ class BorderlessButton extends StatelessWidget {
     this.primaryText,
     this.onTap,
     this.secondaryText,
+    this.primaryTextRight,
+    this.primaryTextRightColor,
+    this.primaryTextRightSize,
+    this.secondaryTextRight,
     this.iconLeft,
     this.iconRight,
     this.paddingBottom,
@@ -83,7 +91,7 @@ class BorderlessButton extends StatelessWidget {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text(
-                    primaryText,
+                    primaryText ?? "",
                     overflow: TextOverflow.ellipsis,
                     style: TextStyle(
                         color: primaryTextColor ?? Colors.black,
@@ -124,11 +132,36 @@ class BorderlessButton extends StatelessWidget {
                         ),
                       )
                     : Container(),
-                Icon(
-                  iconRight,
-                  color: iconRightColor ?? AppColor.disabled,
-                  size: iconRightSize ?? 18,
-                ),
+                primaryTextRight != null
+                    ? Column(
+                        crossAxisAlignment: CrossAxisAlignment.end,
+                        children: [
+                          Text(
+                            primaryTextRight,
+                            style: TextStyle(
+                              color: primaryTextRightColor ?? Colors.black,
+                              fontSize: primaryTextRightSize ?? 16,
+                              fontWeight:
+                                  primaryTextWeight ?? FontWeight.normal,
+                            ),
+                          ),
+                          secondaryTextRight != null
+                              ? Text(
+                                  secondaryTextRight,
+                                  overflow: TextOverflow.ellipsis,
+                                  style: TextStyle(
+                                    color: AppColor.disabled,
+                                    fontSize: secondaryTextSize ?? 13,
+                                  ),
+                                )
+                              : Container(),
+                        ],
+                      )
+                    : Icon(
+                        iconRight,
+                        color: iconRightColor ?? AppColor.disabled,
+                        size: iconRightSize ?? 18,
+                      ),
               ],
             )
           ],

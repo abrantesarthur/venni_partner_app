@@ -21,7 +21,7 @@ class PartnerModel extends ChangeNotifier {
   String _phoneNumber;
   double _rating;
   int _totalTrips;
-  String _pagarmeReceiverID;
+  String _pagarmeRecipientID;
   PartnerStatus _partnerStatus;
   AccountStatus _accountStatus;
   String _denialReason;
@@ -33,6 +33,7 @@ class PartnerModel extends ChangeNotifier {
   bool _photoWithCnhSubmitted = false;
   bool _profilePhotoSubmitted = false;
   bool _bankAccountSubmitted = false;
+  int _amountOwed;
 
   // getters
   String get id => _id;
@@ -44,7 +45,7 @@ class PartnerModel extends ChangeNotifier {
   String get phoneNumber => _phoneNumber;
   double get rating => _rating;
   int get totalTrips => _totalTrips;
-  String get pagarmeReceiverID => _pagarmeReceiverID;
+  String get pagarmeRecipientID => _pagarmeRecipientID;
   PartnerStatus get partnerStatus => _partnerStatus;
   AccountStatus get accountStatus => _accountStatus;
   String get denialReason => _denialReason;
@@ -56,6 +57,7 @@ class PartnerModel extends ChangeNotifier {
   bool get photoWithCnhSubmitted => _photoWithCnhSubmitted;
   bool get profilePhotoSubmitted => _profilePhotoSubmitted;
   bool get bankAccountSubmitted => _bankAccountSubmitted;
+  int get amountOwed => _amountOwed;
 
   void updateAccountStatus(AccountStatus acs) {
     _accountStatus = acs;
@@ -126,7 +128,7 @@ class PartnerModel extends ChangeNotifier {
       _phoneNumber = pi.phoneNumber;
       _rating = pi.rating;
       _totalTrips = pi.totalTrips;
-      _pagarmeReceiverID = pi.pagarmeReceiverID;
+      _pagarmeRecipientID = pi.pagarmeRecipientID;
       _partnerStatus = pi.partnerStatus;
       _accountStatus = pi.accountStatus;
       _denialReason = pi.denialReason;
@@ -145,6 +147,7 @@ class PartnerModel extends ChangeNotifier {
       _bankAccountSubmitted = pi.submittedDocuments == null
           ? false
           : pi.submittedDocuments.bankAccount;
+      _amountOwed = pi.amountOwed;
       if (notify) {
         notifyListeners();
       }

@@ -14,6 +14,9 @@ class Home extends StatefulWidget {
   HomeState createState() => HomeState();
 }
 
+// TODO: turn it into a future that downloads partner data before and shows
+// splash screen before displaying final screen. After doing this, assert that
+// wallet screen works correclty because recipientID is set.
 class HomeState extends State<Home> with WidgetsBindingObserver {
   bool _hasConnection;
 
@@ -46,7 +49,7 @@ class HomeState extends State<Home> with WidgetsBindingObserver {
             color: AppColor.primaryPink,
             child: Center(
               child: Text(
-                "homee",
+                "home",
                 style: TextStyle(color: Colors.white),
               ),
             ),

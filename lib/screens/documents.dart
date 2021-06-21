@@ -634,9 +634,9 @@ Future<void> _openWhatsapp(BuildContext context) async {
     await launch(_whatsappUrl);
   } else {
     showOkDialog(
-      context,
-      "Falha ao abrir whatsapp",
-      "Tente novamente mais tarde",
+      context: context,
+      title: "Falha ao abrir whatsapp",
+      content: "Tente novamente mais tarde",
     );
   }
 }

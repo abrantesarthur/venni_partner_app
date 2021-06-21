@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:partner_app/models/firebase.dart';
 import 'package:partner_app/models/partner.dart';
+import 'package:partner_app/screens/wallet.dart';
 import 'package:partner_app/widgets/borderlessButton.dart';
 import 'package:partner_app/widgets/overallPadding.dart';
 import 'package:provider/provider.dart';
@@ -75,7 +76,16 @@ class Menu extends StatelessWidget {
             child: Column(
               children: [
                 BorderlessButton(
-                  onTap: () {},
+                  onTap: () {
+                    Navigator.pushNamed(
+                      context,
+                      Wallet.routeName,
+                      arguments: WalletArguments(
+                        firebase: firebase,
+                        partner: partner,
+                      ),
+                    );
+                  },
                   iconLeft: Icons.trending_up,
                   iconLeftSize: 24,
                   iconRight: Icons.keyboard_arrow_right,

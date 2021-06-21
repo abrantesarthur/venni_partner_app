@@ -307,7 +307,7 @@ void main() {
       expect(pi.phoneNumber, isNull);
       expect(pi.rating, isNull);
       expect(pi.totalTrips, isNull);
-      expect(pi.pagarmeReceiverID, isNull);
+      expect(pi.pagarmeRecipientID, isNull);
       expect(pi.partnerStatus, isNull);
       expect(pi.accountStatus, isNull);
       expect(pi.denialReason, isNull);
@@ -334,7 +334,7 @@ void main() {
         "phone_number": "+5538999999999",
         "rating": "5.0",
         "total_trips": "100",
-        "pagarme_receiver_id": "pagarme_receiver_id",
+        "pagarme_recipient_id": "pagarme_recipient_id",
         "partner_status": "available",
         "account_status": "pending_documents",
         "denial_reason": "denial_reason",
@@ -376,7 +376,7 @@ void main() {
       expect(pi.phoneNumber, equals("+5538999999999"));
       expect(pi.rating, equals(5.0));
       expect(pi.totalTrips, equals(100));
-      expect(pi.pagarmeReceiverID, equals("pagarme_receiver_id"));
+      expect(pi.pagarmeRecipientID, equals("pagarme_recipient_id"));
       expect(pi.partnerStatus, equals(PartnerStatus.available));
       expect(pi.accountStatus, equals(AccountStatus.pendingDocuments));
       expect(pi.denialReason, equals("denial_reason"));
@@ -414,7 +414,7 @@ void main() {
         "member_since": now,
         "phone_number": "+5538999999999",
         "total_trips": "100",
-        "pagarme_receiver_id": "pagarme_receiver_id",
+        "pagarme_recipient_id": "pagarme_recipient_id",
         "partner_status": "available",
         "account_status": "pending_documents",
         "denial_reason": "denial_reason",

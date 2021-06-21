@@ -40,7 +40,11 @@ extension AppFirebaseAuth on FirebaseAuth {
         context,
         listen: false,
       );
-      await partner.downloadData(firebase);
+      try {
+        await partner.downloadData(firebase);
+      } catch (e) {
+        throw FirebaseAuthException(code: "internal-error");
+      }
 
       // if user already has a partner account
       if (partner.id != null) {
