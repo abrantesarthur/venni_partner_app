@@ -25,7 +25,7 @@ void main() {
     when(mockUser.phoneNumber).thenReturn("+5538999999999");
     when(mockUser.displayName).thenReturn("Fulano");
     when(mockFirebaseModel.database).thenReturn(mockFirebaseDatabase);
-    when(mockFirebaseModel.hasClientAccount).thenReturn(false);
+    when(mockFirebaseModel.isRegistered).thenReturn(false);
     when(mockConnectivityModel.hasConnection).thenReturn(true);
     when(mockFirebaseDatabase.reference()).thenReturn(mockDatabaseReference);
     when(mockDatabaseReference.onValue).thenAnswer((_) => mockEvent);
@@ -266,7 +266,7 @@ void main() {
 
     Future<void> testSuccess(
       WidgetTester tester,
-      bool hasClientAccount,
+      bool isRegistered,
     ) async {
 // add widget to the UI
       await pumpWidget(tester);
@@ -292,7 +292,7 @@ void main() {
       expect(insertPasswordState.circularButtonCallback, isNotNull);
 
       // set mocks to succesfully register user
-      when(mockFirebaseModel.hasClientAccount).thenReturn(hasClientAccount);
+      when(mockFirebaseModel.isRegistered).thenReturn(isRegistered);
       when(mockUserCredential.user).thenReturn(mockUser);
       when(mockUser.updateEmail(any)).thenAnswer((_) async => Future.value());
       when(mockUser.updatePassword(any))
@@ -334,7 +334,7 @@ void main() {
       await testSuccess(tester, true);
     });
 
-    Future<void> testErrosWhenHasClientAccount(
+    Future<void> testErrosWhenisRegistered(
         WidgetTester tester, String code) async {
       // add widget to the UI
       await pumpWidget(tester);
@@ -352,7 +352,7 @@ void main() {
       expect(insertPasswordState.circularButtonCallback, isNotNull);
 
       // set mocks to throw 'wrong-password' error
-      when(mockFirebaseModel.hasClientAccount).thenReturn(true);
+      when(mockFirebaseModel.isRegistered).thenReturn(true);
       when(mockFirebaseAuth.currentUser).thenReturn(mockUser);
       when(mockUser.email).thenReturn("example@provider.com");
       FirebaseAuthException e = FirebaseAuthException(
@@ -375,17 +375,17 @@ void main() {
 
     testWidgets("correctly handles 'wrong-password' error",
         (WidgetTester tester) async {
-      await testErrosWhenHasClientAccount(tester, 'wrong-password');
+      await testErrosWhenisRegistered(tester, 'wrong-password');
     });
 
     testWidgets("correctly handles 'too-many-requests' error",
         (WidgetTester tester) async {
-      await testErrosWhenHasClientAccount(tester, 'too-many-requests');
+      await testErrosWhenisRegistered(tester, 'too-many-requests');
     });
 
     testWidgets("correctly handles 'generic' error",
         (WidgetTester tester) async {
-      await testErrosWhenHasClientAccount(tester, 'generic');
+      await testErrosWhenisRegistered(tester, 'generic');
     });
 
     testWidgets("correctly handles 'requires-recent-login' error",
@@ -408,7 +408,7 @@ void main() {
       // set mocks to throw 'requires-recent-login' error
       FirebaseAuthException e = FirebaseAuthException(
           message: "message", code: "requires-recent-login");
-      when(mockFirebaseModel.hasClientAccount).thenReturn(false);
+      when(mockFirebaseModel.isRegistered).thenReturn(false);
       when(mockUserCredential.user).thenReturn(mockUser);
       when(mockUser.updateEmail(any)).thenAnswer((_) async => throw e);
 

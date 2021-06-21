@@ -22,6 +22,7 @@ import 'package:partner_app/screens/insertPhone.dart';
 import 'package:partner_app/screens/insertSmsCode.dart';
 import 'package:partner_app/screens/sendPhotoWithCnh.dart';
 import 'package:partner_app/screens/sendProfilePhoto.dart';
+import 'package:partner_app/screens/settings.dart';
 import 'package:partner_app/screens/splash.dart';
 import 'package:partner_app/screens/start.dart';
 import 'package:partner_app/screens/wallet.dart';
@@ -183,22 +184,18 @@ class _AppState extends State<App> {
             theme: ThemeData(fontFamily: "OpenSans"),
             // start screen depends on whether user is registered
             initialRoute:
-                firebase.hasClientAccount ? Start.routeName : Start.routeName,
+                firebase.isRegistered ? Start.routeName : Start.routeName,
             // pass appropriate arguments to routes
             onGenerateRoute: (RouteSettings settings) {
               // if Home is pushed
-              // if (settings.name == Home.routeName) {
-              //   final HomeArguments args = settings.arguments;
-              //   return MaterialPageRoute(builder: (context) {
-              //     return Home(
-              //       firebase: args.firebase,
-              //       trip: args.trip,
-              //       user: args.user,
-              //       googleMaps: args.googleMaps,
-              //       connectivity: args.connectivity,
-              //     );
-              //   });
-              // }
+              if (settings.name == Home.routeName) {
+                final HomeArguments args = settings.arguments;
+                return MaterialPageRoute(builder: (context) {
+                  return Home(
+                    firebase: args.firebase,
+                  );
+                });
+              }
 
               // if InsertSmsCode is pushed
               if (settings.name == InsertSmsCode.routeName) {
@@ -308,14 +305,9 @@ class _AppState extends State<App> {
               return null;
             },
             routes: {
-              // Home.routeName: (context) => Home(
-              //       firebase: firebaseModel,
-              //       trip: tripModel,
-              //       user: user,
-              //       googleMaps: googleMaps,
-              //       connectivity: connectivity,
-              //     ),
-              Home.routeName: (context) => Home(),
+              Home.routeName: (context) => Home(
+                    firebase: firebaseModel,
+                  ),
               Start.routeName: (context) => Start(),
               InsertPhone.routeName: (context) => InsertPhone(),
               SendCrlv.routeName: (context) => SendCrlv(),
@@ -323,6 +315,7 @@ class _AppState extends State<App> {
               SendPhotoWithCnh.routeName: (context) => SendPhotoWithCnh(),
               SendProfilePhoto.routeName: (context) => SendProfilePhoto(),
               SendBankAccount.routeName: (context) => SendBankAccount(),
+              Settings.routeName: (context) => Settings(),
             },
           );
         });

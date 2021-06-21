@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:partner_app/models/firebase.dart';
 import 'package:partner_app/models/partner.dart';
+import 'package:partner_app/screens/settings.dart';
 import 'package:partner_app/screens/wallet.dart';
 import 'package:partner_app/widgets/borderlessButton.dart';
 import 'package:partner_app/widgets/overallPadding.dart';
@@ -117,7 +118,7 @@ class Menu extends StatelessWidget {
                 ),
                 Divider(thickness: 0.1, color: Colors.black),
                 BorderlessButton(
-                  onTap: () {},
+                  onTap: () => Navigator.pushNamed(context, Settings.routeName),
                   iconLeft: Icons.settings,
                   iconLeftSize: 24,
                   iconRight: Icons.keyboard_arrow_right,

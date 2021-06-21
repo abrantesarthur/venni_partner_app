@@ -6,9 +6,12 @@ import 'package:partner_app/vendors/firebaseDatabase/interfaces.dart';
 extension AppFirebaseDatabase on FirebaseDatabase {
   // TODO: test
   Future<PartnerInterface> getPartnerFromID(String pilotID) async {
+    print("getPartnerFromID");
     try {
       DataSnapshot snapshot =
           await this.reference().child("partners").child(pilotID).once();
+      print("snapshot.value");
+      print(snapshot.value);
       return PartnerInterface.fromJson(snapshot.value);
     } catch (e) {
       throw (e);
