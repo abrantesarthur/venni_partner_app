@@ -9,6 +9,16 @@ import 'package:partner_app/styles.dart';
 import 'package:partner_app/widgets/okDialog.dart';
 import 'package:partner_app/widgets/yesNoDialog.dart';
 
+extension IntExtension on int {
+  String getFormatedDate() {
+    print(this);
+    DateTime d = DateTime.fromMillisecondsSinceEpoch(this);
+    String day = d.day < 10 ? "0" + d.day.toString() : d.day.toString();
+    String month = d.month < 10 ? "0" + d.month.toString() : d.month.toString();
+    return day + "/" + month + "/" + d.year.toString();
+  }
+}
+
 extension CPFExtension on String {
   // expects format xxxxxxxxxxx
   bool isValidCPF() {

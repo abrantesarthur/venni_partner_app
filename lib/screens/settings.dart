@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:partner_app/models/firebase.dart';
+import 'package:partner_app/screens/profile.dart';
 import 'package:partner_app/styles.dart';
 import 'package:partner_app/widgets/borderlessButton.dart';
 import 'package:partner_app/widgets/goBackScaffold.dart';
@@ -20,7 +21,7 @@ class Settings extends StatelessWidget {
       title: "Configurações",
       children: [
         BorderlessButton(
-          onTap: () {},
+          onTap: () => Navigator.pushNamed(context, Profile.routeName),
           iconLeft: Icons.account_circle_rounded,
           iconLeftSize: 26,
           primaryText: "Perfil",
