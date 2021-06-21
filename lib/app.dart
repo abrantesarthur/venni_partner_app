@@ -9,6 +9,7 @@ import 'package:partner_app/models/connectivity.dart';
 import 'package:partner_app/models/firebase.dart';
 import 'package:partner_app/models/partner.dart';
 import 'package:partner_app/screens/anticipate.dart';
+import 'package:partner_app/screens/profile.dart';
 import 'package:partner_app/screens/sendBankAccount.dart';
 import 'package:partner_app/screens/sendCnh.dart';
 import 'package:partner_app/screens/sendCrlv.dart';
@@ -316,6 +317,7 @@ class _AppState extends State<App> {
               SendProfilePhoto.routeName: (context) => SendProfilePhoto(),
               SendBankAccount.routeName: (context) => SendBankAccount(),
               Settings.routeName: (context) => Settings(),
+              Profile.routeName: (context) => Profile(),
             },
           );
         });

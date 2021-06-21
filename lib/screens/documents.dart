@@ -41,6 +41,8 @@ class DocumentsState extends State<Documents> {
   StreamSubscription accountStatusSubscription;
   StreamSubscription submittedDocumentsSubscription;
   var _firebaseListener;
+  Widget buttonChild;
+  bool lockScreen = false;
 
   @override
   void initState() {
@@ -133,7 +135,7 @@ class DocumentsState extends State<Documents> {
                   ),
                   Spacer(),
                   GestureDetector(
-                    onTap: () => _showHelpDialog(context),
+                    onTap: lockScreen ? () {} : () => _showHelpDialog(context),
                     child: Container(
                       width: screenWidth / 4.5,
                       decoration: BoxDecoration(
@@ -224,16 +226,12 @@ class DocumentsState extends State<Documents> {
                                     ),
                                     Spacer(),
                                     AppButton(
-                                        textData: "Começar",
-                                        onTapCallBack: () {
-                                          Navigator.pushReplacementNamed(
-                                            context,
-                                            Home.routeName,
-                                            arguments: HomeArguments(
-                                              firebase: firebase,
-                                            ),
-                                          );
-                                        }),
+                                      textData: "Começar",
+                                      child: buttonChild,
+                                      onTapCallBack: lockScreen
+                                          ? () {}
+                                          : () async => await start(context),
+                                    ),
                                   ],
                                 ),
                               ),
@@ -589,6 +587,26 @@ class DocumentsState extends State<Documents> {
             ),
           )
         ],
+      ),
+    );
+  }
+
+  Future<void> start(BuildContext context) async {
+    FirebaseModel firebase = Provider.of<FirebaseModel>(context, listen: false);
+    setState(() {
+      buttonChild = CircularProgressIndicator(
+        valueColor: AlwaysStoppedAnimation<Color>(
+          Colors.white,
+        ),
+      );
+      lockScreen = true;
+    });
+    await Future.delayed(Duration(seconds: 2));
+    Navigator.pushReplacementNamed(
+      context,
+      Home.routeName,
+      arguments: HomeArguments(
+        firebase: firebase,
       ),
     );
   }
