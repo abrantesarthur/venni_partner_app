@@ -300,7 +300,7 @@ class PartnerInterface {
   final String phoneNumber;
   final double rating;
   final int totalTrips;
-  final String pagarmeReceiverID;
+  final String pagarmeRecipientID;
   final PartnerStatus partnerStatus;
   final AccountStatus accountStatus;
   final String denialReason;
@@ -313,6 +313,7 @@ class PartnerInterface {
   final Vehicle vehicle;
   final SubmittedDocuments submittedDocuments;
   final BankAccount bankAccount;
+  final int amountOwed;
 
   PartnerInterface({
     @required this.id,
@@ -324,7 +325,7 @@ class PartnerInterface {
     @required this.phoneNumber,
     @required this.rating,
     @required this.totalTrips,
-    @required this.pagarmeReceiverID,
+    @required this.pagarmeRecipientID,
     @required this.partnerStatus,
     @required this.accountStatus,
     @required this.denialReason,
@@ -337,6 +338,7 @@ class PartnerInterface {
     @required this.vehicle,
     @required this.submittedDocuments,
     @required this.bankAccount,
+    @required this.amountOwed,
   });
 
   factory PartnerInterface.fromJson(Map json) {
@@ -372,7 +374,7 @@ class PartnerInterface {
       phoneNumber: json["phone_number"],
       rating: rating,
       totalTrips: totalTrips,
-      pagarmeReceiverID: json["pagarme_receiver_id"],
+      pagarmeRecipientID: json["pagarme_recipient_id"],
       partnerStatus: PartnerStatusExtension.fromString(json["partner_status"]),
       accountStatus: AccountStatusExtension.fromString(json["account_status"]),
       denialReason: json["denial_reason"],
@@ -385,6 +387,7 @@ class PartnerInterface {
       vehicle: Vehicle.fromJson(json["vehicle"]),
       submittedDocuments: submittedDocuments,
       bankAccount: bankAccount,
+      amountOwed: json["amount_owed"],
     );
   }
 
@@ -417,8 +420,8 @@ class PartnerInterface {
     if (this.totalTrips != null) {
       json["total_trips"] = this.totalTrips.toString();
     }
-    if (this.pagarmeReceiverID != null) {
-      json["pagarme_receiver_id"] = this.pagarmeReceiverID;
+    if (this.pagarmeRecipientID != null) {
+      json["pagarme_recipient_id"] = this.pagarmeRecipientID;
     }
     if (this.partnerStatus != null) {
       json["partner_status"] = this.partnerStatus.getString();

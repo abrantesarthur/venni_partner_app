@@ -8,6 +8,7 @@ import 'package:partner_app/config/config.dart';
 import 'package:partner_app/models/connectivity.dart';
 import 'package:partner_app/models/firebase.dart';
 import 'package:partner_app/models/partner.dart';
+import 'package:partner_app/screens/anticipate.dart';
 import 'package:partner_app/screens/sendBankAccount.dart';
 import 'package:partner_app/screens/sendCnh.dart';
 import 'package:partner_app/screens/sendCrlv.dart';
@@ -23,6 +24,8 @@ import 'package:partner_app/screens/sendPhotoWithCnh.dart';
 import 'package:partner_app/screens/sendProfilePhoto.dart';
 import 'package:partner_app/screens/splash.dart';
 import 'package:partner_app/screens/start.dart';
+import 'package:partner_app/screens/wallet.dart';
+import 'package:partner_app/screens/withdraw.dart';
 import 'package:provider/provider.dart';
 
 class App extends StatefulWidget {
@@ -266,6 +269,37 @@ class _AppState extends State<App> {
                   return Documents(
                     firebase: args.firebase,
                     partner: args.partner,
+                  );
+                });
+              }
+
+              // if Wallet is pushed
+              if (settings.name == Wallet.routeName) {
+                final WalletArguments args = settings.arguments;
+                return MaterialPageRoute(builder: (context) {
+                  return Wallet(
+                    firebase: args.firebase,
+                    partner: args.partner,
+                  );
+                });
+              }
+
+              // if Withdraw is pushed
+              if (settings.name == Withdraw.routeName) {
+                final WithdrawArguments args = settings.arguments;
+                return MaterialPageRoute(builder: (context) {
+                  return Withdraw(
+                    availableAmount: args.availableAmount,
+                  );
+                });
+              }
+
+              // if Anticipate is pushed
+              if (settings.name == Anticipate.routeName) {
+                final AnticipateArguments args = settings.arguments;
+                return MaterialPageRoute(builder: (context) {
+                  return Anticipate(
+                    waitingAmount: args.waitingAmount,
                   );
                 });
               }

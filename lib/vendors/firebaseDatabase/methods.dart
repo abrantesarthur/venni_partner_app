@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:partner_app/vendors/firebaseDatabase/interfaces.dart';
 
 extension AppFirebaseDatabase on FirebaseDatabase {
+  // TODO: test
   Future<PartnerInterface> getPartnerFromID(String pilotID) async {
     try {
       DataSnapshot snapshot =

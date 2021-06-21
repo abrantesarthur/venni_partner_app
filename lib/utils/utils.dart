@@ -281,11 +281,11 @@ class MaskedInputFormatter extends TextInputFormatter {
   }
 }
 
-Future<T> showOkDialog<T>(
-  BuildContext context,
-  String title,
+Future<void> showOkDialog({
+  @required BuildContext context,
+  @required String title,
   String content,
-) async {
+}) async {
   return await showDialog(
       context: context,
       builder: (BuildContext context) {
@@ -312,4 +312,8 @@ Future<T> showYesNoDialog<T>(
           onPressedNo: onPressedNo,
         );
       });
+}
+
+String reaisFromCents(int cents) {
+  return (cents / 100).toStringAsFixed(2);
 }
