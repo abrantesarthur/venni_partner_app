@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:partner_app/models/firebase.dart';
 import 'package:partner_app/models/partner.dart';
+import 'package:partner_app/screens/profile.dart';
 import 'package:partner_app/screens/settings.dart';
 import 'package:partner_app/screens/wallet.dart';
 import 'package:partner_app/widgets/borderlessButton.dart';
@@ -23,7 +24,7 @@ class Menu extends StatelessWidget {
             child: DrawerHeader(
               decoration: BoxDecoration(color: Colors.white),
               child: InkWell(
-                onTap: () {},
+                onTap: () => Navigator.pushNamed(context, Profile.routeName),
                 child: Column(
                   children: [
                     Spacer(flex: 2),
