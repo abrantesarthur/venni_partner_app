@@ -47,7 +47,7 @@ class AnticipateState extends State<Anticipate> {
               children: [
                 ArrowBackButton(
                   onTapCallback: () =>
-                      lockScreen ? () {} : Navigator.pop(context),
+                      lockScreen == true ? () {} : Navigator.pop(context),
                 ),
                 Spacer(),
               ],
@@ -120,7 +120,7 @@ class AnticipateState extends State<Anticipate> {
               textData: "Confirmar",
               child: buttonChild,
               onTapCallBack: () async =>
-                  lockScreen ? () {} : await confirm(context),
+                  lockScreen == true ? () {} : await confirm(context),
             ),
           ],
         ),
