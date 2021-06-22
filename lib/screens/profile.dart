@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:partner_app/models/partner.dart';
 import 'package:partner_app/screens/editEmail.dart';
 import 'package:partner_app/screens/editPhone.dart';
+import 'package:partner_app/screens/insertNewPassword.dart';
 import 'package:partner_app/styles.dart';
 import 'package:partner_app/widgets/arrowBackButton.dart';
 import 'package:partner_app/widgets/borderlessButton.dart';
@@ -175,7 +176,12 @@ class ProfileState extends State<Profile> {
                       ),
                       Divider(thickness: 0.1, color: Colors.black),
                       BorderlessButton(
-                        onTap: () {},
+                        onTap: () async {
+                          await Navigator.pushNamed(
+                            context,
+                            InsertNewPassword.routeName,
+                          );
+                        },
                         primaryText: "Alterar senha",
                         secondaryText: "••••••••",
                         iconRight: Icons.keyboard_arrow_right,
