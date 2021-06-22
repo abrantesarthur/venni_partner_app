@@ -34,6 +34,7 @@ class PartnerModel extends ChangeNotifier {
   bool _profilePhotoSubmitted = false;
   bool _bankAccountSubmitted = false;
   int _amountOwed;
+  BankAccount _bankAccount;
 
   // getters
   String get id => _id;
@@ -58,6 +59,7 @@ class PartnerModel extends ChangeNotifier {
   bool get profilePhotoSubmitted => _profilePhotoSubmitted;
   bool get bankAccountSubmitted => _bankAccountSubmitted;
   int get amountOwed => _amountOwed;
+  BankAccount get bankAccount => _bankAccount;
 
   void updateAccountStatus(AccountStatus acs) {
     _accountStatus = acs;
@@ -86,6 +88,11 @@ class PartnerModel extends ChangeNotifier {
 
   void updateBankAccountSubmitted(bool value) {
     _bankAccountSubmitted = value;
+    notifyListeners();
+  }
+
+  void updateBankAccount(BankAccount ba) {
+    _bankAccount = ba;
     notifyListeners();
   }
 
@@ -148,6 +155,7 @@ class PartnerModel extends ChangeNotifier {
           ? false
           : pi.submittedDocuments.bankAccount;
       _amountOwed = pi.amountOwed;
+      _bankAccount = pi.bankAccount;
       if (notify) {
         notifyListeners();
       }

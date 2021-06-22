@@ -398,6 +398,10 @@ class DocumentsState extends State<Documents> {
                                             Navigator.pushNamed(
                                               context,
                                               SendBankAccount.routeName,
+                                              arguments:
+                                                  SendBankAccountArguments(
+                                                mode: SendBankAccountMode.send,
+                                              ),
                                             );
                                           },
                                           title: Text(
