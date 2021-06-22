@@ -13,6 +13,7 @@ import 'package:partner_app/widgets/overallPadding.dart';
 import 'package:partner_app/widgets/warning.dart';
 import 'package:provider/provider.dart';
 import 'package:partner_app/vendors/firebaseAuth.dart';
+import 'package:partner_app/vendors/firebaseDatabase/methods.dart';
 
 enum InsertSmsCodeMode {
   insertNewPhone,
@@ -68,7 +69,7 @@ class InsertSmsCodeState extends State<InsertSmsCode> {
   int _resendToken;
   FirebaseAuth _firebaseAuth;
   FirebaseDatabase _firebaseDatabase;
-  FirebaseAuthException _exception;
+  Exception _exception;
 
   @override
   void initState() {
@@ -171,7 +172,15 @@ class InsertSmsCodeState extends State<InsertSmsCode> {
         await firebase.auth.currentUser.updatePhoneNumber(credential);
       } catch (e) {
         _exception = e;
+        return;
       }
+      // on success, update phone number on database too
+      try {
+        await firebase.database.setPhoneNumber(
+          partnerID: firebase.auth.currentUser.uid,
+          phoneNumber: firebase.auth.currentUser.phoneNumber,
+        );
+      } catch (_) {}
     } else {
       await _firebaseAuth.verificationCompletedCallback(
         context: context,

@@ -135,7 +135,9 @@ class DocumentsState extends State<Documents> {
                   ),
                   Spacer(),
                   GestureDetector(
-                    onTap: lockScreen ? () {} : () => _showHelpDialog(context),
+                    onTap: lockScreen == true
+                        ? () {}
+                        : () => _showHelpDialog(context),
                     child: Container(
                       width: screenWidth / 4.5,
                       decoration: BoxDecoration(
@@ -228,7 +230,7 @@ class DocumentsState extends State<Documents> {
                                     AppButton(
                                       textData: "Começar",
                                       child: buttonChild,
-                                      onTapCallBack: lockScreen
+                                      onTapCallBack: lockScreen == true
                                           ? () {}
                                           : () async => await start(context),
                                     ),

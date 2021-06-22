@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:partner_app/models/partner.dart';
+import 'package:partner_app/screens/editPhone.dart';
 import 'package:partner_app/styles.dart';
 import 'package:partner_app/widgets/arrowBackButton.dart';
 import 'package:partner_app/widgets/borderlessButton.dart';
@@ -128,7 +129,14 @@ class ProfileState extends State<Profile> {
                       ),
                       Divider(thickness: 0.1, color: Colors.black),
                       BorderlessButton(
-                        onTap: () {},
+                        onTap: () async {
+                          final _ = await Navigator.pushNamed(
+                            context,
+                            EditPhone.routeName,
+                          ) as String;
+                          // call setState to rebuild tree and display updated phone
+                          setState(() {});
+                        },
                         primaryText: "Alterar Telefone",
                         secondaryText: firebase.auth.currentUser?.phoneNumber
                             ?.withoutCountryCode(),

@@ -38,6 +38,22 @@ extension AppFirebaseDatabase on FirebaseDatabase {
     }
   }
 
+  Future<void> setPhoneNumber({
+    @required String partnerID,
+    @required String phoneNumber,
+  }) async {
+    try {
+      await this
+          .reference()
+          .child("partners")
+          .child(partnerID)
+          .child("phone_number")
+          .set(phoneNumber);
+    } catch (e) {
+      throw e;
+    }
+  }
+
   Future<void> setSubmittedCnh({
     @required partnerID,
     @required bool value,
