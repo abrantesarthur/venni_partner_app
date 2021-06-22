@@ -9,6 +9,7 @@ import 'package:partner_app/models/connectivity.dart';
 import 'package:partner_app/models/firebase.dart';
 import 'package:partner_app/models/partner.dart';
 import 'package:partner_app/screens/anticipate.dart';
+import 'package:partner_app/screens/bankAccountDetail.dart';
 import 'package:partner_app/screens/editEmail.dart';
 import 'package:partner_app/screens/editPhone.dart';
 import 'package:partner_app/screens/insertNewEmail.dart';
@@ -276,6 +277,14 @@ class _AppState extends State<App> {
                 });
               }
 
+              // if SendBankAccount is pushed
+              if (settings.name == SendBankAccount.routeName) {
+                final SendBankAccountArguments args = settings.arguments;
+                return MaterialPageRoute(builder: (context) {
+                  return SendBankAccount(mode: args.mode);
+                });
+              }
+
               // if Wallet is pushed
               if (settings.name == Wallet.routeName) {
                 final WalletArguments args = settings.arguments;
@@ -320,7 +329,6 @@ class _AppState extends State<App> {
               SendCnh.routeName: (context) => SendCnh(),
               SendPhotoWithCnh.routeName: (context) => SendPhotoWithCnh(),
               SendProfilePhoto.routeName: (context) => SendProfilePhoto(),
-              SendBankAccount.routeName: (context) => SendBankAccount(),
               Settings.routeName: (context) => Settings(),
               Profile.routeName: (context) => Profile(),
               EditPhone.routeName: (context) => EditPhone(),
@@ -328,6 +336,7 @@ class _AppState extends State<App> {
               EditEmail.routeName: (context) => EditEmail(),
               InsertNewEmail.routeName: (context) => InsertNewEmail(),
               InsertNewPassword.routeName: (context) => InsertNewPassword(),
+              BankAccountDetail.routeName: (context) => BankAccountDetail(),
             },
           );
         });

@@ -13,8 +13,19 @@ import 'package:partner_app/widgets/arrowBackButton.dart';
 import 'package:partner_app/widgets/overallPadding.dart';
 import 'package:provider/provider.dart';
 
+enum SendBankAccountMode { send, edit }
+
+class SendBankAccountArguments {
+  final SendBankAccountMode mode;
+
+  SendBankAccountArguments({@required this.mode});
+}
+
 class SendBankAccount extends StatefulWidget {
-  static const String routeName = "sendBankAccount";
+  static const String routeName = "SendBankAccount";
+  final SendBankAccountMode mode;
+
+  SendBankAccount({@required this.mode});
 
   @override
   SendBankAccountState createState() => SendBankAccountState();
@@ -89,7 +100,9 @@ class SendBankAccountState extends State<SendBankAccount> with RouteAware {
             ),
             SizedBox(height: screenHeight / 25),
             Text(
-              "Adicionar conta bancária",
+              widget.mode == SendBankAccountMode.send
+                  ? "Adicionar conta bancária"
+                  : "Alterar conta bancária",
               style: TextStyle(
                 color: Colors.black,
                 fontSize: 20,
@@ -150,9 +163,10 @@ class SendBankAccountState extends State<SendBankAccount> with RouteAware {
                                       selectedBank = value;
                                     });
                                   },
-                                  items: bankMap.keys
+                                  items: bankTypeToNameMap.keys
                                       .map((bankName) => DropdownMenuItem(
-                                            child: Text(bankMap[bankName]),
+                                            child: Text(
+                                                bankTypeToNameMap[bankName]),
                                             value: bankName,
                                           ))
                                       .toList()),
@@ -272,7 +286,9 @@ class SendBankAccountState extends State<SendBankAccount> with RouteAware {
                           left: 0,
                           right: 0,
                           child: AppButton(
-                            textData: "Adicionar Conta",
+                            textData: widget.mode == SendBankAccountMode.send
+                                ? "Adicionar Conta"
+                                : "Alterar Conta",
                             child: buttonChild,
                             buttonColor: allFieldsAreValid()
                                 ? AppColor.primaryPink
@@ -293,6 +309,7 @@ class SendBankAccountState extends State<SendBankAccount> with RouteAware {
   }
 
   Future<void> buttonCallback(BuildContext context) async {
+    print("buttonCallback");
     final connectivity = Provider.of<ConnectivityModel>(context, listen: false);
     final partner = Provider.of<PartnerModel>(context, listen: false);
     final firebase = Provider.of<FirebaseModel>(context, listen: false);
@@ -306,6 +323,8 @@ class SendBankAccountState extends State<SendBankAccount> with RouteAware {
       return;
     }
 
+    print("have connection");
+
     // show progress indicator and lock screen
     setState(() {
       buttonChild = CircularProgressIndicator(
@@ -318,7 +337,7 @@ class SendBankAccountState extends State<SendBankAccount> with RouteAware {
 
     try {
       // add bank account to firebase
-      await firebase.functions.createBankAccount(
+      BankAccount ba = await firebase.functions.createBankAccount(
         BankAccount(
           bankCode: selectedBank.getCode(),
           agency: agencyController.text,
@@ -331,14 +350,21 @@ class SendBankAccountState extends State<SendBankAccount> with RouteAware {
         ),
       );
 
-      // mark bank account as submitted on firebase and locally
-      await firebase.database.setSubmittedBankAccount(
-        partnerID: firebase.auth.currentUser.uid,
-        value: true,
-      );
-      partner.updateBankAccountSubmitted(true);
+      // if sending, mark bank account as submitted on firebase and locally
+      if (widget.mode == SendBankAccountMode.send) {
+        await firebase.database.setSubmittedBankAccount(
+          partnerID: firebase.auth.currentUser.uid,
+          value: true,
+        );
+        partner.updateBankAccountSubmitted(true);
+      }
 
-      // go back to documents screen
+      // if editing, update partner model
+      if (widget.mode == SendBankAccountMode.edit) {
+        partner.updateBankAccount(ba);
+      }
+
+      // go back to previous screen screen
       Navigator.pop(context);
     } catch (e) {
       // unlock screen and display warning on error
@@ -346,6 +372,7 @@ class SendBankAccountState extends State<SendBankAccount> with RouteAware {
         buttonChild = null;
         lockScreen = false;
       });
+      print(e);
       await showDialog(
         context: context,
         builder: (BuildContext context) {

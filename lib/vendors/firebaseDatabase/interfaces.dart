@@ -173,11 +173,20 @@ enum Banks {
 
 extension BanksExtension on Banks {
   String getCode() {
-    return bankMap[this].substring(0, 3);
+    return bankTypeToNameMap[this].substring(0, 3);
   }
 }
 
-Map<Banks, String> bankMap = {
+Map<String, String> bankCodeToNameMap = {
+  "001": "001 - Banco do Brasil",
+  "033": "033 - Santander",
+  "104": "104 - Caixa",
+  "237": "237 - Bradesco",
+  "341": "341 - Itaú",
+  "399": "399 - HSBC",
+};
+
+Map<Banks, String> bankTypeToNameMap = {
   Banks.BancoDoBrasil: "001 - Banco do Brasil",
   Banks.Santander: "033 - Santander",
   Banks.Caixa: "104 - Caixa",
@@ -194,8 +203,23 @@ enum BankAccountType {
 }
 
 extension BankAccountTypeExtension on BankAccountType {
-  String getString() {
-    return this.toString().substring(16);
+  String getString({bool format}) {
+    if (format != null && format) {
+      switch (this) {
+        case BankAccountType.conta_corrente:
+          return "corrente";
+        case BankAccountType.conta_poupanca:
+          return "poupança";
+        case BankAccountType.conta_corrente_conjunta:
+          return "corrente conjunta";
+        case BankAccountType.conta_poupanca_conjunta:
+          return "poupança conjunta";
+        default:
+          return "";
+      }
+    } else {
+      return this.toString().substring(16);
+    }
   }
 
   static BankAccountType fromString(String s) {

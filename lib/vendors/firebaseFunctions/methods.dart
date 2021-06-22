@@ -22,6 +22,7 @@ extension AppFirebaseFunctions on FirebaseFunctions {
       HttpsCallableResult result =
           await this.httpsCallable("payment-create_bank_account").call(data);
       if (result != null && result.data != null) {
+        print(result.data);
         return BankAccount.fromJson(result.data);
       }
     } catch (e) {
