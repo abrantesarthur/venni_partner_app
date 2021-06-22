@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:partner_app/models/partner.dart';
+import 'package:partner_app/screens/editEmail.dart';
 import 'package:partner_app/screens/editPhone.dart';
 import 'package:partner_app/styles.dart';
 import 'package:partner_app/widgets/arrowBackButton.dart';
@@ -130,10 +131,10 @@ class ProfileState extends State<Profile> {
                       Divider(thickness: 0.1, color: Colors.black),
                       BorderlessButton(
                         onTap: () async {
-                          final _ = await Navigator.pushNamed(
+                          await Navigator.pushNamed(
                             context,
                             EditPhone.routeName,
-                          ) as String;
+                          );
                           // call setState to rebuild tree and display updated phone
                           setState(() {});
                         },
@@ -150,7 +151,14 @@ class ProfileState extends State<Profile> {
                       ),
                       Divider(thickness: 0.1, color: Colors.black),
                       BorderlessButton(
-                        onTap: () {},
+                        onTap: () async {
+                          await Navigator.pushNamed(
+                            context,
+                            EditEmail.routeName,
+                          );
+                          // call setState to rebuild tree and display updated email
+                          setState(() {});
+                        },
                         primaryText: "Alterar email",
                         secondaryText: firebase.auth.currentUser?.email,
                         label: firebase.auth.currentUser.emailVerified

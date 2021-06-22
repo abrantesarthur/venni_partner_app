@@ -275,58 +275,58 @@ extension AppFirebaseAuth on FirebaseAuth {
     }
   }
 
-  // Future<UpdateEmailResponse> reauthenticateAndUpdateEmail({
-  //   @required String email,
-  //   @required String password,
-  // }) async {
-  //   try {
-  //     // reauthenticate user to avoid 'requires-recent-login' error
-  //     await _reauthenticateWithEmailAndPassword(password);
-  //   } on FirebaseAuthException catch (e) {
-  //     if (e.code == "wrong-password") {
-  //       return UpdateEmailResponse(
-  //         successful: false,
-  //         code: e.code,
-  //         message: "Senha incorreta. Tente novamente.",
-  //       );
-  //     } else {
-  //       return UpdateEmailResponse(
-  //         successful: false,
-  //         code: e.code,
-  //         message: "Algo deu errado. Tente novamente mais tarde.",
-  //       );
-  //     }
-  //   }
+  Future<UpdateEmailResponse> reauthenticateAndUpdateEmail({
+    @required String email,
+    @required String password,
+  }) async {
+    try {
+      // reauthenticate user to avoid 'requires-recent-login' error
+      await _reauthenticateWithEmailAndPassword(password);
+    } on FirebaseAuthException catch (e) {
+      if (e.code == "wrong-password") {
+        return UpdateEmailResponse(
+          successful: false,
+          code: e.code,
+          message: "Senha incorreta. Tente novamente.",
+        );
+      } else {
+        return UpdateEmailResponse(
+          successful: false,
+          code: e.code,
+          message: "Algo deu errado. Tente novamente mais tarde.",
+        );
+      }
+    }
 
-  //   try {
-  //     // try to update email
-  //     await this.currentUser.updateEmail(email);
-  //     return UpdateEmailResponse(successful: true);
-  //   } on FirebaseAuthException catch (e) {
-  //     if (e.code == "email-already-in-use") {
-  //       return UpdateEmailResponse(
-  //         successful: false,
-  //         code: e.code,
-  //         message: "O email já está sendo usado. Tente outro.",
-  //       );
-  //     }
-  //     if (e.code == "invalid-email") {
-  //       // display appropriate message
-  //       return UpdateEmailResponse(
-  //         successful: false,
-  //         code: e.code,
-  //         message: "Email inválido. Tente outro.",
-  //       );
-  //     }
-  //     // e.code == "requires-recent-login" should never happen
-  //     return UpdateEmailResponse(
-  //       successful: false,
-  //       code: e.code,
-  //       message:
-  //           "Falha ao alterar email. Saia e entre novamente na sua conta e tente novamente.",
-  //     );
-  //   }
-  // }
+    try {
+      // try to update email
+      await this.currentUser.updateEmail(email);
+      return UpdateEmailResponse(successful: true);
+    } on FirebaseAuthException catch (e) {
+      if (e.code == "email-already-in-use") {
+        return UpdateEmailResponse(
+          successful: false,
+          code: e.code,
+          message: "O email já está sendo usado. Tente outro.",
+        );
+      }
+      if (e.code == "invalid-email") {
+        // display appropriate message
+        return UpdateEmailResponse(
+          successful: false,
+          code: e.code,
+          message: "Email inválido. Tente outro.",
+        );
+      }
+      // e.code == "requires-recent-login" should never happen
+      return UpdateEmailResponse(
+        successful: false,
+        code: e.code,
+        message:
+            "Falha ao alterar email. Saia e entre novamente na sua conta e tente novamente.",
+      );
+    }
+  }
 
   // Future<DeleteAccountResponse> deleteAccount({
   //   @required FirebaseModel firebase,

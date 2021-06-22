@@ -9,7 +9,9 @@ import 'package:partner_app/models/connectivity.dart';
 import 'package:partner_app/models/firebase.dart';
 import 'package:partner_app/models/partner.dart';
 import 'package:partner_app/screens/anticipate.dart';
+import 'package:partner_app/screens/editEmail.dart';
 import 'package:partner_app/screens/editPhone.dart';
+import 'package:partner_app/screens/insertNewEmail.dart';
 import 'package:partner_app/screens/insertNewPhone.dart';
 import 'package:partner_app/screens/profile.dart';
 import 'package:partner_app/screens/sendBankAccount.dart';
@@ -322,6 +324,8 @@ class _AppState extends State<App> {
               Profile.routeName: (context) => Profile(),
               EditPhone.routeName: (context) => EditPhone(),
               InsertNewPhone.routeName: (context) => InsertNewPhone(),
+              EditEmail.routeName: (context) => EditEmail(),
+              InsertNewEmail.routeName: (context) => InsertNewEmail(),
             },
           );
         });
