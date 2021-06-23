@@ -106,7 +106,7 @@ class WalletState extends State<Wallet> {
                                 children: [
                                   Center(
                                     child: Text(
-                                      "Saldo",
+                                      "Saldo Disponível",
                                       style: TextStyle(
                                         color: Colors.black,
                                         fontSize: 18,
