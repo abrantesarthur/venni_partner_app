@@ -70,4 +70,12 @@ extension AppFirebaseFunctions on FirebaseFunctions {
     }
     return null;
   }
+
+  Future<void> deleteAccount() async {
+    try {
+      await this.httpsCallable("account-delete_partner").call();
+    } catch (e) {
+      throw e;
+    }
+  }
 }

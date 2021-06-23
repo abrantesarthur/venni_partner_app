@@ -40,7 +40,7 @@ class HomeState extends State<Home> with WidgetsBindingObserver {
     WidgetsBinding.instance.addPostFrameCallback((_) async {
       // add listener to FirebaseModel so user is redirected to Start when logs out
       _firebaseListener = () {
-        _signOut(widget.firebase);
+        _signOut(context);
       };
       widget.firebase.addListener(_firebaseListener);
     });
@@ -100,8 +100,12 @@ class HomeState extends State<Home> with WidgetsBindingObserver {
   }
 
   // push start screen when user logs out
-  void _signOut(FirebaseModel firebase) {
+  void _signOut(BuildContext context) {
+    FirebaseModel firebase = Provider.of<FirebaseModel>(context, listen: false);
+    PartnerModel partner = Provider.of<PartnerModel>(context, listen: false);
     if (!firebase.isRegistered) {
+      // clear partner model
+      partner.clear();
       Navigator.pushNamedAndRemoveUntil(
         context,
         Start.routeName,

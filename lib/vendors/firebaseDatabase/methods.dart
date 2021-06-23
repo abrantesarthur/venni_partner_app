@@ -4,7 +4,6 @@ import 'package:flutter/material.dart';
 import 'package:partner_app/vendors/firebaseDatabase/interfaces.dart';
 
 extension AppFirebaseDatabase on FirebaseDatabase {
-  // TODO: test
   Future<PartnerInterface> getPartnerFromID(String pilotID) async {
     print("getPartnerFromID");
     try {
@@ -181,5 +180,54 @@ extension AppFirebaseDatabase on FirebaseDatabase {
         .child("submitted_documents")
         .onValue
         .listen(onData);
+  }
+
+  Future<void> submitDeleteReasons({
+    @required Map<DeleteReason, bool> reasons,
+    @required String uid,
+  }) async {
+    if (reasons == null) {
+      return Future.value();
+    }
+
+    // iterate over reasons, adding them to database
+    reasons.keys.forEach((key) async {
+      String reasonString;
+
+      // if user didn't select this reason, don't add it to database
+      if (reasons[key] == false) {
+        return;
+      }
+
+      switch (key) {
+        case DeleteReason.badAppExperience:
+          reasonString = "bad-app-experience";
+          break;
+        case DeleteReason.badTripExperience:
+          reasonString = "bad-trip-experience";
+          break;
+        case DeleteReason.doesntUseService:
+          reasonString = "doesnt-use-service";
+          break;
+        case DeleteReason.hasAnotherAccount:
+          reasonString = "has-another-account";
+          break;
+        case DeleteReason.another:
+          reasonString = "something-else";
+          break;
+      }
+
+      try {
+        await this
+            .reference()
+            .child("partner-delete-reasons")
+            .child(reasonString)
+            .child(uid)
+            .set({
+          "timestamp": DateTime.now().millisecondsSinceEpoch,
+        });
+      } catch (e) {}
+      return;
+    });
   }
 }
