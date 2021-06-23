@@ -161,4 +161,36 @@ class PartnerModel extends ChangeNotifier {
       }
     }
   }
+
+  @override
+  void dispose() {
+    clear();
+    super.dispose();
+  }
+
+  void clear() {
+    _id = null;
+    _name = null;
+    _lastName = null;
+    _cpf = null;
+    _gender = null;
+    _memberSince = null;
+    _phoneNumber = null;
+    _rating = null;
+    _totalTrips = null;
+    _pagarmeRecipientID = null;
+    _partnerStatus = null;
+    _accountStatus = null;
+    _denialReason = null;
+    _lockReason = null;
+    _vehicle = null;
+    _profileImage = null;
+    _crlvSubmitted = null;
+    _cnhSubmitted = null;
+    _photoWithCnhSubmitted = null;
+    _profilePhotoSubmitted = null;
+    _bankAccountSubmitted = null;
+    _amountOwed = null;
+    _bankAccount = null;
+  }
 }

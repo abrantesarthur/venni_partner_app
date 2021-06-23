@@ -10,11 +10,13 @@ import 'package:partner_app/models/firebase.dart';
 import 'package:partner_app/models/partner.dart';
 import 'package:partner_app/screens/anticipate.dart';
 import 'package:partner_app/screens/bankAccountDetail.dart';
+import 'package:partner_app/screens/deleteAccount.dart';
 import 'package:partner_app/screens/editEmail.dart';
 import 'package:partner_app/screens/editPhone.dart';
 import 'package:partner_app/screens/insertNewEmail.dart';
 import 'package:partner_app/screens/insertNewPassword.dart';
 import 'package:partner_app/screens/insertNewPhone.dart';
+import 'package:partner_app/screens/privacy.dart';
 import 'package:partner_app/screens/profile.dart';
 import 'package:partner_app/screens/sendBankAccount.dart';
 import 'package:partner_app/screens/sendCnh.dart';
@@ -337,6 +339,8 @@ class _AppState extends State<App> {
               InsertNewEmail.routeName: (context) => InsertNewEmail(),
               InsertNewPassword.routeName: (context) => InsertNewPassword(),
               BankAccountDetail.routeName: (context) => BankAccountDetail(),
+              Privacy.routeName: (context) => Privacy(),
+              DeleteAccount.routeName: (context) => DeleteAccount(),
             },
           );
         });

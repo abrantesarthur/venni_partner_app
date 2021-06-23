@@ -516,3 +516,11 @@ class PartnerInterface {
     return json;
   }
 }
+
+enum DeleteReason {
+  badTripExperience,
+  badAppExperience,
+  hasAnotherAccount,
+  doesntUseService,
+  another,
+}

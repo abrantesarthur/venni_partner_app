@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:partner_app/models/firebase.dart';
 import 'package:partner_app/screens/bankAccountDetail.dart';
+import 'package:partner_app/screens/privacy.dart';
 import 'package:partner_app/screens/profile.dart';
 import 'package:partner_app/styles.dart';
 import 'package:partner_app/widgets/borderlessButton.dart';
@@ -45,7 +46,7 @@ class Settings extends StatelessWidget {
         ),
         Divider(thickness: 0.1, color: Colors.black),
         BorderlessButton(
-          onTap: () {},
+          onTap: () => Navigator.pushNamed(context, Privacy.routeName),
           iconLeft: Icons.lock_rounded,
           iconLeftSize: 26,
           primaryText: "Privacidade",
