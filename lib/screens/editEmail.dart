@@ -93,6 +93,7 @@ class EditEmailState extends State<EditEmail> {
                                   codeSent = true;
                                 });
                               } catch (e) {
+                                print(e);
                                 // display warning on failure
                                 setState(() {
                                   warning = Warning(

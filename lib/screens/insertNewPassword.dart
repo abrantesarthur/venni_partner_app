@@ -227,6 +227,7 @@ class InsertNewPasswordState extends State<InsertNewPassword> {
   Widget build(BuildContext context) {
     final screenHeight = MediaQuery.of(context).size.height;
     return Scaffold(
+      resizeToAvoidBottomInset: false,
       backgroundColor: Colors.white,
       body: LayoutBuilder(
         builder: (
@@ -266,7 +267,6 @@ class InsertNewPasswordState extends State<InsertNewPassword> {
                         controller: oldPasswordTextEditingController,
                         hintText: "senha atual",
                         focusNode: oldPasswordFocusNode,
-                        autoFocus: true,
                         enabled: !lockScreen,
                         onSubmittedCallback: (String _) {
                           oldPasswordFocusNode.unfocus();
