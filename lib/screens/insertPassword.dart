@@ -303,10 +303,6 @@ class InsertPasswordState extends State<InsertPassword> {
             await firebase.database.getPartnerFromID(
           widget.userCredential.user.uid,
         );
-        PartnerModel partner = Provider.of<PartnerModel>(
-          context,
-          listen: false,
-        );
         partner.fromPartnerInterface(partnerInterface);
         return true;
       } on FirebaseAuthException catch (e) {
