@@ -180,8 +180,10 @@ extension AppFirebaseAuth on FirebaseAuth {
         throw FirebaseAuthException(code: "database-failure");
       }
 
-      // send email verification
-      await credential.user.sendEmailVerification();
+      // send email verification if necessary
+      if(!firebase.auth.currentUser.emailVerified) {
+        await credential.user.sendEmailVerification();
+      }
     } on FirebaseAuthException catch (e) {
       throw e;
     }
