@@ -348,6 +348,7 @@ void main() {
       setupFirebaseMocks(
         tester: tester,
         userHasPartnerAccount: true,
+        userisRegistered: true,
         partnerAccountStatusIsApproved: true,
         signInSucceeds: true,
       );
@@ -386,6 +387,7 @@ void main() {
       setupFirebaseMocks(
         tester: tester,
         userHasPartnerAccount: true,
+        userisRegistered: true,
         partnerAccountStatusIsApproved: false,
         signInSucceeds: true,
       );
@@ -687,6 +689,7 @@ void main() {
         tester,
         find.byType(Home),
         userHasPartnerAccount: true,
+        userisRegistered: true,
         partnerAccountStatusIsApproved: true,
       );
     });
@@ -698,6 +701,7 @@ void main() {
         tester,
         find.byType(Documents),
         userHasPartnerAccount: true,
+        userisRegistered: true,
         partnerAccountStatusIsApproved: false,
       );
     });

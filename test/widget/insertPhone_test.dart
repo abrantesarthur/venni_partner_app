@@ -284,7 +284,8 @@ void main() {
       await tester.pumpWidget(MultiProvider(
         providers: [
           ChangeNotifierProvider<FirebaseModel>(
-              create: (context) => mockFirebaseModel),
+            create: (context) => mockFirebaseModel,
+          ),
           ChangeNotifierProvider<ConnectivityModel>(
             create: (context) => mockConnectivityModel,
           ),
@@ -367,6 +368,7 @@ void main() {
         tester: tester,
         verifyPhoneNumberCallbackName: "verificationCompleted",
         userHasPartnerAccount: true,
+        userisRegistered: true,
         partnerAccountStatusIsApproved: true,
         signInSucceeds: true,
       );
@@ -408,6 +410,7 @@ void main() {
         tester: tester,
         verifyPhoneNumberCallbackName: "verificationCompleted",
         userHasPartnerAccount: true,
+        userisRegistered: true,
         partnerAccountStatusIsApproved: false,
         signInSucceeds: true,
       );
