@@ -296,8 +296,6 @@ class InsertPasswordState extends State<InsertPassword> {
           password: passwordTextEditingController.text.trim(),
         );
 
-        // TODO: delete client that is created;
-
         // we enforce a variant that, by the time Documents is pushed, PartnerModel
         // must have been updated with the user information
         // try getting partner credentials

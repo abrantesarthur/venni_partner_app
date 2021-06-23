@@ -136,7 +136,7 @@ class InsertSmsCodeState extends State<InsertSmsCode> {
     );
   }
 
-  // codeSentCallback is called when sms code is successfully resent.
+  // codeSentCallback is called when sms code is successfully sent.
   // it resets the state to value similar to initState.
   void codeSentCallback(String verificationId, int resendToken) {
     setState(() {
