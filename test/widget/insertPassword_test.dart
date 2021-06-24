@@ -24,6 +24,7 @@ void main() {
     when(mockFirebaseAuth.currentUser).thenReturn(mockUser);
     when(mockUser.phoneNumber).thenReturn("+5538999999999");
     when(mockUser.displayName).thenReturn("Fulano");
+    when(mockUser.emailVerified).thenReturn(true);
     when(mockFirebaseModel.database).thenReturn(mockFirebaseDatabase);
     when(mockFirebaseModel.isRegistered).thenReturn(false);
     when(mockConnectivityModel.hasConnection).thenReturn(true);
