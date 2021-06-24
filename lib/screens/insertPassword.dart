@@ -262,20 +262,10 @@ class InsertPasswordState extends State<InsertPassword> {
           cpf: widget.cpf,
           gender: widget.gender,
         );
-
         // we enforce a variant that, by the time Documents is pushed, PartnerModel
         // must have been updated with the user information
         // try getting partner credentials
-        PartnerInterface partnerInterface =
-            await firebase.database.getPartnerFromID(
-          widget.userCredential.user.uid,
-        );
-        PartnerModel partner = Provider.of<PartnerModel>(
-          context,
-          listen: false,
-        );
-        partner.fromPartnerInterface(partnerInterface);
-
+        await partner.downloadData(firebase);
         return true;
       } on FirebaseAuthException catch (e) {
         await handleRegistrationFailure(firebase, e);

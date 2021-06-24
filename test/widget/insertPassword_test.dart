@@ -335,7 +335,10 @@ void main() {
     });
 
     Future<void> testErrosWhenisRegistered(
-        WidgetTester tester, String code) async {
+      WidgetTester tester,
+      String code,
+      String expectedWarning,
+    ) async {
       // add widget to the UI
       await pumpWidget(tester);
 
@@ -357,7 +360,7 @@ void main() {
       when(mockUser.email).thenReturn("example@provider.com");
       FirebaseAuthException e = FirebaseAuthException(
         message: "message",
-        code: "wrong-password",
+        code: code,
       );
       when(mockUser.reauthenticateWithCredential(any))
           .thenAnswer((_) async => throw e);
@@ -371,21 +374,39 @@ void main() {
 
       // expect registrationErrorWarnings not to be null
       expect(insertPasswordState.registrationErrorWarnings, isNotNull);
+
+      await tester.pumpAndSettle();
+
+      // expect to find warning
+      final warningFinder = find.widgetWithText(Warning, expectedWarning);
+      expect(warningFinder, findsOneWidget);
     }
 
     testWidgets("correctly handles 'wrong-password' error",
         (WidgetTester tester) async {
-      await testErrosWhenisRegistered(tester, 'wrong-password');
+      await testErrosWhenisRegistered(
+        tester,
+        'wrong-password',
+        "Senha incorreta. Tente novamente.",
+      );
     });
 
     testWidgets("correctly handles 'too-many-requests' error",
         (WidgetTester tester) async {
-      await testErrosWhenisRegistered(tester, 'too-many-requests');
+      await testErrosWhenisRegistered(
+        tester,
+        'too-many-requests',
+        "Muitas tentativas sucessivas. Tente novamente mais tarde.",
+      );
     });
 
     testWidgets("correctly handles 'generic' error",
         (WidgetTester tester) async {
-      await testErrosWhenisRegistered(tester, 'generic');
+      await testErrosWhenisRegistered(
+        tester,
+        'generic',
+        "Algo deu errado. Tente novamente mais tarde.",
+      );
     });
 
     testWidgets("correctly handles 'requires-recent-login' error",
