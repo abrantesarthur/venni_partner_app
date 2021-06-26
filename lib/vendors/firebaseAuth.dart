@@ -2,6 +2,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter/material.dart';
 import 'package:partner_app/models/firebase.dart';
+import 'package:partner_app/models/googleMaps.dart';
 import 'package:partner_app/models/partner.dart';
 import 'package:partner_app/screens/documents.dart';
 import 'package:partner_app/screens/home.dart';
@@ -50,10 +51,18 @@ extension AppFirebaseAuth on FirebaseAuth {
       if (partner.id != null && firebase.isRegistered) {
         // if accountStatus is 'approved', push Home screen
         if (partner.accountStatus == AccountStatus.approved) {
+          GoogleMapsModel googleMaps = Provider.of<GoogleMapsModel>(
+            context,
+            listen: false,
+          );
           Navigator.pushReplacementNamed(
             context,
             Home.routeName,
-            arguments: HomeArguments(firebase: firebase),
+            arguments: HomeArguments(
+              firebase: firebase,
+              partner: partner,
+              googleMaps: googleMaps,
+            ),
           );
         } else {
           // otherwise, push documents screen
@@ -181,7 +190,7 @@ extension AppFirebaseAuth on FirebaseAuth {
       }
 
       // send email verification if necessary
-      if(!firebase.auth.currentUser.emailVerified) {
+      if (!firebase.auth.currentUser.emailVerified) {
         await credential.user.sendEmailVerification();
       }
     } on FirebaseAuthException catch (e) {

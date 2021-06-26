@@ -4,6 +4,7 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:mockito/mockito.dart';
 import 'package:partner_app/models/connectivity.dart';
 import 'package:partner_app/models/firebase.dart';
+import 'package:partner_app/models/googleMaps.dart';
 import 'package:partner_app/models/partner.dart';
 import 'package:partner_app/screens/documents.dart';
 import 'package:partner_app/screens/home.dart';
@@ -252,7 +253,10 @@ void main() {
           ),
           ChangeNotifierProvider<PartnerModel>(
             create: (context) => mockPartnerModel,
-          )
+          ),
+          ChangeNotifierProvider<GoogleMapsModel>(
+            create: (context) => mockGoogleMapsModel,
+          ),
         ],
         child: MaterialApp(
           home: InsertSmsCode(
@@ -276,6 +280,8 @@ void main() {
           routes: {
             Home.routeName: (context) => Home(
                   firebase: mockFirebaseModel,
+                  partner: mockPartnerModel,
+                  googleMaps: mockGoogleMapsModel,
                 ),
             Start.routeName: (context) => Start(),
             InsertEmail.routeName: (context) => InsertEmail(
@@ -589,7 +595,10 @@ void main() {
             ),
             ChangeNotifierProvider<PartnerModel>(
               create: (context) => mockPartnerModel,
-            )
+            ),
+            ChangeNotifierProvider<GoogleMapsModel>(
+              create: (context) => mockGoogleMapsModel,
+            ),
           ],
           child: MaterialApp(
             home: InsertSmsCode(
@@ -611,7 +620,11 @@ void main() {
               return null;
             },
             routes: {
-              Home.routeName: (context) => Home(firebase: mockFirebaseModel),
+              Home.routeName: (context) => Home(
+                    firebase: mockFirebaseModel,
+                    partner: mockPartnerModel,
+                    googleMaps: mockGoogleMapsModel,
+                  ),
               Start.routeName: (context) => Start(),
               InsertEmail.routeName: (context) => InsertEmail(
                     userCredential: mockUserCredential,
