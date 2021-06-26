@@ -5,7 +5,6 @@ import 'package:partner_app/vendors/firebaseDatabase/interfaces.dart';
 
 extension AppFirebaseDatabase on FirebaseDatabase {
   Future<PartnerInterface> getPartnerFromID(String pilotID) async {
-    print("getPartnerFromID");
     try {
       DataSnapshot snapshot =
           await this.reference().child("partners").child(pilotID).once();
@@ -152,6 +151,22 @@ extension AppFirebaseDatabase on FirebaseDatabase {
     }
   }
 
+  Future<void> setPartnerStatus({
+    @required partnerID,
+    @required PartnerStatus partnerStatus,
+  }) async {
+    try {
+      await this
+          .reference()
+          .child("partners")
+          .child(partnerID)
+          .child("partner_status")
+          .set(partnerStatus.getString());
+    } catch (e) {
+      throw e;
+    }
+  }
+
   // onAccountStatusUpdate subscribes onData to handle changes in the
   // account status of partner with uid partnerID
   StreamSubscription onAccountStatusUpdate(
@@ -178,6 +193,21 @@ extension AppFirebaseDatabase on FirebaseDatabase {
         .child("partners")
         .child(partnerID)
         .child("submitted_documents")
+        .onValue
+        .listen(onData);
+  }
+
+  // onPartnerStatusUpdate subscribes onData to handle changes in the status
+  // of the partner with uid partnerID
+  StreamSubscription onPartnerStatusUpdate(
+    String partnerID,
+    void Function(Event) onData,
+  ) {
+    return this
+        .reference()
+        .child("partners")
+        .child(partnerID)
+        .child("partner_status")
         .onValue
         .listen(onData);
   }

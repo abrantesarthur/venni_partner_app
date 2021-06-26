@@ -1,14 +1,19 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:partner_app/models/connectivity.dart';
 import 'package:partner_app/models/firebase.dart';
+import 'package:partner_app/vendors/firebaseDatabase/interfaces.dart';
+import 'package:partner_app/vendors/firebaseDatabase/methods.dart';
 import 'package:partner_app/models/googleMaps.dart';
 import 'package:partner_app/models/partner.dart';
 import 'package:partner_app/screens/menu.dart';
 import 'package:partner_app/screens/shareLocation.dart';
 import 'package:partner_app/screens/splash.dart';
 import 'package:partner_app/screens/start.dart';
+import 'package:partner_app/widgets/appButton.dart';
 import 'package:partner_app/widgets/menuButton.dart';
 import 'package:partner_app/widgets/overallPadding.dart';
 import 'package:provider/provider.dart';
@@ -46,6 +51,9 @@ class Home extends StatefulWidget {
 class HomeState extends State<Home> with WidgetsBindingObserver {
   Future<Position> partnerPositionFuture;
   bool _hasConnection;
+  StreamSubscription partnerStatusSubscription;
+  bool lockScreen = false;
+  Widget buttonChild;
 
   var _firebaseListener;
 
@@ -61,6 +69,20 @@ class HomeState extends State<Home> with WidgetsBindingObserver {
 
     // trigger _getPartnerPosition
     partnerPositionFuture = _getPartnerPosition();
+
+    // subscribe to changes in partner_status so UI is updated appropriately
+    partnerStatusSubscription = widget.firebase.database.onPartnerStatusUpdate(
+      widget.firebase.auth.currentUser.uid,
+      (e) {
+        PartnerStatus partnerStatus = PartnerStatusExtension.fromString(
+          e.snapshot.value,
+        );
+        // update partner model accordingly. This will trigger a tree rebuild
+        if (partnerStatus != null) {
+          widget.partner.updatePartnerStatus(partnerStatus);
+        }
+      },
+    );
 
     // add listeners after tree is built and we have context
     WidgetsBinding.instance.addPostFrameCallback((_) async {
@@ -96,6 +118,9 @@ class HomeState extends State<Home> with WidgetsBindingObserver {
     WidgetsBinding.instance.removeObserver(this);
     widget.firebase.removeListener(_firebaseListener);
     widget.partner.cancelPositionChangeSubscription();
+    if (partnerStatusSubscription != null) {
+      partnerStatusSubscription.cancel();
+    }
     super.dispose();
   }
 
@@ -172,11 +197,27 @@ class HomeState extends State<Home> with WidgetsBindingObserver {
               ),
               Positioned(
                 child: OverallPadding(
-                  child: MenuButton(onPressed: () {
-                    _scaffoldKey.currentState.openDrawer();
-                  }),
+                  child: MenuButton(
+                      onPressed: lockScreen
+                          ? () {}
+                          : () {
+                              _scaffoldKey.currentState.openDrawer();
+                            }),
                 ),
               ),
+              partner.partnerStatus == PartnerStatus.unavailable
+                  ? OverallPadding(
+                      child: Container(
+                        alignment: Alignment.bottomCenter,
+                        child: AppButton(
+                          textData: "Conectar",
+                          onTapCallBack: lockScreen
+                              ? () {}
+                              : () async => await connect(context),
+                        ),
+                      ),
+                    )
+                  : Container(),
             ],
           ),
         );
@@ -213,5 +254,28 @@ class HomeState extends State<Home> with WidgetsBindingObserver {
         (_) => false,
       );
     }
+  }
+
+  Future<void> connect(BuildContext context) async {
+    FirebaseModel firebase = Provider.of<FirebaseModel>(context, listen: false);
+    // lock screen and display circularProgressIndicator
+    setState(() {
+      buttonChild = CircularProgressIndicator(
+        valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
+      );
+      lockScreen = true;
+    });
+    // send request to set partner as 'available'
+    await firebase.database.setPartnerStatus(
+      partnerID: firebase.auth.currentUser.uid,
+      partnerStatus: PartnerStatus.available,
+    );
+    // unlock screen and hide circularProgressIndicator
+    setState(() {
+      buttonChild = CircularProgressIndicator(
+        valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
+      );
+      lockScreen = true;
+    });
   }
 }
