@@ -74,6 +74,11 @@ class PartnerModel extends ChangeNotifier {
     notifyListeners();
   }
 
+  void updatePartnerStatus(PartnerStatus ps) {
+    _partnerStatus = ps;
+    notifyListeners();
+  }
+
   void updateCrlvSubmitted(bool value) {
     _crlvSubmitted = value;
     notifyListeners();
