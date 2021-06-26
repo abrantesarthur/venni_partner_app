@@ -4,6 +4,7 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:mockito/mockito.dart';
 import 'package:partner_app/models/connectivity.dart';
 import 'package:partner_app/models/firebase.dart';
+import 'package:partner_app/models/googleMaps.dart';
 import 'package:partner_app/models/partner.dart';
 import 'package:partner_app/screens/insertSmsCode.dart';
 import 'package:partner_app/screens/documents.dart';
@@ -291,7 +292,10 @@ void main() {
           ),
           ChangeNotifierProvider<PartnerModel>(
             create: (context) => mockPartnerModel,
-          )
+          ),
+          ChangeNotifierProvider<GoogleMapsModel>(
+            create: (context) => mockGoogleMapsModel,
+          ),
         ],
         builder: (context, child) => MaterialApp(
           home: InsertPhone(),
@@ -308,7 +312,11 @@ void main() {
             return null;
           },
           routes: {
-            Home.routeName: (context) => Home(firebase: mockFirebaseModel),
+            Home.routeName: (context) => Home(
+                  firebase: mockFirebaseModel,
+                  partner: mockPartnerModel,
+                  googleMaps: mockGoogleMapsModel,
+                ),
             InsertEmail.routeName: (context) => InsertEmail(
                   userCredential: mockUserCredential,
                 ),

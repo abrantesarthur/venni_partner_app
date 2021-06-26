@@ -4,6 +4,7 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:mockito/mockito.dart';
 import 'package:partner_app/models/connectivity.dart';
 import 'package:partner_app/models/firebase.dart';
+import 'package:partner_app/models/googleMaps.dart';
 import 'package:partner_app/models/partner.dart';
 import 'package:partner_app/screens/insertNewPassword.dart';
 import 'package:partner_app/screens/profile.dart';
@@ -36,7 +37,10 @@ void main() {
           ),
           ChangeNotifierProvider<ConnectivityModel>(
             create: (context) => mockConnectivityModel,
-          )
+          ),
+          ChangeNotifierProvider<GoogleMapsModel>(
+            create: (context) => mockGoogleMapsModel,
+          ),
         ],
         builder: (context, child) => MaterialApp(
           home: InsertNewPassword(),
@@ -56,6 +60,9 @@ void main() {
           ),
           ChangeNotifierProvider<ConnectivityModel>(
             create: (context) => mockConnectivityModel,
+          ),
+          ChangeNotifierProvider<GoogleMapsModel>(
+            create: (context) => mockGoogleMapsModel,
           ),
         ],
         builder: (context, child) => MaterialApp(
@@ -366,87 +373,6 @@ void main() {
       );
     });
   });
-
-  group("displayPasswordChecks", () {
-    testWidgets("if false, doesn't display password warnings",
-        (WidgetTester tester) async {
-      // display InsertNewPassword
-      await pumpInsertNewPassword(tester);
-
-      // get InsertNewPassword state
-      InsertNewPasswordState state =
-          tester.state(find.byType(InsertNewPassword));
-
-      // expect to find password checks
-      final passwordChecksFinder = find.byType(PasswordWarning);
-      expect(state.displayPasswordChecks, isTrue);
-      expect(passwordChecksFinder, findsNWidgets(3));
-
-      // set displayPasswordChecks to false
-      state.displayPasswordChecks = false;
-      expect(state.displayPasswordChecks, isFalse);
-      await tester.pump();
-
-      // expect not to find password checks
-      expect(passwordChecksFinder, findsNothing);
-    });
-
-    testWidgets("if false, doesn't display password warnings",
-        (WidgetTester tester) async {
-      // display InsertNewPassword
-      await pumpInsertNewPassword(tester);
-
-      // get InsertNewPassword state
-      InsertNewPasswordState state =
-          tester.state(find.byType(InsertNewPassword));
-
-      // expect to find password checks
-      final passwordChecksFinder = find.byType(PasswordWarning);
-      expect(state.displayPasswordChecks, isTrue);
-      expect(passwordChecksFinder, findsNWidgets(3));
-
-      // set displayPasswordChecks to false
-      state.displayPasswordChecks = false;
-      expect(state.displayPasswordChecks, isFalse);
-      await tester.pump();
-
-      // expect not to find password checks
-      expect(passwordChecksFinder, findsNothing);
-    });
-
-    testWidgets("is true whenever new password is entered",
-        (WidgetTester tester) async {
-      // display InsertNewPassword
-      await pumpInsertNewPassword(tester);
-
-      // get InsertNewPassword state
-      InsertNewPasswordState state =
-          tester.state(find.byType(InsertNewPassword));
-
-      // expect to find password checks
-      final passwordChecksFinder = find.byType(PasswordWarning);
-      expect(state.displayPasswordChecks, isTrue);
-      expect(passwordChecksFinder, findsNWidgets(3));
-
-      // set displayPasswordChecks to false
-      state.displayPasswordChecks = false;
-      expect(state.displayPasswordChecks, isFalse);
-      await tester.pumpAndSettle();
-
-      // expect not to find password checks
-      expect(passwordChecksFinder, findsNothing);
-
-      // enter new password
-      final passwordFinders = find.byType(AppInputPassword);
-      final newPasswordFinder = passwordFinders.last;
-      await tester.enterText(newPasswordFinder, "123");
-      await tester.pumpAndSettle();
-
-      // expect to find password checks
-      expect(state.displayPasswordChecks, isTrue);
-      expect(passwordChecksFinder, findsNWidgets(3));
-    });
-  });
 }
 
 void expectEnabledState({
@@ -539,32 +465,4 @@ void expectState({
   expect(state.passwordChecks[0], equals(passwordHasEightCharacters));
   expect(state.passwordChecks[1], equals(passwordHasLetter));
   expect(state.passwordChecks[2], equals(passwordHasNumber));
-
-  // focus nodes
-  expectFocus(
-    tester: tester,
-    oldPasswordHasFocus: oldPasswordHasFocus,
-    newPasswordHasFocus: newPasswordHasFocus,
-  );
-}
-
-void expectFocus({
-  @required WidgetTester tester,
-  @required bool oldPasswordHasFocus,
-  @required bool newPasswordHasFocus,
-}) {
-  final passwordFinders = find.byType(AppInputPassword);
-  final oldPasswordFinder = passwordFinders.first;
-  final newPasswordFinder = passwordFinders.last;
-  final oldPasswordWidget = tester.widget(oldPasswordFinder);
-  final newPasswordWidget = tester.widget(newPasswordFinder);
-  // before tapping new password input, old password input has focus
-  expect(
-      oldPasswordWidget,
-      isA<AppInputPassword>().having((o) => o.focusNode.hasFocus,
-          "focusNode.hasFocus", equals(oldPasswordHasFocus)));
-  expect(
-      newPasswordWidget,
-      isA<AppInputPassword>().having((o) => o.focusNode.hasFocus,
-          "focusNode.hasFocus", equals(newPasswordHasFocus)));
 }

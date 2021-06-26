@@ -7,6 +7,7 @@ import 'package:flutter/material.dart';
 import 'package:partner_app/config/config.dart';
 import 'package:partner_app/models/connectivity.dart';
 import 'package:partner_app/models/firebase.dart';
+import 'package:partner_app/models/googleMaps.dart';
 import 'package:partner_app/models/partner.dart';
 import 'package:partner_app/screens/anticipate.dart';
 import 'package:partner_app/screens/bankAccountDetail.dart';
@@ -32,6 +33,7 @@ import 'package:partner_app/screens/insertSmsCode.dart';
 import 'package:partner_app/screens/sendPhotoWithCnh.dart';
 import 'package:partner_app/screens/sendProfilePhoto.dart';
 import 'package:partner_app/screens/settings.dart';
+import 'package:partner_app/screens/shareLocation.dart';
 import 'package:partner_app/screens/splash.dart';
 import 'package:partner_app/screens/start.dart';
 import 'package:partner_app/screens/wallet.dart';
@@ -48,7 +50,7 @@ class _AppState extends State<App> {
   FirebaseModel firebaseModel;
   PartnerModel partnerModel;
   ConnectivityModel connectivity;
-  // GoogleMapsModel googleMaps;
+  GoogleMapsModel googleMaps;
   FirebaseAuth firebaseAuth;
   FirebaseDatabase firebaseDatabase;
   FirebaseStorage firebaseStorage;
@@ -60,13 +62,13 @@ class _AppState extends State<App> {
     super.initState();
   }
 
-  // @override
-  // void dispose() {
-  //   if (googleMaps != null) {
-  //     googleMaps.dispose();
-  //   }
-  //   super.dispose();
-  // }
+  @override
+  void dispose() {
+    if (googleMaps != null) {
+      googleMaps.dispose();
+    }
+    super.dispose();
+  }
 
   Future<void> initializeApp() async {
     // TODO: decide whether to set firebase.database.setPersistenceEnabled(true)
@@ -161,8 +163,7 @@ class _AppState extends State<App> {
       // initialize models
       partnerModel = PartnerModel();
       // tripModel = TripModel();
-      // user = UserModel();
-      // googleMaps = GoogleMapsModel();
+      googleMaps = GoogleMapsModel();
       // pilot = PilotModel();
       connectivity = ConnectivityModel();
     } else {
@@ -181,6 +182,9 @@ class _AppState extends State<App> {
           ),
           ChangeNotifierProvider<ConnectivityModel>(
             create: (context) => connectivity,
+          ),
+          ChangeNotifierProvider<GoogleMapsModel>(
+            create: (context) => googleMaps,
           ),
         ], // pass user model down
         builder: (context, child) {
@@ -202,6 +206,8 @@ class _AppState extends State<App> {
                 return MaterialPageRoute(builder: (context) {
                   return Home(
                     firebase: args.firebase,
+                    partner: args.partner,
+                    googleMaps: args.googleMaps,
                   );
                 });
               }
@@ -318,12 +324,24 @@ class _AppState extends State<App> {
                 });
               }
 
+              // if ShareLocation is pushed
+              if (settings.name == ShareLocation.routeName) {
+                final ShareLocationArguments args = settings.arguments;
+                return MaterialPageRoute(builder: (context) {
+                  return ShareLocation(
+                    push: args.push,
+                  );
+                });
+              }
+
               assert(false, 'Need to implement ${settings.name}');
               return null;
             },
             routes: {
               Home.routeName: (context) => Home(
                     firebase: firebaseModel,
+                    partner: partnerModel,
+                    googleMaps: googleMaps,
                   ),
               Start.routeName: (context) => Start(),
               InsertPhone.routeName: (context) => InsertPhone(),

@@ -1,8 +1,12 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
+import 'package:geolocator/geolocator.dart';
 import 'package:partner_app/models/firebase.dart';
 import 'package:partner_app/vendors/firebaseDatabase/interfaces.dart';
 import 'package:partner_app/vendors/firebaseDatabase/methods.dart';
 import 'package:partner_app/vendors/firebaseStorage.dart';
+import 'package:partner_app/vendors/geolocator.dart';
 
 class ProfileImage {
   final ImageProvider<Object> file;
@@ -35,6 +39,8 @@ class PartnerModel extends ChangeNotifier {
   bool _bankAccountSubmitted = false;
   int _amountOwed;
   BankAccount _bankAccount;
+  Position _position;
+  StreamSubscription _positionSubscription;
 
   // getters
   String get id => _id;
@@ -60,6 +66,8 @@ class PartnerModel extends ChangeNotifier {
   bool get bankAccountSubmitted => _bankAccountSubmitted;
   int get amountOwed => _amountOwed;
   BankAccount get bankAccount => _bankAccount;
+  Position get position => _position;
+  StreamSubscription get positionSubscription => _positionSubscription;
 
   void updateAccountStatus(AccountStatus acs) {
     _accountStatus = acs;
@@ -119,6 +127,45 @@ class PartnerModel extends ChangeNotifier {
     PartnerInterface partnerInterface =
         await firebase.database.getPartnerFromID(firebase.auth.currentUser.uid);
     this.fromPartnerInterface(partnerInterface, notify: notify);
+  }
+
+  Future<Position> getPosition({bool notify = true}) async {
+    Position partnerPos;
+    try {
+      partnerPos = await determineUserPosition();
+    } catch (_) {
+      _position = null;
+    }
+    _position = partnerPos;
+    if (notify) {
+      notifyListeners();
+    }
+
+    return _position;
+  }
+
+  // cancel position subscription if it exists
+  void cancelPositionChangeSubscription() {
+    if (_positionSubscription != null) {
+      _positionSubscription.cancel();
+    }
+  }
+
+  // updates partner position whenever they move at least 50 meters
+  void updateGeocodingOnPositionChange() {
+    try {
+      Stream<Position> userPositionStream = Geolocator.getPositionStream(
+        desiredAccuracy: LocationAccuracy.best,
+        distanceFilter: 50,
+      );
+      // cancel previous subscription if it exists
+      cancelPositionChangeSubscription();
+      // subscribe to changes in position, updating position and gocoding on changes
+      _positionSubscription = userPositionStream.listen((position) async {
+        _position = position;
+        notifyListeners();
+      });
+    } catch (_) {}
   }
 
   void fromPartnerInterface(

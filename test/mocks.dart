@@ -6,6 +6,7 @@ import 'package:flutter/material.dart';
 import 'package:mockito/mockito.dart';
 import 'package:partner_app/models/connectivity.dart';
 import 'package:partner_app/models/firebase.dart';
+import 'package:partner_app/models/googleMaps.dart';
 import 'package:partner_app/models/partner.dart';
 import 'package:partner_app/vendors/firebaseDatabase/interfaces.dart';
 
@@ -32,6 +33,8 @@ class MockUser extends Mock implements User {}
 
 class MockPartnerModel extends Mock implements PartnerModel {}
 
+class MockGoogleMapsModel extends Mock implements GoogleMapsModel {}
+
 class MockPartnerInterface extends Mock implements PartnerInterface {}
 
 class MockConnectivityModel extends Mock implements ConnectivityModel {}
@@ -43,6 +46,7 @@ MockNavigatorObserver mockNavigatorObserver = MockNavigatorObserver();
 MockUserCredential mockUserCredential = MockUserCredential();
 MockUser mockUser = MockUser();
 MockPartnerModel mockPartnerModel = MockPartnerModel();
+MockGoogleMapsModel mockGoogleMapsModel = MockGoogleMapsModel();
 MockPartnerInterface mockPartnerInterface = MockPartnerInterface();
 MockConnectivityModel mockConnectivityModel = MockConnectivityModel();
 MockDataSnapshot mockDataSnapshot = MockDataSnapshot();
