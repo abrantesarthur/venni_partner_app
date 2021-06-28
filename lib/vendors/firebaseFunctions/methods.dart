@@ -78,4 +78,20 @@ extension AppFirebaseFunctions on FirebaseFunctions {
       throw e;
     }
   }
+
+  Future<void> connect({
+    @required double currentLatitude,
+    @required double currentLongitude,
+  }) async {
+    Map<String, double> data = {
+      "current_latitude": currentLatitude,
+      "current_longitude": currentLongitude,
+    };
+    try {
+      await this.httpsCallable("partner-connect").call(data);
+    } catch (e) {
+      throw e;
+    }
+    return null;
+  }
 }

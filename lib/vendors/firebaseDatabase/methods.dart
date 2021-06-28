@@ -160,7 +160,7 @@ extension AppFirebaseDatabase on FirebaseDatabase {
           .reference()
           .child("partners")
           .child(partnerID)
-          .child("partner_status")
+          .child("status")
           .set(partnerStatus.getString());
     } catch (e) {
       throw e;
@@ -207,7 +207,7 @@ extension AppFirebaseDatabase on FirebaseDatabase {
         .reference()
         .child("partners")
         .child(partnerID)
-        .child("partner_status")
+        .child("status")
         .onValue
         .listen(onData);
   }

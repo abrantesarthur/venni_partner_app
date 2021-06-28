@@ -399,7 +399,7 @@ class PartnerInterface {
       rating: rating,
       totalTrips: totalTrips,
       pagarmeRecipientID: json["pagarme_recipient_id"],
-      partnerStatus: PartnerStatusExtension.fromString(json["partner_status"]),
+      partnerStatus: PartnerStatusExtension.fromString(json["status"]),
       accountStatus: AccountStatusExtension.fromString(json["account_status"]),
       denialReason: json["denial_reason"],
       lockReason: json["lock_reason"],
@@ -448,7 +448,7 @@ class PartnerInterface {
       json["pagarme_recipient_id"] = this.pagarmeRecipientID;
     }
     if (this.partnerStatus != null) {
-      json["partner_status"] = this.partnerStatus.getString();
+      json["status"] = this.partnerStatus.getString();
     }
     if (this.accountStatus != null) {
       json["account_status"] = this.accountStatus.getString();
