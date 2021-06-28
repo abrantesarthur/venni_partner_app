@@ -222,6 +222,7 @@ class PartnerModel extends ChangeNotifier {
           : pi.submittedDocuments.bankAccount;
       _amountOwed = pi.amountOwed;
       _bankAccount = pi.bankAccount;
+      _gains = 0;
       if (notify) {
         notifyListeners();
       }
