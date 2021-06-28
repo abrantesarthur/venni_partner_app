@@ -9,6 +9,7 @@ import 'package:partner_app/styles.dart';
 import 'package:partner_app/utils/utils.dart';
 import 'package:partner_app/vendors/firebaseDatabase/interfaces.dart';
 import 'package:partner_app/vendors/firebaseDatabase/methods.dart';
+import 'package:partner_app/vendors/firebaseFunctions/methods.dart';
 import 'package:partner_app/models/googleMaps.dart';
 import 'package:partner_app/models/partner.dart';
 import 'package:partner_app/screens/menu.dart';
@@ -16,7 +17,6 @@ import 'package:partner_app/screens/shareLocation.dart';
 import 'package:partner_app/screens/splash.dart';
 import 'package:partner_app/screens/start.dart';
 import 'package:partner_app/widgets/appButton.dart';
-import 'package:partner_app/widgets/cancelButton.dart';
 import 'package:partner_app/widgets/menuButton.dart';
 import 'package:partner_app/widgets/overallPadding.dart';
 import 'package:provider/provider.dart';
@@ -215,6 +215,7 @@ class HomeState extends State<Home> with WidgetsBindingObserver {
                         alignment: Alignment.bottomCenter,
                         child: AppButton(
                           textData: "Conectar",
+                          child: buttonChild,
                           onTapCallBack: lockScreen
                               ? () {}
                               : () async => await connect(context),
@@ -248,7 +249,7 @@ class HomeState extends State<Home> with WidgetsBindingObserver {
                                 ),
                                 children: <TextSpan>[
                                   TextSpan(
-                                    text: reaisFromCents(partner.gains),
+                                    text: reaisFromCents(partner.gains ?? 0),
                                     style: TextStyle(
                                       fontSize: 35,
                                       fontWeight: FontWeight.bold,
@@ -346,18 +347,19 @@ class HomeState extends State<Home> with WidgetsBindingObserver {
       );
       lockScreen = true;
     });
-    // update status locally, even though we already have a listener, since
-    // the listener can be flaky sometimes
-    partner.updatePartnerStatus(PartnerStatus.available);
 
-    // send request to set partner as 'available'
-    await firebase.database.setPartnerStatus(
-      partnerID: firebase.auth.currentUser.uid,
-      partnerStatus: PartnerStatus.available,
+    // send request to connect, thus updating partner's status to 'available'
+    // and setting his position
+    await firebase.functions.connect(
+      currentLatitude: partner.position.latitude,
+      currentLongitude: partner.position.longitude,
     );
 
     // clear gains so we can start counting them again
     partner.updateGains(0, notify: false);
+
+    // update status locally, since the database listener can be flaky sometimes
+    partner.updatePartnerStatus(PartnerStatus.available);
 
     // unlock screen and hide circularProgressIndicator
     setState(() {

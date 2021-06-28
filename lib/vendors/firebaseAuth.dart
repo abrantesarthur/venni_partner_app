@@ -49,6 +49,7 @@ extension AppFirebaseAuth on FirebaseAuth {
 
       // if user already has a partner account
       if (partner.id != null && firebase.isRegistered) {
+        print("partner.id != null && firebase.isRegistered");
         // if accountStatus is 'approved', push Home screen
         if (partner.accountStatus == AccountStatus.approved) {
           GoogleMapsModel googleMaps = Provider.of<GoogleMapsModel>(
