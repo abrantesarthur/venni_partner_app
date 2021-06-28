@@ -94,4 +94,13 @@ extension AppFirebaseFunctions on FirebaseFunctions {
     }
     return null;
   }
+
+  Future<void> disconnect() async {
+    try {
+      await this.httpsCallable("partner-disconnect").call();
+    } catch (e) {
+      throw e;
+    }
+    return null;
+  }
 }
