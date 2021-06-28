@@ -5,6 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
+import 'package:intl/intl.dart' as intl;
 import 'package:partner_app/styles.dart';
 import 'package:partner_app/widgets/okDialog.dart';
 import 'package:partner_app/widgets/yesNoDialog.dart';
@@ -308,22 +309,25 @@ Future<void> showOkDialog({
 
 Future<T> showYesNoDialog<T>(
   BuildContext context, {
-  String title,
+  @required String title,
   String content,
   VoidCallback onPressedNo,
-  VoidCallback onPressedYes,
+  @required VoidCallback onPressedYes,
 }) async {
   return await showDialog(
-      context: context,
-      builder: (BuildContext context) {
-        return YesNoDialog(
-          title: title,
-          onPressedYes: onPressedYes,
-          onPressedNo: onPressedNo,
-        );
-      });
+    context: context,
+    builder: (BuildContext context) {
+      return YesNoDialog(
+        title: title,
+        content: content,
+        onPressedYes: onPressedYes,
+        onPressedNo: onPressedNo,
+      );
+    },
+  );
 }
 
 String reaisFromCents(int cents) {
-  return (cents / 100).toStringAsFixed(2);
+  var f = intl.NumberFormat("###,##0.00");
+  return f.format(cents / 100);
 }

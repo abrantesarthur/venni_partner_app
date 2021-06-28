@@ -41,6 +41,7 @@ class PartnerModel extends ChangeNotifier {
   BankAccount _bankAccount;
   Position _position;
   StreamSubscription _positionSubscription;
+  int _gains;
 
   // getters
   String get id => _id;
@@ -68,6 +69,7 @@ class PartnerModel extends ChangeNotifier {
   BankAccount get bankAccount => _bankAccount;
   Position get position => _position;
   StreamSubscription get positionSubscription => _positionSubscription;
+  int get gains => _gains;
 
   void updateAccountStatus(AccountStatus acs) {
     _accountStatus = acs;
@@ -106,6 +108,18 @@ class PartnerModel extends ChangeNotifier {
 
   void updateBankAccount(BankAccount ba) {
     _bankAccount = ba;
+    notifyListeners();
+  }
+
+  void updateGains(int g, {bool notify = true}) {
+    _gains = g;
+    if (notify) {
+      notifyListeners();
+    }
+  }
+
+  void increaseGainsBy(int v) {
+    _gains += v;
     notifyListeners();
   }
 

@@ -197,7 +197,7 @@ class _AppState extends State<App> {
             theme: ThemeData(fontFamily: "OpenSans"),
             // start screen depends on whether user is registered
             initialRoute:
-                firebase.isRegistered ? Start.routeName : Start.routeName,
+                firebase.isRegistered ? Home.routeName : Start.routeName,
             // pass appropriate arguments to routes
             onGenerateRoute: (RouteSettings settings) {
               // if Home is pushed
