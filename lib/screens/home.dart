@@ -5,6 +5,8 @@ import 'package:geolocator/geolocator.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:partner_app/models/connectivity.dart';
 import 'package:partner_app/models/firebase.dart';
+import 'package:partner_app/styles.dart';
+import 'package:partner_app/utils/utils.dart';
 import 'package:partner_app/vendors/firebaseDatabase/interfaces.dart';
 import 'package:partner_app/vendors/firebaseDatabase/methods.dart';
 import 'package:partner_app/models/googleMaps.dart';
@@ -14,9 +16,11 @@ import 'package:partner_app/screens/shareLocation.dart';
 import 'package:partner_app/screens/splash.dart';
 import 'package:partner_app/screens/start.dart';
 import 'package:partner_app/widgets/appButton.dart';
+import 'package:partner_app/widgets/cancelButton.dart';
 import 'package:partner_app/widgets/menuButton.dart';
 import 'package:partner_app/widgets/overallPadding.dart';
 import 'package:provider/provider.dart';
+import 'package:sliding_up_panel/sliding_up_panel.dart';
 
 class HomeArguments {
   FirebaseModel firebase;
@@ -218,6 +222,82 @@ class HomeState extends State<Home> with WidgetsBindingObserver {
                       ),
                     )
                   : Container(),
+              partner.partnerStatus == PartnerStatus.available
+                  ? SlidingUpPanel(
+                      panel: OverallPadding(
+                        top: 0,
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.center,
+                          children: [
+                            SizedBox(height: screenHeight / 100),
+                            Icon(
+                              Icons.maximize,
+                              color: Colors.black.withOpacity(0.3),
+                              size: 30,
+                            ),
+                            Spacer(),
+                            SizedBox(height: screenHeight / 100),
+                            RichText(
+                              textAlign: TextAlign.start,
+                              text: TextSpan(
+                                text: "R\$",
+                                style: TextStyle(
+                                  fontSize: 18,
+                                  color: Colors.black,
+                                  fontWeight: FontWeight.normal,
+                                ),
+                                children: <TextSpan>[
+                                  TextSpan(
+                                    text: reaisFromCents(partner.gains),
+                                    style: TextStyle(
+                                      fontSize: 35,
+                                      fontWeight: FontWeight.bold,
+                                      color: Colors.black,
+                                    ),
+                                  ),
+                                  TextSpan(
+                                    text: " recebidos",
+                                    style: TextStyle(
+                                      fontSize: 18,
+                                      fontWeight: FontWeight.normal,
+                                      color: AppColor.disabled,
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ),
+                            SizedBox(height: screenHeight / 50),
+                            AppButton(
+                              textData: "Desconectar",
+                              child: buttonChild,
+                              onTapCallBack: lockScreen
+                                  ? () {}
+                                  : () async => disconnect(context),
+                            ),
+                          ],
+                        ),
+                      ),
+                      collapsed: Column(
+                        children: [
+                          SizedBox(height: screenHeight / 25),
+                          Text(
+                            "VOCÊ ESTÁ ONLINE",
+                            style: TextStyle(
+                              fontWeight: FontWeight.bold,
+                              fontSize: 24,
+                              color: AppColor.primaryPink,
+                            ),
+                          ),
+                        ],
+                      ),
+                      color: Colors.white,
+                      maxHeight: screenHeight / 2.7,
+                      borderRadius: BorderRadius.only(
+                        topLeft: Radius.circular(10.0),
+                        topRight: Radius.circular(10.0),
+                      ),
+                    )
+                  : Container(),
             ],
           ),
         );
@@ -258,6 +338,7 @@ class HomeState extends State<Home> with WidgetsBindingObserver {
 
   Future<void> connect(BuildContext context) async {
     FirebaseModel firebase = Provider.of<FirebaseModel>(context, listen: false);
+    PartnerModel partner = Provider.of<PartnerModel>(context, listen: false);
     // lock screen and display circularProgressIndicator
     setState(() {
       buttonChild = CircularProgressIndicator(
@@ -265,17 +346,64 @@ class HomeState extends State<Home> with WidgetsBindingObserver {
       );
       lockScreen = true;
     });
+    // update status locally, even though we already have a listener, since
+    // the listener can be flaky sometimes
+    partner.updatePartnerStatus(PartnerStatus.available);
+
     // send request to set partner as 'available'
     await firebase.database.setPartnerStatus(
       partnerID: firebase.auth.currentUser.uid,
       partnerStatus: PartnerStatus.available,
     );
+
+    // clear gains so we can start counting them again
+    partner.updateGains(0, notify: false);
+
     // unlock screen and hide circularProgressIndicator
     setState(() {
-      buttonChild = CircularProgressIndicator(
-        valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
-      );
-      lockScreen = true;
+      buttonChild = null;
+      lockScreen = false;
     });
+  }
+
+  Future<void> disconnect(BuildContext context) async {
+    // show dialog asking user if the want to disconnect
+    await showYesNoDialog(
+      context,
+      title: "Deseja se desconectar",
+      content: "você irá parar de receber pedidos de corridas",
+      onPressedYes: () async {
+        // if partner indeed choses to disconnect, pop off dialog
+        Navigator.pop(context);
+
+        // lock screen
+        setState(() {
+          lockScreen = true;
+        });
+
+        // manually update status locally, even though we already have a
+        // listener, since the listener can be flaky sometimes
+        PartnerModel partner = Provider.of<PartnerModel>(
+          context,
+          listen: false,
+        );
+        partner.updatePartnerStatus(PartnerStatus.unavailable);
+
+        // send request to set partner as 'unavailable'
+        FirebaseModel firebase = Provider.of<FirebaseModel>(
+          context,
+          listen: false,
+        );
+        await firebase.database.setPartnerStatus(
+          partnerID: firebase.auth.currentUser.uid,
+          partnerStatus: PartnerStatus.unavailable,
+        );
+
+        // unlock screen
+        setState(() {
+          lockScreen = false;
+        });
+      },
+    );
   }
 }

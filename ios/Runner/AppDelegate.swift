@@ -11,7 +11,7 @@ import GoogleMaps
     // extract googleMapsApiKey from dartEnvironmentVariables
 
     // read DartEnvironmentVariables from Info.plist
-    var dartEnvironmentVariables: String = Bundle.main.infoDictionary?["DartEnvironmentVariables"] as! String ?? ""
+    var dartEnvironmentVariables: String = (Bundle.main.infoDictionary?["DartEnvironmentVariables"] as! String) ?? ""
     // use ',' as a serapator to convert dartEnvironmentVariables string into array
     let dartEnvironmentVariablesArray = dartEnvironmentVariables.components(separatedBy: ",")
     // look for entry in dartEnvironmentVariablesArray containing 'GOOGLE_MAPS_API_KEY' string
@@ -29,7 +29,7 @@ import GoogleMaps
     if(googleMapsApiKeyNameAndValue.count > 1) {
       googleMapsApiKey = googleMapsApiKeyNameAndValue[1]
     }
-    GMSServices.provideAPIKey(googleMapsApiKey)
+    GMSServices.provideAPIKey("AIzaSyBBIJW3IUj9uU60BIpIFNlzcMhhSrsgegQ")
 
     GeneratedPluginRegistrant.register(with: self)
     return super.application(application, didFinishLaunchingWithOptions: launchOptions)
