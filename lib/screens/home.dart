@@ -270,7 +270,6 @@ class HomeState extends State<Home> with WidgetsBindingObserver {
                             SizedBox(height: screenHeight / 50),
                             AppButton(
                               textData: "Desconectar",
-                              child: buttonChild,
                               onTapCallBack: lockScreen
                                   ? () {}
                                   : () async => disconnect(context),
@@ -281,14 +280,16 @@ class HomeState extends State<Home> with WidgetsBindingObserver {
                       collapsed: Column(
                         children: [
                           SizedBox(height: screenHeight / 25),
-                          Text(
-                            "VOCÊ ESTÁ ONLINE",
-                            style: TextStyle(
-                              fontWeight: FontWeight.bold,
-                              fontSize: 24,
-                              color: AppColor.primaryPink,
-                            ),
-                          ),
+                          buttonChild == null
+                              ? Text(
+                                  "VOCÊ ESTÁ ONLINE",
+                                  style: TextStyle(
+                                    fontWeight: FontWeight.bold,
+                                    fontSize: 24,
+                                    color: AppColor.primaryPink,
+                                  ),
+                                )
+                              : buttonChild,
                         ],
                       ),
                       color: Colors.white,
@@ -350,10 +351,25 @@ class HomeState extends State<Home> with WidgetsBindingObserver {
 
     // send request to connect, thus updating partner's status to 'available'
     // and setting his position
-    await firebase.functions.connect(
-      currentLatitude: partner.position.latitude,
-      currentLongitude: partner.position.longitude,
-    );
+    try {
+      await firebase.functions.connect(
+        currentLatitude: partner.position.latitude,
+        currentLongitude: partner.position.longitude,
+      );
+    } catch (e) {
+      // warn user about failure
+      await showOkDialog(
+        context: context,
+        title: "Algo deu errado",
+        content: "Tente novamente mais tarde",
+      );
+      // unlock screen and hide circularProgressIndicator
+      setState(() {
+        buttonChild = null;
+        lockScreen = false;
+      });
+      return;
+    }
 
     // clear gains so we can start counting them again
     partner.updateGains(0, notify: false);
@@ -372,7 +388,7 @@ class HomeState extends State<Home> with WidgetsBindingObserver {
     // show dialog asking user if the want to disconnect
     await showYesNoDialog(
       context,
-      title: "Deseja se desconectar",
+      title: "Deseja se desconectar?",
       content: "você irá parar de receber pedidos de corridas",
       onPressedYes: () async {
         // if partner indeed choses to disconnect, pop off dialog
@@ -381,29 +397,46 @@ class HomeState extends State<Home> with WidgetsBindingObserver {
         // lock screen
         setState(() {
           lockScreen = true;
+          buttonChild = CircularProgressIndicator(
+            valueColor: AlwaysStoppedAnimation<Color>(
+              AppColor.primaryPink,
+            ),
+          );
         });
 
-        // manually update status locally, even though we already have a
-        // listener, since the listener can be flaky sometimes
+        // send request to disconnect partner
+        FirebaseModel firebase = Provider.of<FirebaseModel>(
+          context,
+          listen: false,
+        );
+        try {
+          await firebase.functions.disconnect();
+        } catch (e) {
+          // warn user about failure
+          await showOkDialog(
+            context: context,
+            title: "Algo deu errado",
+            content: "Tente novamente mais tarde",
+          );
+          // unlock screen
+          setState(() {
+            lockScreen = false;
+            buttonChild = null;
+          });
+          return;
+        }
+
+        // manually update status locally, since the listener can be flaky
         PartnerModel partner = Provider.of<PartnerModel>(
           context,
           listen: false,
         );
         partner.updatePartnerStatus(PartnerStatus.unavailable);
 
-        // send request to set partner as 'unavailable'
-        FirebaseModel firebase = Provider.of<FirebaseModel>(
-          context,
-          listen: false,
-        );
-        await firebase.database.setPartnerStatus(
-          partnerID: firebase.auth.currentUser.uid,
-          partnerStatus: PartnerStatus.unavailable,
-        );
-
         // unlock screen
         setState(() {
           lockScreen = false;
+          buttonChild = null;
         });
       },
     );
