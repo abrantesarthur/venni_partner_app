@@ -5,6 +5,9 @@ import 'package:partner_app/vendors/firebaseDatabase/interfaces.dart';
 
 extension AppFirebaseDatabase on FirebaseDatabase {
   Future<PartnerInterface> getPartnerFromID(String pilotID) async {
+    if (pilotID == null || pilotID.isEmpty) {
+      return null;
+    }
     try {
       DataSnapshot snapshot =
           await this.reference().child("partners").child(pilotID).once();

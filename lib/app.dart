@@ -38,6 +38,7 @@ import 'package:partner_app/screens/splash.dart';
 import 'package:partner_app/screens/start.dart';
 import 'package:partner_app/screens/wallet.dart';
 import 'package:partner_app/screens/withdraw.dart';
+import 'package:partner_app/vendors/firebaseDatabase/interfaces.dart';
 import 'package:provider/provider.dart';
 
 class App extends StatefulWidget {
@@ -72,36 +73,12 @@ class _AppState extends State<App> {
 
   Future<void> initializeApp() async {
     // TODO: decide whether to set firebase.database.setPersistenceEnabled(true)
-    await initializeFlutterFire();
-  }
-
-  // Define an async function to initialize FlutterFire
-  Future<void> initializeFlutterFire() async {
     try {
-      /*
-        By default, initializeApp references the FirebaseOptions object that
-        read the configuration from GoogleService-Info.plist on iOS and
-        google-services.json on Android. Which such files we end up picking
-        depends on which value we pass to the --flavor flag of futter run 
-        reference: https://firebase.google.com/docs/projects/multiprojects */
-      if (Firebase.apps.length == 0) {
-        await Firebase.initializeApp();
-      }
-
-      // // insantiate authentication, database, and storage
-      firebaseAuth = FirebaseAuth.instance;
-      firebaseDatabase = FirebaseDatabase.instance;
-      firebaseStorage = FirebaseStorage.instance;
-      firebaseFunctions = FirebaseFunctions.instance;
-
-      // check if cloud functions are being emulated locally
-      if (AppConfig.env.values.emulateCloudFunctions) {
-        firebaseFunctions.useFunctionsEmulator(
-            origin: AppConfig.env.values.cloudFunctionsBaseURL);
-      }
-
-      // set default authentication language as brazilian portuguese
-      await firebaseAuth.setLanguageCode("pt_br");
+      await initializeFlutterFire();
+      initializeModels();
+      // download partner data so we can know their 'account_status' and decide
+      // whether to push Home or Start
+      await initializePartner();
 
       setState(() {
         _initialized = true;
@@ -113,6 +90,55 @@ class _AppState extends State<App> {
         _error = true;
       });
     }
+  }
+
+  // Define an async function to initialize FlutterFire
+  Future<void> initializeFlutterFire() async {
+    /*
+        By default, initializeApp references the FirebaseOptions object that
+        read the configuration from GoogleService-Info.plist on iOS and
+        google-services.json on Android. Which such files we end up picking
+        depends on which value we pass to the --flavor flag of futter run 
+        reference: https://firebase.google.com/docs/projects/multiprojects */
+    if (Firebase.apps.length == 0) {
+      await Firebase.initializeApp();
+    }
+
+    // // insantiate authentication, database, and storage
+    firebaseAuth = FirebaseAuth.instance;
+    firebaseDatabase = FirebaseDatabase.instance;
+    firebaseStorage = FirebaseStorage.instance;
+    firebaseFunctions = FirebaseFunctions.instance;
+
+    // check if cloud functions are being emulated locally
+    if (AppConfig.env.values.emulateCloudFunctions) {
+      firebaseFunctions.useFunctionsEmulator(
+          origin: AppConfig.env.values.cloudFunctionsBaseURL);
+    }
+
+    // set default authentication language as brazilian portuguese
+    await firebaseAuth.setLanguageCode("pt_br");
+  }
+
+  void initializeModels() {
+    // initialize firebaseModel. This will add a listener for user changes.
+    firebaseModel = FirebaseModel(
+      firebaseAuth: firebaseAuth,
+      firebaseDatabase: firebaseDatabase,
+      firebaseStorage: firebaseStorage,
+      firebaseFunctions: firebaseFunctions,
+    );
+
+    // initialize models
+    partnerModel = PartnerModel();
+    // tripModel = TripModel();
+    googleMaps = GoogleMapsModel();
+    // pilot = PilotModel();
+    connectivity = ConnectivityModel();
+  }
+
+  Future<void> initializePartner() async {
+    await partnerModel.downloadData(firebaseModel);
   }
 
   // TODO: README How to test locally taking DEV flavor into account. Explain that need to run emulator locally.
@@ -151,22 +177,7 @@ class _AppState extends State<App> {
     }
 
     // Show a loader until FlutterFire is initialized
-    if (_initialized) {
-      // initialize firebaseModel. This will add a listener for user changes.
-      firebaseModel = FirebaseModel(
-        firebaseAuth: firebaseAuth,
-        firebaseDatabase: firebaseDatabase,
-        firebaseStorage: firebaseStorage,
-        firebaseFunctions: firebaseFunctions,
-      );
-
-      // initialize models
-      partnerModel = PartnerModel();
-      // tripModel = TripModel();
-      googleMaps = GoogleMapsModel();
-      // pilot = PilotModel();
-      connectivity = ConnectivityModel();
-    } else {
+    if (!_initialized) {
       return Splash();
     }
 
@@ -192,12 +203,18 @@ class _AppState extends State<App> {
             context,
             listen: false,
           );
+          PartnerModel partner = Provider.of<PartnerModel>(
+            context,
+            listen: false,
+          );
 
           return MaterialApp(
             theme: ThemeData(fontFamily: "OpenSans"),
             // start screen depends on whether user is registered
-            initialRoute:
-                firebase.isRegistered ? Home.routeName : Start.routeName,
+            initialRoute: firebase.isRegistered &&
+                    partner.accountStatus == AccountStatus.approved
+                ? Home.routeName
+                : Start.routeName,
             // pass appropriate arguments to routes
             onGenerateRoute: (RouteSettings settings) {
               // if Home is pushed

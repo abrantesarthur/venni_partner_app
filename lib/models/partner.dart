@@ -191,7 +191,9 @@ class PartnerModel extends ChangeNotifier {
     PartnerInterface pi, {
     bool notify = true,
   }) {
-    if (pi != null) {
+    if (pi == null) {
+      clear();
+    } else {
       _id = pi.id;
       _name = pi.name;
       _lastName = pi.lastName;
@@ -223,9 +225,9 @@ class PartnerModel extends ChangeNotifier {
       _amountOwed = pi.amountOwed;
       _bankAccount = pi.bankAccount;
       _gains = 0;
-      if (notify) {
-        notifyListeners();
-      }
+    }
+    if (notify) {
+      notifyListeners();
     }
   }
 
