@@ -66,6 +66,9 @@ extension AppFirebaseStorage on FirebaseStorage {
 
   // TODO: cache downloaded images
   Future<ProfileImage> getPartnerProfilePicture(String id) async {
+    if (id == null) {
+      return null;
+    }
     ListResult results;
     try {
       results = await this.ref().child("partner-documents").child(id).list();
