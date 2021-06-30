@@ -316,6 +316,7 @@ void main() {
                   firebase: mockFirebaseModel,
                   partner: mockPartnerModel,
                   googleMaps: mockGoogleMapsModel,
+                  timer: mockTimerModel,
                 ),
             InsertEmail.routeName: (context) => InsertEmail(
                   userCredential: mockUserCredential,

@@ -40,7 +40,10 @@ class ShareLocationState extends State<ShareLocation> {
               borderRadius: 10.0,
               textData: "Recarregar Aplicatiavo",
               onTapCallBack: () async {
-                Navigator.pushReplacementNamed(context, widget.push);
+                Navigator.pushReplacementNamed(
+                  context,
+                  widget.push,
+                );
               },
             )
           : AppButton(

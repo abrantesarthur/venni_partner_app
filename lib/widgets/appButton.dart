@@ -12,6 +12,9 @@ class AppButton extends StatelessWidget {
   final Color buttonColor;
   final VoidCallback onTapCallBack;
   final Widget child;
+  final BoxBorder border;
+  final bool hasShadow;
+  final Widget widgetRight;
 
   AppButton({
     this.textStyle,
@@ -23,6 +26,9 @@ class AppButton extends StatelessWidget {
     this.borderRadius,
     this.buttonColor,
     this.child,
+    this.border,
+    this.hasShadow = true,
+    this.widgetRight,
     @required this.onTapCallBack,
   });
 
@@ -36,8 +42,9 @@ class AppButton extends StatelessWidget {
       child: Container(
         decoration: BoxDecoration(
           borderRadius: BorderRadius.circular(borderRadius ?? 100.0),
+          border: border,
           color: buttonColor ?? AppColor.primaryPink,
-          boxShadow: buttonColor != AppColor.disabled
+          boxShadow: buttonColor != AppColor.disabled && hasShadow
               ? [
                   BoxShadow(
                     color: Colors.black.withOpacity(0.3),
@@ -72,9 +79,10 @@ class AppButton extends StatelessWidget {
                         textAlign: TextAlign.center,
                         style: textStyle ??
                             TextStyle(
-                                fontWeight: FontWeight.bold,
-                                fontSize: 24,
-                                color: Colors.white),
+                              fontWeight: FontWeight.bold,
+                              fontSize: 24,
+                              color: Colors.white,
+                            ),
                       ),
               ),
               this.iconRight != null
@@ -84,7 +92,15 @@ class AppButton extends StatelessWidget {
                           padding: EdgeInsets.only(right: screenWidth / 50),
                           child:
                               Icon(iconRight, color: Colors.white, size: 24)))
-                  : Container()
+                  : widgetRight != null
+                      ? Align(
+                          alignment: Alignment.centerRight,
+                          child: Padding(
+                            padding: EdgeInsets.only(right: screenWidth / 30),
+                            child: widgetRight,
+                          ),
+                        )
+                      : Container()
             ],
           ),
         ),
