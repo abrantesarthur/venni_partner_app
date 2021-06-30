@@ -126,3 +126,129 @@ class Transfer {
     );
   }
 }
+
+enum TripStatus {
+  waitingConfirmation,
+  waitingPayment,
+  waitingPartner,
+  lookingForPartner,
+  noPartnersAvailable,
+  inProgress,
+  completed,
+  cancelledByPartner,
+  cancelledByClient,
+  paymentFailed,
+}
+
+extension TripStatusExtension on TripStatus {
+  static TripStatus fromString(String s) {
+    switch (s) {
+      case "waiting-confirmation":
+        return TripStatus.waitingConfirmation;
+      case "waiting-payment":
+        return TripStatus.waitingPayment;
+      case "waiting-partner":
+        return TripStatus.waitingPartner;
+      case "looking-for-partner":
+        return TripStatus.lookingForPartner;
+      case "in-progress":
+        return TripStatus.inProgress;
+      case "completed":
+        return TripStatus.completed;
+      case "cancelled-by-partner":
+        return TripStatus.cancelledByPartner;
+      case "cancelled-by-client":
+        return TripStatus.cancelledByClient;
+      case "payment-failed":
+        return TripStatus.paymentFailed;
+      default:
+        return null;
+    }
+  }
+}
+
+enum PaymentMethod {
+  cash,
+  creditCard,
+}
+
+extension PaymentMethodExtension on PaymentMethod {
+  static PaymentMethod fromString(String s) {
+    switch (s) {
+      case "cash":
+        return PaymentMethod.cash;
+      case "credit_card":
+        return PaymentMethod.creditCard;
+      default:
+        return null;
+    }
+  }
+}
+
+class Trip {
+  String clientID;
+  TripStatus tripStatus;
+  String originPlaceID;
+  String destinationPlaceID;
+  int farePrice;
+  int distanceMeters;
+  String distanceText;
+  int durationSeconds;
+  String durationText;
+  String clientToDestinationEncodedPoints;
+  int requestTime;
+  String originAddress;
+  String destinationAddress;
+  PaymentMethod paymentMethod;
+
+  Trip({
+    @required this.clientID,
+    @required this.tripStatus,
+    @required this.originPlaceID,
+    @required this.destinationPlaceID,
+    @required this.farePrice,
+    @required this.distanceMeters,
+    @required this.distanceText,
+    @required this.durationSeconds,
+    @required this.durationText,
+    @required this.clientToDestinationEncodedPoints,
+    @required this.requestTime,
+    @required this.originAddress,
+    @required this.destinationAddress,
+    @required this.paymentMethod,
+  });
+
+  factory Trip.fromJson(Map json) {
+    if (json == null) {
+      return null;
+    }
+
+    int distanceMeters = json["distance_meters"] == null
+        ? null
+        : int.parse(json["distance_meters"]);
+    int durationSeconds = json["duration_seconds"] == null
+        ? null
+        : int.parse(json["duration_seconds"]);
+    int requestTime =
+        json["request_time"] == null ? null : int.parse(json["request_time"]);
+    PaymentMethod paymentMethod =
+        PaymentMethodExtension.fromString(json["payment_method"]);
+
+    return Trip(
+      clientID: json["uid"],
+      tripStatus: TripStatusExtension.fromString(json["trip_status"]),
+      originPlaceID: json["origin_place_id"],
+      destinationPlaceID: json["destination_place_id"],
+      farePrice: json["fare_price"],
+      distanceMeters: distanceMeters,
+      distanceText: json["distance_text"],
+      durationSeconds: durationSeconds,
+      durationText: json["duration_text"],
+      clientToDestinationEncodedPoints: json["encoded_points"],
+      requestTime: requestTime,
+      originAddress: json["origin_address"],
+      destinationAddress: json["destination_address"],
+      paymentMethod: paymentMethod,
+    );
+  }
+}
