@@ -8,6 +8,7 @@ import 'package:partner_app/models/connectivity.dart';
 import 'package:partner_app/models/firebase.dart';
 import 'package:partner_app/models/googleMaps.dart';
 import 'package:partner_app/models/partner.dart';
+import 'package:partner_app/models/timer.dart';
 import 'package:partner_app/vendors/firebaseDatabase/interfaces.dart';
 
 class MockFirebaseAuth extends Mock implements FirebaseAuth {}
@@ -39,6 +40,8 @@ class MockPartnerInterface extends Mock implements PartnerInterface {}
 
 class MockConnectivityModel extends Mock implements ConnectivityModel {}
 
+class MockTimerModel extends Mock implements TimerModel {}
+
 MockFirebaseModel mockFirebaseModel = MockFirebaseModel();
 MockFirebaseAuth mockFirebaseAuth = MockFirebaseAuth();
 MockFirebaseDatabase mockFirebaseDatabase = MockFirebaseDatabase();
@@ -47,6 +50,7 @@ MockUserCredential mockUserCredential = MockUserCredential();
 MockUser mockUser = MockUser();
 MockPartnerModel mockPartnerModel = MockPartnerModel();
 MockGoogleMapsModel mockGoogleMapsModel = MockGoogleMapsModel();
+MockTimerModel mockTimerModel = MockTimerModel();
 MockPartnerInterface mockPartnerInterface = MockPartnerInterface();
 MockConnectivityModel mockConnectivityModel = MockConnectivityModel();
 MockDataSnapshot mockDataSnapshot = MockDataSnapshot();

@@ -5,6 +5,7 @@ import 'package:geolocator/geolocator.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:partner_app/models/connectivity.dart';
 import 'package:partner_app/models/firebase.dart';
+import 'package:partner_app/models/timer.dart';
 import 'package:partner_app/styles.dart';
 import 'package:partner_app/utils/utils.dart';
 import 'package:partner_app/vendors/firebaseDatabase/interfaces.dart';
@@ -19,6 +20,7 @@ import 'package:partner_app/screens/start.dart';
 import 'package:partner_app/widgets/appButton.dart';
 import 'package:partner_app/widgets/menuButton.dart';
 import 'package:partner_app/widgets/overallPadding.dart';
+import 'package:partner_app/widgets/partnerRequested.dart';
 import 'package:provider/provider.dart';
 import 'package:sliding_up_panel/sliding_up_panel.dart';
 
@@ -26,10 +28,12 @@ class HomeArguments {
   FirebaseModel firebase;
   PartnerModel partner;
   GoogleMapsModel googleMaps;
+  TimerModel timer;
   HomeArguments({
     @required this.firebase,
     @required this.partner,
     @required this.googleMaps,
+    @required this.timer,
   });
 }
 
@@ -38,11 +42,13 @@ class Home extends StatefulWidget {
   final FirebaseModel firebase;
   final PartnerModel partner;
   final GoogleMapsModel googleMaps;
+  final TimerModel timer;
 
   Home({
     @required this.firebase,
     @required this.partner,
     @required this.googleMaps,
+    @required this.timer,
   });
 
   @override
@@ -77,12 +83,39 @@ class HomeState extends State<Home> with WidgetsBindingObserver {
     // subscribe to changes in partner_status so UI is updated appropriately
     partnerStatusSubscription = widget.firebase.database.onPartnerStatusUpdate(
       widget.firebase.auth.currentUser.uid,
-      (e) {
+      (e) async {
         PartnerStatus partnerStatus = PartnerStatusExtension.fromString(
           e.snapshot.value,
         );
-        // update partner model accordingly. This will trigger a tree rebuild
+
         if (partnerStatus != null) {
+          // if partner has been requested, kick off 10s timer. The TimerModel
+          // is passed to the PartnerRequested widget which uses its 'remainingSeconds'
+          // property to display how much time the partner has to accept the trip.
+          // Once the timer stops, if the partner hasn't accepted
+          // the trip request we call 'declineTrip' and udpate their status locally
+          if (partnerStatus == PartnerStatus.requested) {
+            widget.timer.kickOff(
+                durationSeconds: 10,
+                callback: () {
+                  // if partner did not accept trip after 10s
+                  if (!widget.partner.acceptedTrip) {
+                    // set partner status to available so that UI is updated and
+                    // they can no longer accept trip requests. It's ok to do this
+                    // without sending request to firebase. The trip protocol
+                    // guarantees that 'confirmTrip' will set a partner
+                    // available again if they fail to accept a trip.
+                    widget.partner.updatePartnerStatus(PartnerStatus.available);
+                  } else {
+                    // if partner accepted trip, reset acceptedTrip to false
+                    widget.partner.resetAcceptedTrip(notify: false);
+                  }
+                });
+          }
+          if (partnerStatus == PartnerStatus.busy) {
+            // TODO: download trip information
+          }
+          // update partner model accordingly. This will trigger a tree rebuild
           widget.partner.updatePartnerStatus(partnerStatus);
         }
       },
@@ -299,6 +332,17 @@ class HomeState extends State<Home> with WidgetsBindingObserver {
                         topRight: Radius.circular(10.0),
                       ),
                     )
+                  : Container(),
+              // TODO: play a sound
+              // TODO: retrieve client informatin later
+              partner.partnerStatus == PartnerStatus.requested
+                  ? PartnerRequested()
+                  : Container(),
+              // TODO: PartnerBusy should return a Future that only resolves
+              // once we retrieve the client information. Also, I should start thinking
+              // or at least researching about how firebase deals with connectivity issues.
+              partner.partnerStatus == PartnerStatus.busy
+                  ? Center(child: Text("BUSY"))
                   : Container(),
             ],
           ),

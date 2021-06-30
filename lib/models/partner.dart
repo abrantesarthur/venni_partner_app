@@ -42,6 +42,7 @@ class PartnerModel extends ChangeNotifier {
   Position _position;
   StreamSubscription _positionSubscription;
   int _gains;
+  bool _acceptedTrip = false;
 
   // getters
   String get id => _id;
@@ -70,6 +71,21 @@ class PartnerModel extends ChangeNotifier {
   Position get position => _position;
   StreamSubscription get positionSubscription => _positionSubscription;
   int get gains => _gains;
+  bool get acceptedTrip => _acceptedTrip;
+
+  void setAcceptedTrip({bool notify = true}) {
+    _acceptedTrip = true;
+    if (notify) {
+      notifyListeners();
+    }
+  }
+
+  void resetAcceptedTrip({bool notify = true}) {
+    _acceptedTrip = false;
+    if (notify) {
+      notifyListeners();
+    }
+  }
 
   void updateAccountStatus(AccountStatus acs) {
     _accountStatus = acs;

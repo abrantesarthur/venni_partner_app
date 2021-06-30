@@ -9,6 +9,7 @@ import 'package:partner_app/models/connectivity.dart';
 import 'package:partner_app/models/firebase.dart';
 import 'package:partner_app/models/googleMaps.dart';
 import 'package:partner_app/models/partner.dart';
+import 'package:partner_app/models/timer.dart';
 import 'package:partner_app/screens/anticipate.dart';
 import 'package:partner_app/screens/bankAccountDetail.dart';
 import 'package:partner_app/screens/deleteAccount.dart';
@@ -52,6 +53,7 @@ class _AppState extends State<App> {
   PartnerModel partnerModel;
   ConnectivityModel connectivity;
   GoogleMapsModel googleMaps;
+  TimerModel timer;
   FirebaseAuth firebaseAuth;
   FirebaseDatabase firebaseDatabase;
   FirebaseStorage firebaseStorage;
@@ -85,6 +87,7 @@ class _AppState extends State<App> {
         _error = false;
       });
     } catch (e) {
+      print(e);
       // Set `_error` state to true if Firebase initialization fails
       setState(() {
         _error = true;
@@ -131,10 +134,9 @@ class _AppState extends State<App> {
 
     // initialize models
     partnerModel = PartnerModel();
-    // tripModel = TripModel();
     googleMaps = GoogleMapsModel();
-    // pilot = PilotModel();
     connectivity = ConnectivityModel();
+    timer = TimerModel();
   }
 
   Future<void> initializePartner() async {
@@ -197,6 +199,9 @@ class _AppState extends State<App> {
           ChangeNotifierProvider<GoogleMapsModel>(
             create: (context) => googleMaps,
           ),
+          ChangeNotifierProvider<TimerModel>(
+            create: (context) => timer,
+          ),
         ], // pass user model down
         builder: (context, child) {
           FirebaseModel firebase = Provider.of<FirebaseModel>(
@@ -225,6 +230,7 @@ class _AppState extends State<App> {
                     firebase: args.firebase,
                     partner: args.partner,
                     googleMaps: args.googleMaps,
+                    timer: args.timer,
                   );
                 });
               }
@@ -359,6 +365,7 @@ class _AppState extends State<App> {
                     firebase: firebaseModel,
                     partner: partnerModel,
                     googleMaps: googleMaps,
+                    timer: timer,
                   ),
               Start.routeName: (context) => Start(),
               InsertPhone.routeName: (context) => InsertPhone(),

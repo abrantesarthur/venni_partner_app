@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:partner_app/models/firebase.dart';
 import 'package:partner_app/models/googleMaps.dart';
 import 'package:partner_app/models/partner.dart';
+import 'package:partner_app/models/timer.dart';
 import 'package:partner_app/screens/documents.dart';
 import 'package:partner_app/screens/home.dart';
 import 'package:partner_app/screens/insertEmail.dart';
@@ -56,6 +57,10 @@ extension AppFirebaseAuth on FirebaseAuth {
             context,
             listen: false,
           );
+          TimerModel timer = Provider.of<TimerModel>(
+            context,
+            listen: false,
+          );
           Navigator.pushReplacementNamed(
             context,
             Home.routeName,
@@ -63,6 +68,7 @@ extension AppFirebaseAuth on FirebaseAuth {
               firebase: firebase,
               partner: partner,
               googleMaps: googleMaps,
+              timer: timer,
             ),
           );
         } else {

@@ -282,6 +282,7 @@ void main() {
                   firebase: mockFirebaseModel,
                   partner: mockPartnerModel,
                   googleMaps: mockGoogleMapsModel,
+                  timer: mockTimerModel,
                 ),
             Start.routeName: (context) => Start(),
             InsertEmail.routeName: (context) => InsertEmail(
@@ -624,6 +625,7 @@ void main() {
                     firebase: mockFirebaseModel,
                     partner: mockPartnerModel,
                     googleMaps: mockGoogleMapsModel,
+                    timer: mockTimerModel,
                   ),
               Start.routeName: (context) => Start(),
               InsertEmail.routeName: (context) => InsertEmail(

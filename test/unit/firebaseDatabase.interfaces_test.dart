@@ -338,7 +338,7 @@ void main() {
         "status": "available",
         "account_status": "pending_documents",
         "denial_reason": "denial_reason",
-        "current_client_id": "current_client_id",
+        "current_client_uid": "current_client_uid",
         "current_latitude": "11.1111",
         "current_longitude": "22.2222",
         "current_zone": "AA",
@@ -380,7 +380,7 @@ void main() {
       expect(pi.partnerStatus, equals(PartnerStatus.available));
       expect(pi.accountStatus, equals(AccountStatus.pendingDocuments));
       expect(pi.denialReason, equals("denial_reason"));
-      expect(pi.currentClientID, equals("current_client_id"));
+      expect(pi.currentClientID, equals("current_client_uid"));
       expect(pi.currentLatitude, equals(11.1111));
       expect(pi.currentLongitude, equals(22.2222));
       expect(pi.currentZone, equals("AA"));
@@ -418,7 +418,7 @@ void main() {
         "status": "available",
         "account_status": "pending_documents",
         "denial_reason": "denial_reason",
-        "current_client_id": "current_client_id",
+        "current_client_uid": "current_client_uid",
         "current_latitude": "11.1111",
         "current_longitude": "22.2222",
         "current_zone": "AA",

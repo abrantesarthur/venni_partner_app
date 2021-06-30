@@ -403,7 +403,7 @@ class PartnerInterface {
       accountStatus: AccountStatusExtension.fromString(json["account_status"]),
       denialReason: json["denial_reason"],
       lockReason: json["lock_reason"],
-      currentClientID: json["current_client_id"],
+      currentClientID: json["current_client_uid"],
       currentLatitude: currentLatitude,
       currentLongitude: currentLongitude,
       currentZone: json["current_zone"],
@@ -460,7 +460,7 @@ class PartnerInterface {
       json["lock_reason"] = this.lockReason;
     }
     if (this.currentClientID != null) {
-      json["current_client_id"] = this.currentClientID;
+      json["current_client_uid"] = this.currentClientID;
     }
     if (this.currentLatitude != null) {
       json["current_latitude"] = this.currentLatitude.toString();

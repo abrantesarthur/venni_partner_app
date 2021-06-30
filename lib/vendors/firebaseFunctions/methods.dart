@@ -103,4 +103,14 @@ extension AppFirebaseFunctions on FirebaseFunctions {
     }
     return null;
   }
+
+    Future<void> acceptTrip() async {
+    try {
+      await this.httpsCallable("trip-accept").call();
+    } catch (e) {
+      throw e;
+    }
+    return null;
+  }
+
 }
