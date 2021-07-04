@@ -283,6 +283,8 @@ void main() {
                   partner: mockPartnerModel,
                   googleMaps: mockGoogleMapsModel,
                   timer: mockTimerModel,
+                  trip: mockTripModel,
+                  connectivity: mockConnectivityModel,
                 ),
             Start.routeName: (context) => Start(),
             InsertEmail.routeName: (context) => InsertEmail(
@@ -626,6 +628,8 @@ void main() {
                     partner: mockPartnerModel,
                     googleMaps: mockGoogleMapsModel,
                     timer: mockTimerModel,
+                    trip: mockTripModel,
+                    connectivity: mockConnectivityModel,
                   ),
               Start.routeName: (context) => Start(),
               InsertEmail.routeName: (context) => InsertEmail(

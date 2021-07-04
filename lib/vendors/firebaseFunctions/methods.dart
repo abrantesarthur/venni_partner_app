@@ -22,12 +22,9 @@ extension AppFirebaseFunctions on FirebaseFunctions {
       HttpsCallableResult result =
           await this.httpsCallable("payment-create_bank_account").call(data);
       if (result != null && result.data != null) {
-        print(result.data);
         return BankAccount.fromJson(result.data);
       }
-    } catch (e) {
-      throw e;
-    }
+    } catch (e) {}
     return null;
   }
 
@@ -39,11 +36,9 @@ extension AppFirebaseFunctions on FirebaseFunctions {
       HttpsCallableResult result =
           await this.httpsCallable("payment-get_balance").call(data);
       if (result != null && result.data != null) {
-        print(result.data);
         return Balance.fromJson(result.data);
       }
     } catch (e) {
-      print(e);
       throw e;
     }
     return null;
@@ -61,22 +56,16 @@ extension AppFirebaseFunctions on FirebaseFunctions {
       HttpsCallableResult result =
           await this.httpsCallable("payment-create_transfer").call(data);
       if (result != null && result.data != null) {
-        print(result.data);
         return Transfer.fromJson(result.data);
       }
     } catch (e) {
-      print(e);
       throw e;
     }
     return null;
   }
 
   Future<void> deleteAccount() async {
-    try {
-      await this.httpsCallable("account-delete_partner").call();
-    } catch (e) {
-      throw e;
-    }
+    await this.httpsCallable("account-delete_partner").call();
   }
 
   Future<void> connect({
@@ -87,30 +76,35 @@ extension AppFirebaseFunctions on FirebaseFunctions {
       "current_latitude": currentLatitude,
       "current_longitude": currentLongitude,
     };
-    try {
-      await this.httpsCallable("partner-connect").call(data);
-    } catch (e) {
-      throw e;
-    }
-    return null;
+    await this.httpsCallable("partner-connect").call(data);
   }
 
   Future<void> disconnect() async {
+    await this.httpsCallable("partner-disconnect").call();
+  }
+
+  Future<void> acceptTrip() async {
+    await this.httpsCallable("trip-accept").call();
+  }
+
+  Future<Trip> getCurrentTrip() async {
     try {
-      await this.httpsCallable("partner-disconnect").call();
+      HttpsCallableResult result =
+          await this.httpsCallable("trip-partner_get_current_trip").call();
+      if (result != null && result.data != null) {
+        return Trip.fromJson(result.data);
+      }
     } catch (e) {
       throw e;
     }
     return null;
   }
 
-    Future<void> acceptTrip() async {
-    try {
-      await this.httpsCallable("trip-accept").call();
-    } catch (e) {
-      throw e;
-    }
-    return null;
+  Future<void> cancelTrip() async {
+    await this.httpsCallable("trip-partner_cancel").call();
   }
 
+  Future<void> startTrip() async {
+    await this.httpsCallable("trip-start").call();
+  }
 }

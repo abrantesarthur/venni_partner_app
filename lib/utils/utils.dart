@@ -9,10 +9,10 @@ import 'package:intl/intl.dart' as intl;
 import 'package:partner_app/styles.dart';
 import 'package:partner_app/widgets/okDialog.dart';
 import 'package:partner_app/widgets/yesNoDialog.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 extension IntExtension on int {
   String getFormatedDate() {
-    print(this);
     DateTime d = DateTime.fromMillisecondsSinceEpoch(this);
     String day = d.day < 10 ? "0" + d.day.toString() : d.day.toString();
     String month = d.month < 10 ? "0" + d.month.toString() : d.month.toString();
@@ -148,7 +148,7 @@ extension PhoneNumberExtension on String {
         .replaceRange(10, 10, "-");
   }
 
-// isValidPhoneNumber returns true if phone has format (##) ##### ####
+// isValidPhoneNumber returns true if phone has format (##) #####-####
   bool isValidPhoneNumber() {
     if (this == null) {
       return false;
@@ -330,4 +330,18 @@ Future<T> showYesNoDialog<T>(
 String reaisFromCents(int cents) {
   var f = intl.NumberFormat("###,##0.00");
   return f.format(cents / 100);
+}
+
+// getDistanceBetweenCoordinates uses the Haversine formula to calculae the
+// shortest distance between two coordinates and returns result in meters
+int getDistanceBetweenCoordinates(LatLng c1, LatLng c2) {
+  const p = 0.017453292519943295; // Math.PI / 180
+  const earthDiameter = 12742;
+  double a = 0.5 -
+      cos((c2.latitude - c1.latitude) * p) / 2 +
+      cos(c1.latitude) *
+          cos(c2.latitude) *
+          (1 - cos((c2.longitude - c1.longitude) * p)) /
+          2;
+  return (earthDiameter * asin(sqrt(a)) * 1000).round();
 }

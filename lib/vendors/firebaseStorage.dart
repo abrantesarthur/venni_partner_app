@@ -92,4 +92,32 @@ extension AppFirebaseStorage on FirebaseStorage {
     }
     return null;
   }
+
+  Future<ProfileImage> getClientProfilePicture(String id) async {
+    if (id == null || id.isEmpty) {
+      return null;
+    }
+    ListResult results;
+    try {
+      results = await this.ref().child("user-photos").child(id).list();
+      if (results != null && results.items.length > 0) {
+        Reference profilePhotoRef;
+        results.items.forEach((item) {
+          if (item.fullPath.contains("profile")) {
+            profilePhotoRef = item;
+          }
+        });
+        if (profilePhotoRef != null) {
+          String imageURL = await profilePhotoRef.getDownloadURL();
+          return ProfileImage(
+            file: NetworkImage(imageURL),
+            name: results.items[0].name,
+          );
+        }
+      }
+    } catch (e) {
+      return null;
+    }
+    return null;
+  }
 }
