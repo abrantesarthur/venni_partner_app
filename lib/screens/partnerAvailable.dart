@@ -148,12 +148,6 @@ class PartnerAvailableState extends State<PartnerAvailable> {
           listen: false,
         );
         partner.updatePartnerStatus(PartnerStatus.unavailable);
-
-        // unlock screen
-        setState(() {
-          lockScreen = false;
-          buttonChild = null;
-        });
       },
     );
   }

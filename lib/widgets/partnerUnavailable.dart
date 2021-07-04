@@ -69,11 +69,5 @@ class PartnerUnavailableStatus extends State<PartnerUnavailable> {
 
     // update status locally, since the database listener can be flaky sometimes
     partner.updatePartnerStatus(PartnerStatus.available);
-
-    // unlock screen and hide circularProgressIndicator
-    setState(() {
-      buttonChild = null;
-      lock = false;
-    });
   }
 }
