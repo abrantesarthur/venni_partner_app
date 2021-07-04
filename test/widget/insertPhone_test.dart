@@ -317,6 +317,8 @@ void main() {
                   partner: mockPartnerModel,
                   googleMaps: mockGoogleMapsModel,
                   timer: mockTimerModel,
+                  trip: mockTripModel,
+                  connectivity: mockConnectivityModel,
                 ),
             InsertEmail.routeName: (context) => InsertEmail(
                   userCredential: mockUserCredential,

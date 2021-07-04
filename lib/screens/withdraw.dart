@@ -181,7 +181,6 @@ class WithdrawState extends State<Withdraw> {
         amount: (controller.numberValue * 100).floor().toString(),
         pagarmeRecipientID: partner.pagarmeRecipientID,
       );
-      print(transfer);
     } catch (e) {
       // displaying warning on failure
       await showOkDialog(

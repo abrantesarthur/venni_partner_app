@@ -28,8 +28,6 @@ class PartnerRequestedState extends State<PartnerRequested> {
   Widget build(BuildContext context) {
     final screenHeight = MediaQuery.of(context).size.height;
     final screenWidth = MediaQuery.of(context).size.width;
-    PartnerModel partner = Provider.of<PartnerModel>(context, listen: false);
-    FirebaseModel firebase = Provider.of<FirebaseModel>(context);
 
     return Column(
       children: [
@@ -82,56 +80,58 @@ class PartnerRequestedState extends State<PartnerRequested> {
                           ),
                         )
                       : null,
-                  onTapCallBack: lock
-                      ? () {}
-                      : () async {
-                          // mark the pilot as having accepted trip, so if 10s timeout
-                          // finishes, we don't send a declineTrip request and don't update
-                          // the UI disposing this PartnerRequested widget
-                          partner.setAcceptedTrip(notify: false);
-
-                          // lock this widget and display circular progress indicator
-                          setState(() {
-                            lock = true;
-                            buttonChild = CircularProgressIndicator(
-                              valueColor:
-                                  AlwaysStoppedAnimation<Color>(Colors.white),
-                            );
-                          });
-
-                          // send request to accept the trip
-                          try {
-                            await firebase.functions.acceptTrip();
-                          } catch (e) {
-                            // warn user
-                            await showOkDialog(
-                              context: context,
-                              title: "Algo deu errado",
-                            );
-                            // reset partner status so they can no longer accept the trip.
-                            // it's ok doing this without sending a request to firebase
-                            // since, if a partner fails to accept a trip, his status
-                            // is reset to available
-                            partner.updatePartnerStatus(
-                              PartnerStatus.available,
-                            );
-                            return;
-                          }
-
-                          // block until partner is granted or denied the trip
-                          // so that circular progress indicator continues
-                          // being displayed
-                          while (partner.partnerStatus != PartnerStatus.busy &&
-                              partner.partnerStatus !=
-                                  PartnerStatus.available) {
-                            await Future.delayed(Duration(seconds: 1));
-                          }
-                        },
+                  onTapCallBack:
+                      lock ? () {} : () async => await accept(context),
                 ),
                 SizedBox(height: screenHeight / 20),
               ],
             )),
       ],
     );
+  }
+
+  Future<void> accept(BuildContext context) async {
+    PartnerModel partner = Provider.of<PartnerModel>(context, listen: false);
+    FirebaseModel firebase = Provider.of<FirebaseModel>(context, listen: false);
+
+    // mark the pilot as having accepted trip, so if 10s timeout
+    // finishes, we don't send a declineTrip request and don't update
+    // the UI disposing this PartnerRequested widget
+    partner.setAcceptedTrip(true, notify: false);
+
+    // lock this widget and display circular progress indicator
+    setState(() {
+      lock = true;
+      buttonChild = CircularProgressIndicator(
+        valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
+      );
+    });
+
+    // send request to accept the trip
+    try {
+      await firebase.functions.acceptTrip();
+    } catch (e) {
+      // warn user
+      await showOkDialog(
+        context: context,
+        title: "Algo deu errado",
+      );
+      // reset partner status so they can no longer accept the trip.
+      // it's ok doing this without sending a request to firebase
+      // since, if a partner fails to accept a trip, his status
+      // is reset to available
+      partner.updatePartnerStatus(
+        PartnerStatus.available,
+      );
+      return;
+    }
+
+    // block until partner is granted or denied the trip
+    // so that circular progress indicator continues
+    // being displayed
+    while (partner.partnerStatus != PartnerStatus.busy &&
+        partner.partnerStatus != PartnerStatus.available) {
+      await Future.delayed(Duration(seconds: 1));
+    }
   }
 }

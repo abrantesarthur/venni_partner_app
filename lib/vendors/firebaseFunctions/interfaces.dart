@@ -25,8 +25,6 @@ class Balance {
   });
 
   factory Balance.fromJson(Map json) {
-    print(json);
-    print(json["waiting_funds"]);
     return json == null
         ? null
         : Balance(
@@ -190,6 +188,10 @@ class Trip {
   TripStatus tripStatus;
   String originPlaceID;
   String destinationPlaceID;
+  double originLat;
+  double originLng;
+  double destinationLat;
+  double destinationLng;
   int farePrice;
   int distanceMeters;
   String distanceText;
@@ -200,12 +202,20 @@ class Trip {
   String originAddress;
   String destinationAddress;
   PaymentMethod paymentMethod;
+  String
+      clientName; // added to firebase Trip's interface by partnerGetCurrentTrip
+  String
+      clientPhone; // added to firebase Trip's interface by partnerGetCurrentTrip
 
   Trip({
     @required this.clientID,
     @required this.tripStatus,
     @required this.originPlaceID,
     @required this.destinationPlaceID,
+    @required this.originLat,
+    @required this.originLng,
+    @required this.destinationLat,
+    @required this.destinationLng,
     @required this.farePrice,
     @required this.distanceMeters,
     @required this.distanceText,
@@ -216,6 +226,8 @@ class Trip {
     @required this.originAddress,
     @required this.destinationAddress,
     @required this.paymentMethod,
+    @required this.clientName,
+    @required this.clientPhone,
   });
 
   factory Trip.fromJson(Map json) {
@@ -233,12 +245,26 @@ class Trip {
         json["request_time"] == null ? null : int.parse(json["request_time"]);
     PaymentMethod paymentMethod =
         PaymentMethodExtension.fromString(json["payment_method"]);
+    double originLat =
+        json["origin_lat"] == null ? null : double.parse(json["origin_lat"]);
+    double originLng =
+        json["origin_lng"] == null ? null : double.parse(json["origin_lng"]);
+    double destinationLat = json["destination_lat"] == null
+        ? null
+        : double.parse(json["destination_lat"]);
+    double destinationLng = json["destination_lng"] == null
+        ? null
+        : double.parse(json["destination_lng"]);
 
     return Trip(
       clientID: json["uid"],
       tripStatus: TripStatusExtension.fromString(json["trip_status"]),
       originPlaceID: json["origin_place_id"],
       destinationPlaceID: json["destination_place_id"],
+      originLat: originLat,
+      originLng: originLng,
+      destinationLat: destinationLat,
+      destinationLng: destinationLng,
       farePrice: json["fare_price"],
       distanceMeters: distanceMeters,
       distanceText: json["distance_text"],
@@ -249,6 +275,8 @@ class Trip {
       originAddress: json["origin_address"],
       destinationAddress: json["destination_address"],
       paymentMethod: paymentMethod,
+      clientName: json["client_name"],
+      clientPhone: json["client_phone"],
     );
   }
 }

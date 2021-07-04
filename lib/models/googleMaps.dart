@@ -2,6 +2,11 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:flutter/services.dart' show rootBundle;
+import 'package:partner_app/models/partner.dart';
+import 'package:partner_app/models/trip.dart';
+import 'package:partner_app/utils/utils.dart';
+import 'package:partner_app/vendors/firebaseFunctions/interfaces.dart';
+import 'package:provider/provider.dart';
 
 // TODO: write tests
 class GoogleMapsModel extends ChangeNotifier {
@@ -26,7 +31,6 @@ class GoogleMapsModel extends ChangeNotifier {
         .loadString("assets/map_style.txt")
         .then((value) => {_mapStyle = value});
   }
-
   set initialCameraLatLng(LatLng latlng) {
     _initialCameraLatLng = latlng;
     notifyListeners();
@@ -64,7 +68,7 @@ class GoogleMapsModel extends ChangeNotifier {
   //   // remove polylines
   //   _polylines.clear();
   //   // remove markers
-  //   _undrawMarkers();
+  //   undrawMarkers();
 
   //   if (animateCamera) {
   //     await _googleMapController.animateCamera(CameraUpdate.newLatLngZoom(
@@ -78,238 +82,176 @@ class GoogleMapsModel extends ChangeNotifier {
   //   notifyListeners();
   // }
 
-  // Future<void> drawPolylineFromPartnerToDestination(
-  //   BuildContext context,
-  // ) async {
-  //   // only draw polyline between the partner and origin if inProgress
-  //   TripModel trip = Provider.of<TripModel>(context, listen: false);
-  //   if (trip.tripStatus != TripStatus.inProgress) {
-  //     return;
-  //   }
+  Future<void> drawDestinationMarker(
+    BuildContext context, {
+    bool notify = true,
+  }) async {
+    print("drawDestinationMarker");
+    // only draw marker if inProgress
+    TripModel trip = Provider.of<TripModel>(context, listen: false);
+    if (trip.tripStatus != TripStatus.inProgress) {
+      return;
+    }
 
-  //   // remove old polyline
-  //   _polylines.clear();
-  //   _undrawMarkers();
+    // remove old markers
+    undrawMarkers(notify: false);
 
-  //   // get partner position
-  //   PartnerModel partner = Provider.of<PartnerModel>(context, listen: false);
-  //   LatLng partnerCoordinates = LatLng(
-  //     partner.currentLatitude,
-  //     partner.currentLongitude,
-  //   );
+    // get trip destination position
+    LatLng destinationCoordinates = LatLng(
+      trip.destinationLat,
+      trip.destinationLng,
+    );
 
-  //   // get trip destination position
-  //   LatLng destinationCoordinates = LatLng(
-  //     trip.dropOffAddress.latitude,
-  //     trip.dropOffAddress.longitude,
-  //   );
+    final screenHeight = MediaQuery.of(context).size.height;
+    await drawMarkers(
+      context: context,
+      markerCoordinates: destinationCoordinates,
+      topPadding: screenHeight / 5,
+      bottomPadding: screenHeight / 10,
+      notify: notify,
+    );
+  }
 
-  //   // request google directions API for encoded points between partner and destination
-  //   // TODO: move directions api requests to server. Request it when partner reports
-  //   // their position and, besides their coordinates, set the encoded points too.
-  //   // Also, user placeIDs instead of coordinates whenever possible. This makes
-  //   // markers more precise
-  //   DirectionsResponse response = await Directions().searchByCoordinates(
-  //     originCoordinates: partnerCoordinates,
-  //     destinationCoordinates: destinationCoordinates,
-  //   );
+  Future<void> drawOriginMarker(
+    BuildContext context, {
+    bool notify = true,
+  }) async {
+    print("drawOriginMarker");
+    // only draw markers if waitingPartner
+    TripModel trip = Provider.of<TripModel>(context, listen: false);
+    if (trip.tripStatus != TripStatus.waitingPartner) {
+      return;
+    }
 
-  //   if (response != null && response.status == "OK") {
-  //     // get encodedPoints
-  //     String encodedPoints = response.result.route.encodedPoints;
+    // remove old markers
+    undrawMarkers(notify: false);
 
-  //     // set partner coordinates locally to what directions returns
-  //     partner.updateCurrentLatitude(response.result.route.originLatitude);
-  //     partner.updateCurrentLongitude(response.result.route.originLongitude);
+    // get trip origin position
+    LatLng originCoordinates = LatLng(
+      trip.originLat,
+      trip.originLng,
+    );
 
-  //     // draw the polyline
-  //     final screenHeight = MediaQuery.of(context).size.height;
-  //     drawPolyline(
-  //       context: context,
-  //       encodedPoints: encodedPoints,
-  //       topPadding: screenHeight / 40,
-  //       bottomPadding: screenHeight / 5,
-  //     );
+    final screenHeight = MediaQuery.of(context).size.height;
+    await drawMarkers(
+      context: context,
+      markerCoordinates: originCoordinates,
+      topPadding: screenHeight / 5,
+      bottomPadding: screenHeight / 10,
+      notify: notify,
+    );
+  }
 
-  //     // set trip remaining duration
-  //     trip.updateDurationSeconds(response.result.route.durationSeconds);
-  //   }
-  // }
+  Future<void> drawMarkers({
+    @required BuildContext context,
+    LatLng markerCoordinates,
+    double topPadding,
+    double bottomPadding,
+    bool notify = true,
+  }) async {
+    print("drawMarkers");
+    // hide partners's location details and set maps padding
+    setGoogleMapsCameraView(
+      locationButtonEnabled: true,
+      locationEnabled: true,
+      topPadding: topPadding,
+      bottomPadding: bottomPadding,
+      notify: false,
+    );
 
-  // Future<void> drawPolylineFromPartnerToOrigin(BuildContext context) async {
-  //   // only draw polyline between the use and the partner if waitingPartner
-  //   TripModel trip = Provider.of<TripModel>(context, listen: false);
-  //   if (trip.tripStatus != TripStatus.waitingPartner) {
-  //     return;
-  //   }
+    // get partner cooridnates
+    PartnerModel partner = Provider.of<PartnerModel>(context, listen: false);
+    LatLng partnerCoordinates = LatLng(
+      partner.position.latitude,
+      partner.position.longitude,
+    );
 
-  //   // remove old polyline
-  //   _polylines.clear();
-  //   _undrawMarkers();
+    // add bounds to map view
+    animateCamera(partnerCoordinates, markerCoordinates);
 
-  //   // get partner position
-  //   PartnerModel partner = Provider.of<PartnerModel>(context, listen: false);
-  //   LatLng partnerCoordinates = LatLng(
-  //     partner.currentLatitude,
-  //     partner.currentLongitude,
-  //   );
+    // get destination marker
+    BitmapDescriptor markerIcon = await AppBitmapDescriptor.fromSvg(
+      context,
+      "images/pickUpIcon.svg",
+    );
+    LatLng markerPosition = LatLng(
+      markerCoordinates.latitude,
+      markerCoordinates.longitude,
+    );
+    Marker marker = Marker(
+      markerId: MarkerId("dropOffMakrer"),
+      position: markerPosition,
+      icon: markerIcon,
+    );
 
-  //   // get trip origin position
-  //   LatLng originCoordinates = LatLng(
-  //     trip.pickUpAddress.latitude,
-  //     trip.pickUpAddress.longitude,
-  //   );
+    // add marker
+    _markers.add(marker);
 
-  //   // request google directions API for encoded points between user and partner
-  //   // TODO: move directions api requests to server. Request it when partner reports
-  //   // their position and, besides their coordinates, set the encoded points too.
-  //   DirectionsResponse response = await Directions().searchByCoordinates(
-  //     originCoordinates: originCoordinates,
-  //     destinationCoordinates: partnerCoordinates,
-  //   );
+    if (notify) {
+      print("drawMarkers notifyListeners");
+      notifyListeners();
+    }
+  }
 
-  //   if (response != null && response.status == "OK") {
-  //     // get encodedPoints
-  //     String encodedPoints = response.result.route.encodedPoints;
-
-  //     // set partner coordinates locally to what directions returns
-  //     partner.updateCurrentLatitude(response.result.route.destinationLatitude);
-  //     partner
-  //         .updateCurrentLongitude(response.result.route.destinationLongitude);
-
-  //     // draw the polyline
-  //     final screenHeight = MediaQuery.of(context).size.height;
-  //     drawPolyline(
-  //       context: context,
-  //       encodedPoints: encodedPoints,
-  //       topPadding: screenHeight / 40,
-  //       bottomPadding: screenHeight / 4,
-  //     );
-
-  //     // set partner arrival time
-  //     trip.updatePartnerArrivalSeconds(response.result.route.durationSeconds);
-  //   }
-  // }
-
-  // Future<void> drawPolyline({
-  //   @required BuildContext context,
-  //   @required String encodedPoints,
-  //   double topPadding,
-  //   double bottomPadding,
-  // }) async {
-  //   // drive polyline between user's pick up and drop off points
-  //   // set polylines
-  //   PolylineId polylineId = PolylineId("poly");
-  //   Polyline polyline = AppPolylinePoints.getPolylineFromEncodedPoints(
-  //     id: polylineId,
-  //     encodedPoints: encodedPoints,
-  //   );
-  //   if (polyline.points.first.latitude == polyline.points.last.latitude &&
-  //       polyline.points.first.longitude == polyline.points.last.longitude) {
-  //     // clear polyline if end and start points are the same
-  //     _polylines.clear();
-  //   } else {
-  //     _polylines[polylineId] = polyline;
-  //   }
-
-  //   // hide user's location details and set maps padding
-  //   setGoogleMapsCameraView(
-  //     locationButtonEnabled: false,
-  //     topPadding: topPadding,
-  //     bottomPadding: bottomPadding,
-  //   );
-
-  //   // add bounds to map view
-  //   // for some reason we have to delay computation so animateCamera works
-  //   Future.delayed(Duration(milliseconds: 50), () async {
-  //     await _googleMapController.animateCamera(CameraUpdate.newLatLngBounds(
-  //       AppPolylinePoints.calculateBounds(polyline),
-  //       50,
-  //     ));
-  //   });
-
-  //   // draw  markers
-  //   await _drawMarkers(context, polyline: polyline);
-  //   notifyListeners();
-  // }
+  Future<void> animateCamera(
+    LatLng firstCoordinates,
+    LatLng secondCoordinates,
+  ) {
+    print("schedule animateCamera");
+    return Future.delayed(Duration(milliseconds: 250), () async {
+      print("actually animateCamera");
+      await _googleMapController.animateCamera(CameraUpdate.newLatLngBounds(
+        calculateBounds(firstCoordinates, secondCoordinates),
+        50,
+      ));
+    });
+  }
 
   void setGoogleMapsCameraView({
     bool locationEnabled = true,
     bool locationButtonEnabled = true,
     double topPadding,
     double bottomPadding,
+    bool notify = true,
   }) {
-    // hide user's location details (true by default)
+    // set user's location details (true by default)
     _myLocationEnabled = locationEnabled;
     _myLocationButtonEnabled = locationButtonEnabled;
 
     // set paddings (null by default)
     _googleMapsBottomPadding = bottomPadding;
     _googleMapsTopPadding = topPadding;
-    notifyListeners();
+    if (notify) {
+      notifyListeners();
+    }
   }
 
-  // void _undrawMarkers() {
-  //   _markers.clear();
-  // }
+  LatLngBounds calculateBounds(
+    LatLng firstLocation,
+    LatLng secondLocation,
+  ) {
+    double highestLat = firstLocation.latitude > secondLocation.latitude
+        ? firstLocation.latitude
+        : secondLocation.latitude;
+    double highestLng = firstLocation.longitude > secondLocation.longitude
+        ? firstLocation.longitude
+        : secondLocation.longitude;
+    double lowestLat = firstLocation.latitude < secondLocation.latitude
+        ? firstLocation.latitude
+        : secondLocation.latitude;
+    double lowestLng = firstLocation.longitude < secondLocation.longitude
+        ? firstLocation.longitude
+        : secondLocation.longitude;
+    return LatLngBounds(
+      southwest: LatLng(lowestLat, lowestLng),
+      northeast: LatLng(highestLat, highestLng),
+    );
+  }
 
-  // Future<void> _drawMarkers(
-  //   BuildContext context, {
-  //   Polyline polyline,
-  // }) async {
-  //   _markers.clear();
-  //   TripModel trip = Provider.of<TripModel>(context, listen: false);
-
-  //   // first marker icon depends on whether trip is in progress
-  //   BitmapDescriptor firstMarkerIcon;
-  //   if (trip.tripStatus == TripStatus.inProgress) {
-  //     // partner's helmet
-  //     firstMarkerIcon =
-  //         await AppBitmapDescriptor.fromIconData(Icons.sports_motorsports);
-  //   } else {
-  //     // pink square
-  //     firstMarkerIcon = await AppBitmapDescriptor.fromSvg(
-  //       context,
-  //       "images/pickUpIcon.svg",
-  //     );
-  //   }
-
-  //   LatLng firstMarkerPosition = LatLng(
-  //     polyline.points.first.latitude,
-  //     polyline.points.first.longitude,
-  //   );
-  //   Marker firstMarker = Marker(
-  //     markerId: MarkerId("firstMarker"),
-  //     position: firstMarkerPosition,
-  //     icon: firstMarkerIcon,
-  //   );
-
-  //   // second marker icon depends on whether user is waiting partner or in progress
-  //   BitmapDescriptor secondMarkerIcon;
-  //   if (trip.tripStatus == TripStatus.waitingPartner) {
-  //     // draw partner helmet if waiting partner
-  //     secondMarkerIcon =
-  //         await AppBitmapDescriptor.fromIconData(Icons.sports_motorsports);
-  //   } else {
-  //     // draw round circle if in progres or in another state
-  //     secondMarkerIcon = await AppBitmapDescriptor.fromSvg(
-  //       context,
-  //       "images/dropOffIcon.svg",
-  //     );
-  //   }
-
-  //   LatLng secondMarkerPosition = LatLng(
-  //     polyline.points.last.latitude,
-  //     polyline.points.last.longitude,
-  //   );
-  //   Marker secondMarker = Marker(
-  //     markerId: MarkerId("dropOffMakrer"),
-  //     position: secondMarkerPosition,
-  //     icon: secondMarkerIcon,
-  //   );
-
-  //   // add markers
-  //   _markers.add(firstMarker);
-  //   _markers.add(secondMarker);
-  // }
+  void undrawMarkers({bool notify = true}) {
+    _markers.clear();
+    if (notify) {
+      notifyListeners();
+    }
+  }
 }

@@ -9,6 +9,8 @@ class FloatingCard extends StatelessWidget {
   final double leftPadding;
   final double rightPadding;
   final double borderRadius;
+  final double topPadding;
+  final double bottomPadding;
   final Color color;
 
   FloatingCard({
@@ -20,6 +22,8 @@ class FloatingCard extends StatelessWidget {
     this.borderRadius,
     this.leftPadding,
     this.rightPadding,
+    this.topPadding,
+    this.bottomPadding,
     this.color,
   });
 
@@ -46,8 +50,8 @@ class FloatingCard extends StatelessWidget {
           padding: EdgeInsets.only(
             left: leftPadding ?? screenWidth / 30,
             right: rightPadding ?? screenWidth / 30,
-            top: screenHeight / 80,
-            bottom: screenHeight / 80,
+            top: topPadding ?? screenHeight / 80,
+            bottom: bottomPadding ?? screenHeight / 80,
           ),
           child: child,
         ),

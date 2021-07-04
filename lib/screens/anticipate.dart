@@ -159,7 +159,8 @@ class AnticipateState extends State<Anticipate> {
     });
 
     // request anticipation, displaying warning on failure and pushing detail screen
-    print(controller.numberValue * 100);
+    // TODO: complete this
+    // print(controller.numberValue * 100);
     await Future.delayed(Duration(seconds: 1));
 
     // unlock screen and hide circular button indicator

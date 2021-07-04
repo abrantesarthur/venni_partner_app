@@ -1,10 +1,12 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter/material.dart';
+import 'package:partner_app/models/connectivity.dart';
 import 'package:partner_app/models/firebase.dart';
 import 'package:partner_app/models/googleMaps.dart';
 import 'package:partner_app/models/partner.dart';
 import 'package:partner_app/models/timer.dart';
+import 'package:partner_app/models/trip.dart';
 import 'package:partner_app/screens/documents.dart';
 import 'package:partner_app/screens/home.dart';
 import 'package:partner_app/screens/insertEmail.dart';
@@ -43,6 +45,7 @@ extension AppFirebaseAuth on FirebaseAuth {
         listen: false,
       );
       try {
+        print("firebasAuth donwloadData");
         await partner.downloadData(firebase);
       } catch (e) {
         throw FirebaseAuthException(code: "internal-error");
@@ -50,7 +53,6 @@ extension AppFirebaseAuth on FirebaseAuth {
 
       // if user already has a partner account
       if (partner.id != null && firebase.isRegistered) {
-        print("partner.id != null && firebase.isRegistered");
         // if accountStatus is 'approved', push Home screen
         if (partner.accountStatus == AccountStatus.approved) {
           GoogleMapsModel googleMaps = Provider.of<GoogleMapsModel>(
@@ -58,6 +60,14 @@ extension AppFirebaseAuth on FirebaseAuth {
             listen: false,
           );
           TimerModel timer = Provider.of<TimerModel>(
+            context,
+            listen: false,
+          );
+          TripModel trip = Provider.of<TripModel>(
+            context,
+            listen: false,
+          );
+          ConnectivityModel connectivity = Provider.of<ConnectivityModel>(
             context,
             listen: false,
           );
@@ -69,6 +79,8 @@ extension AppFirebaseAuth on FirebaseAuth {
               partner: partner,
               googleMaps: googleMaps,
               timer: timer,
+              trip: trip,
+              connectivity: connectivity,
             ),
           );
         } else {

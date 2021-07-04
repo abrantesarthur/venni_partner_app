@@ -6,6 +6,10 @@
 	<array>
 	<string>https</string>
 	<string>http</string>
+	<string>googlechromes</string>
+    <string>comgooglemaps</string>
+    <string>iosamap</string>
+    <string>waze</string>
 	</array>
 	<key>CFBundleDevelopmentRegion</key>
 	<string>$(DEVELOPMENT_LANGUAGE)</string>
