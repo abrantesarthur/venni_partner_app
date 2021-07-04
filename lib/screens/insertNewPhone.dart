@@ -172,7 +172,6 @@ class InsertNewPhoneState extends State<InsertNewPhone> {
 
   // handleException displays warning message depending on received exception
   void handleException(FirebaseAuthException e) {
-    print(e.code);
     // displayErrorMessage displays warning message depending on received exception
     if (e.code == "invalid-verification-code") {
       setInactiveState(message: "Código inválido. Tente novamente.");

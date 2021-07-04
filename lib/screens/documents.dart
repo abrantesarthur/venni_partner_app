@@ -1,10 +1,12 @@
 import 'dart:async';
 
 import 'package:flutter/material.dart';
+import 'package:partner_app/models/connectivity.dart';
 import 'package:partner_app/models/firebase.dart';
 import 'package:partner_app/models/googleMaps.dart';
 import 'package:partner_app/models/partner.dart';
 import 'package:partner_app/models/timer.dart';
+import 'package:partner_app/models/trip.dart';
 import 'package:partner_app/screens/home.dart';
 import 'package:partner_app/screens/sendBankAccount.dart';
 import 'package:partner_app/screens/sendCnh.dart';
@@ -16,6 +18,7 @@ import 'package:partner_app/vendors/firebaseDatabase/interfaces.dart';
 import 'package:partner_app/vendors/firebaseDatabase/methods.dart';
 import 'package:partner_app/styles.dart';
 import 'package:partner_app/utils/utils.dart';
+import 'package:partner_app/vendors/urlLauncher.dart';
 import 'package:partner_app/widgets/appButton.dart';
 import 'package:partner_app/widgets/overallPadding.dart';
 import 'package:provider/provider.dart';
@@ -139,7 +142,8 @@ class DocumentsState extends State<Documents> {
                   GestureDetector(
                     onTap: lockScreen == true
                         ? () {}
-                        : () => _showHelpDialog(context),
+                        // TODO: insert final contact number here
+                        : () => _showHelpDialog(context, "18575446592"),
                     child: Container(
                       width: screenWidth / 4.5,
                       decoration: BoxDecoration(
@@ -616,6 +620,14 @@ class DocumentsState extends State<Documents> {
       context,
       listen: false,
     );
+    TripModel trip = Provider.of<TripModel>(
+      context,
+      listen: false,
+    );
+    ConnectivityModel connectivity = Provider.of<ConnectivityModel>(
+      context,
+      listen: false,
+    );
     setState(() {
       buttonChild = CircularProgressIndicator(
         valueColor: AlwaysStoppedAnimation<Color>(
@@ -633,12 +645,14 @@ class DocumentsState extends State<Documents> {
         partner: partner,
         googleMaps: googleMaps,
         timer: timer,
+        trip: trip,
+        connectivity: connectivity,
       ),
     );
   }
 }
 
-Future<dynamic> _showHelpDialog(BuildContext context) {
+Future<dynamic> _showHelpDialog(BuildContext context, String phoneNumber) {
   FirebaseModel firebase = Provider.of<FirebaseModel>(context, listen: false);
   return showDialog(
     context: context,
@@ -648,7 +662,8 @@ Future<dynamic> _showHelpDialog(BuildContext context) {
           child: ListBody(
             children: [
               ListTile(
-                onTap: () async => await _openWhatsapp(context),
+                onTap: () async =>
+                    await UrlLauncher.openWhatsapp(context, phoneNumber),
                 title: Text("Chat com o suporte"),
                 leading: Icon(
                   Icons.question_answer,
@@ -674,17 +689,4 @@ Future<dynamic> _showHelpDialog(BuildContext context) {
       );
     },
   );
-}
-
-Future<void> _openWhatsapp(BuildContext context) async {
-  String _whatsappUrl = "https://wa.me/5538999455370";
-  if (await canLaunch(_whatsappUrl)) {
-    await launch(_whatsappUrl);
-  } else {
-    showOkDialog(
-      context: context,
-      title: "Falha ao abrir whatsapp",
-      content: "Tente novamente mais tarde",
-    );
-  }
 }

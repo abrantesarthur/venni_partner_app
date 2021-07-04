@@ -67,13 +67,10 @@ class PartnerUnavailableStatus extends State<PartnerUnavailable> {
     // clear gains so we can start counting them again
     partner.updateGains(0, notify: false);
 
+    // periodically report their position to firebase
+    partner.sendPositionToFirebase(true);
+
     // update status locally, since the database listener can be flaky sometimes
     partner.updatePartnerStatus(PartnerStatus.available);
-
-    // unlock screen and hide circularProgressIndicator
-    setState(() {
-      buttonChild = null;
-      lock = false;
-    });
   }
 }

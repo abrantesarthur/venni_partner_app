@@ -2,9 +2,13 @@ import 'dart:async';
 
 import 'package:flutter/material.dart';
 import 'package:geolocator/geolocator.dart';
+import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:partner_app/models/firebase.dart';
+import 'package:partner_app/models/googleMaps.dart';
+import 'package:partner_app/models/trip.dart';
 import 'package:partner_app/vendors/firebaseDatabase/interfaces.dart';
 import 'package:partner_app/vendors/firebaseDatabase/methods.dart';
+import 'package:partner_app/vendors/firebaseFunctions/interfaces.dart';
 import 'package:partner_app/vendors/firebaseStorage.dart';
 import 'package:partner_app/vendors/geolocator.dart';
 
@@ -43,6 +47,8 @@ class PartnerModel extends ChangeNotifier {
   StreamSubscription _positionSubscription;
   int _gains;
   bool _acceptedTrip = false;
+  bool _sendPositionToFirebase = false;
+  bool _animateMapsCamera = false;
 
   // getters
   String get id => _id;
@@ -73,15 +79,16 @@ class PartnerModel extends ChangeNotifier {
   int get gains => _gains;
   bool get acceptedTrip => _acceptedTrip;
 
-  void setAcceptedTrip({bool notify = true}) {
-    _acceptedTrip = true;
-    if (notify) {
-      notifyListeners();
-    }
+  void sendPositionToFirebase(bool v) {
+    _sendPositionToFirebase = v;
   }
 
-  void resetAcceptedTrip({bool notify = true}) {
-    _acceptedTrip = false;
+  void animateMapsCameraView(bool v) {
+    _animateMapsCamera = v;
+  }
+
+  void setAcceptedTrip(bool v, {bool notify = true}) {
+    _acceptedTrip = v;
     if (notify) {
       notifyListeners();
     }
@@ -160,7 +167,10 @@ class PartnerModel extends ChangeNotifier {
 
     // get partner data
     PartnerInterface partnerInterface =
-        await firebase.database.getPartnerFromID(firebase.auth.currentUser.uid);
+        await firebase.database.getPartnerFromID(
+      firebase.auth.currentUser.uid,
+    );
+
     this.fromPartnerInterface(partnerInterface, notify: notify);
   }
 
@@ -186,8 +196,18 @@ class PartnerModel extends ChangeNotifier {
     }
   }
 
-  // updates partner position whenever they move at least 50 meters
-  void updateGeocodingOnPositionChange() {
+  // handlePositionUpdates starts listener that gets triggered whenever partner
+  // moves at least 50 meters. This lisener, in turn, updates PartnerModel position,
+  // reports it to firebase if _sendPositionToFireabase flag is set, and animates
+  // google maps camera if _animateMapsCamera flag is set. THis is to better
+  // display partner position in relation to either trip's origin or destination
+  // depending on whether there is a trip with 'waitingPartner' or 'inProgress'
+  // status.
+  void handlePositionUpdates(
+    FirebaseModel firebase,
+    GoogleMapsModel googleMaps,
+    TripModel trip,
+  ) {
     try {
       Stream<Position> userPositionStream = Geolocator.getPositionStream(
         desiredAccuracy: LocationAccuracy.best,
@@ -198,6 +218,40 @@ class PartnerModel extends ChangeNotifier {
       // subscribe to changes in position, updating position and gocoding on changes
       _positionSubscription = userPositionStream.listen((position) async {
         _position = position;
+        // if sendPosition flag is set, report partner position to firebase. This
+        // flag is set when partner becomes 'available' so that we always know where
+        // they are located and matching algorithm can function properly
+        if (_sendPositionToFirebase) {
+          await firebase.database.updatePartnerPosition(
+            partnerID: firebase.auth.currentUser.uid,
+            latitude: _position.latitude,
+            longitude: _position.longitude,
+          );
+        }
+        // if animateMapsCamera flag is set, we  update the maps camera view
+        // from the partner to origin or destination, depending on whether trip
+        // is 'waitingParner' or 'inProgress'. This flag is set when partner
+        // becomes 'busy' so he knows where he is supposed to go pick client.
+        if (_animateMapsCamera) {
+          LatLng firstCoordinate = LatLng(
+            _position.latitude,
+            _position.longitude,
+          );
+          LatLng secondCoordinate;
+          // if waitingPartner, bounds are between partner and origin
+          if (trip.tripStatus == TripStatus.waitingPartner) {
+            secondCoordinate = LatLng(trip.originLat, trip.originLng);
+            // if inProgress, bounds are between partner and destination
+          } else if (trip.tripStatus == TripStatus.inProgress) {
+            secondCoordinate = LatLng(trip.destinationLat, trip.destinationLng);
+          }
+          if (secondCoordinate != null) {
+            googleMaps.animateCamera(firstCoordinate, secondCoordinate);
+          }
+        }
+        // notifyListeners triggers a rebuild in PartnerBusy, which uses the
+        // new partner position to decide whether to display a "cancel trip" or
+        // a "start trip" button.
         notifyListeners();
       });
     } catch (_) {}

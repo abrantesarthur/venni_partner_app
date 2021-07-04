@@ -408,6 +408,13 @@ packages:
       url: "https://pub.dartlang.org"
     source: hosted
     version: "1.0.1"
+  map_launcher:
+    dependency: "direct main"
+    description:
+      name: map_launcher
+      url: "https://pub.dartlang.org"
+    source: hosted
+    version: "2.1.1"
   matcher:
     dependency: transitive
     description:
@@ -518,6 +525,13 @@ packages:
     description: flutter
     source: sdk
     version: "0.0.99"
+  slider_button:
+    dependency: "direct main"
+    description:
+      name: slider_button
+      url: "https://pub.dartlang.org"
+    source: hosted
+    version: "1.0.0"
   sliding_up_panel:
     dependency: "direct main"
     description:
@@ -644,6 +658,20 @@ packages:
       url: "https://pub.dartlang.org"
     source: hosted
     version: "2.1.0"
+  vibration:
+    dependency: transitive
+    description:
+      name: vibration
+      url: "https://pub.dartlang.org"
+    source: hosted
+    version: "1.7.3"
+  vibration_web:
+    dependency: transitive
+    description:
+      name: vibration_web
+      url: "https://pub.dartlang.org"
+    source: hosted
+    version: "1.6.2"
   watcher:
     dependency: transitive
     description:

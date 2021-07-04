@@ -309,7 +309,6 @@ class SendBankAccountState extends State<SendBankAccount> with RouteAware {
   }
 
   Future<void> buttonCallback(BuildContext context) async {
-    print("buttonCallback");
     final connectivity = Provider.of<ConnectivityModel>(context, listen: false);
     final partner = Provider.of<PartnerModel>(context, listen: false);
     final firebase = Provider.of<FirebaseModel>(context, listen: false);
@@ -322,8 +321,6 @@ class SendBankAccountState extends State<SendBankAccount> with RouteAware {
       );
       return;
     }
-
-    print("have connection");
 
     // show progress indicator and lock screen
     setState(() {
@@ -372,7 +369,6 @@ class SendBankAccountState extends State<SendBankAccount> with RouteAware {
         buttonChild = null;
         lockScreen = false;
       });
-      print(e);
       await showDialog(
         context: context,
         builder: (BuildContext context) {

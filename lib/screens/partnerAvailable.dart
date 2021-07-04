@@ -147,13 +147,9 @@ class PartnerAvailableState extends State<PartnerAvailable> {
           context,
           listen: false,
         );
+        // stop report their position to firebase
+        partner.sendPositionToFirebase(false);
         partner.updatePartnerStatus(PartnerStatus.unavailable);
-
-        // unlock screen
-        setState(() {
-          lockScreen = false;
-          buttonChild = null;
-        });
       },
     );
   }

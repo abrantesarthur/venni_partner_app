@@ -10,6 +10,7 @@ import 'package:partner_app/models/firebase.dart';
 import 'package:partner_app/models/googleMaps.dart';
 import 'package:partner_app/models/partner.dart';
 import 'package:partner_app/models/timer.dart';
+import 'package:partner_app/models/trip.dart';
 import 'package:partner_app/screens/anticipate.dart';
 import 'package:partner_app/screens/bankAccountDetail.dart';
 import 'package:partner_app/screens/deleteAccount.dart';
@@ -54,6 +55,7 @@ class _AppState extends State<App> {
   ConnectivityModel connectivity;
   GoogleMapsModel googleMaps;
   TimerModel timer;
+  TripModel trip;
   FirebaseAuth firebaseAuth;
   FirebaseDatabase firebaseDatabase;
   FirebaseStorage firebaseStorage;
@@ -137,10 +139,16 @@ class _AppState extends State<App> {
     googleMaps = GoogleMapsModel();
     connectivity = ConnectivityModel();
     timer = TimerModel();
+    trip = TripModel();
   }
 
   Future<void> initializePartner() async {
+    // download partner data
     await partnerModel.downloadData(firebaseModel);
+    // if partner has active trip request, download it as well
+    if (partnerModel.partnerStatus == PartnerStatus.busy) {
+      await trip.downloadData(firebaseModel, notify: false);
+    }
   }
 
   // TODO: README How to test locally taking DEV flavor into account. Explain that need to run emulator locally.
@@ -202,6 +210,9 @@ class _AppState extends State<App> {
           ChangeNotifierProvider<TimerModel>(
             create: (context) => timer,
           ),
+          ChangeNotifierProvider<TripModel>(
+            create: (context) => trip,
+          ),
         ], // pass user model down
         builder: (context, child) {
           FirebaseModel firebase = Provider.of<FirebaseModel>(
@@ -231,6 +242,8 @@ class _AppState extends State<App> {
                     partner: args.partner,
                     googleMaps: args.googleMaps,
                     timer: args.timer,
+                    trip: args.trip,
+                    connectivity: args.connectivity,
                   );
                 });
               }
@@ -362,11 +375,12 @@ class _AppState extends State<App> {
             },
             routes: {
               Home.routeName: (context) => Home(
-                    firebase: firebaseModel,
-                    partner: partnerModel,
-                    googleMaps: googleMaps,
-                    timer: timer,
-                  ),
+                  firebase: firebaseModel,
+                  partner: partnerModel,
+                  googleMaps: googleMaps,
+                  timer: timer,
+                  trip: trip,
+                  connectivity: connectivity),
               Start.routeName: (context) => Start(),
               InsertPhone.routeName: (context) => InsertPhone(),
               SendCrlv.routeName: (context) => SendCrlv(),

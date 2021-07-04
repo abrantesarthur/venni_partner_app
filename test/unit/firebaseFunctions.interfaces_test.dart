@@ -25,6 +25,12 @@ void main() {
       expect(t.originAddress, isNull);
       expect(t.destinationAddress, isNull);
       expect(t.paymentMethod, isNull);
+      expect(t.clientName, isNull);
+      expect(t.clientPhone, isNull);
+      expect(t.originLat, isNull);
+      expect(t.originLng, isNull);
+      expect(t.destinationLat, isNull);
+      expect(t.destinationLng, isNull);
     });
 
     test("fromJson with valid argument", () {
@@ -43,6 +49,12 @@ void main() {
         "origin_address": "origin_address",
         "destination_address": "destination_address",
         "payment_method": "credit_card",
+        "client_name": "client_name",
+        "client_phone": "client_phone",
+        "origin_lat": "11.111111",
+        "origin_lng": "22.222222",
+        "destination_lat": "33.333333",
+        "destination_lng": "44.444444",
       };
       Trip t = Trip.fromJson(json);
       expect(t, isNotNull);
@@ -60,6 +72,12 @@ void main() {
       expect(t.originAddress, equals("origin_address"));
       expect(t.destinationAddress, equals("destination_address"));
       expect(t.paymentMethod, equals(PaymentMethod.creditCard));
+      expect(t.clientName, equals("client_name"));
+      expect(t.clientPhone, equals("client_phone"));
+      expect(t.originLat, equals(11.111111));
+      expect(t.originLng, equals(22.222222));
+      expect(t.destinationLat, equals(33.333333));
+      expect(t.destinationLng, equals(44.444444));
     });
   });
 

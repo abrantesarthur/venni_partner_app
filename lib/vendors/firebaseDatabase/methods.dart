@@ -170,6 +170,20 @@ extension AppFirebaseDatabase on FirebaseDatabase {
     }
   }
 
+  Future<void> updatePartnerPosition({
+    @required partnerID,
+    @required double latitude,
+    @required double longitude,
+  }) async {
+    // round latitude and longitude to at most 6 decimal places
+    latitude = (latitude * 1000000).round() / 1000000;
+    longitude = (longitude * 1000000).round() / 1000000;
+    await this.reference().child("partners").child(partnerID).update({
+      "current_latitude": latitude.toString(),
+      "current_longitude": longitude.toString(),
+    });
+  }
+
   // onAccountStatusUpdate subscribes onData to handle changes in the
   // account status of partner with uid partnerID
   StreamSubscription onAccountStatusUpdate(
@@ -211,6 +225,19 @@ extension AppFirebaseDatabase on FirebaseDatabase {
         .child("partners")
         .child(partnerID)
         .child("status")
+        .onValue
+        .listen(onData);
+  }
+
+  StreamSubscription onTripStatusUpdate(
+    String clientID,
+    void Function(Event) onData,
+  ) {
+    return this
+        .reference()
+        .child("trip-requests")
+        .child(clientID)
+        .child("trip_status")
         .onValue
         .listen(onData);
   }
