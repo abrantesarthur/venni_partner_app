@@ -1,5 +1,6 @@
 import 'package:cloud_functions/cloud_functions.dart';
 import 'package:flutter/material.dart';
+import 'package:partner_app/utils/utils.dart';
 import 'package:partner_app/vendors/firebaseDatabase/interfaces.dart';
 import 'package:partner_app/vendors/firebaseFunctions/interfaces.dart';
 
@@ -73,8 +74,8 @@ extension AppFirebaseFunctions on FirebaseFunctions {
     @required double currentLongitude,
   }) async {
     Map<String, double> data = {
-      "current_latitude": currentLatitude,
-      "current_longitude": currentLongitude,
+      "current_latitude": toFixed(currentLatitude, 6),
+      "current_longitude": toFixed(currentLongitude, 6),
     };
     await this.httpsCallable("partner-connect").call(data);
   }
