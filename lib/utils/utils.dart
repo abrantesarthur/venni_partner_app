@@ -1,3 +1,4 @@
+import 'dart:ffi';
 import 'dart:math';
 import 'dart:ui'
     as ui; // imported as ui to prevent conflict between ui.Image and the Image widget
@@ -344,4 +345,12 @@ int getDistanceBetweenCoordinates(LatLng c1, LatLng c2) {
           (1 - cos((c2.longitude - c1.longitude) * p)) /
           2;
   return (earthDiameter * asin(sqrt(a)) * 1000).round();
+}
+
+double toFixed(double num, num decimals) {
+  if (decimals <= 0) {
+    return num;
+  }
+  int factor = pow(10, decimals);
+  return (num * factor).round() / factor;
 }

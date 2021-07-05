@@ -28,6 +28,8 @@ class TimerModel extends ChangeNotifier {
         if (_remainingSeconds == 0) {
           // cancel timer
           t.cancel();
+          // set timer to null
+          _timer = null;
           // execute callback if it exists
           if (callback != null) {
             callback();
@@ -39,5 +41,12 @@ class TimerModel extends ChangeNotifier {
       },
     );
     notifyListeners();
+  }
+
+  void cancel() {
+    if (_timer != null) {
+      _timer.cancel();
+      _timer = null;
+    }
   }
 }

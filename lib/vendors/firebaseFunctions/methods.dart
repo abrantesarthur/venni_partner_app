@@ -107,4 +107,9 @@ extension AppFirebaseFunctions on FirebaseFunctions {
   Future<void> startTrip() async {
     await this.httpsCallable("trip-start").call();
   }
+
+  Future<void> completeTrip(int clientRating) async {
+    Map<String, int> data = {"client_rating": clientRating};
+    await this.httpsCallable("trip-complete").call(data);
+  }
 }
