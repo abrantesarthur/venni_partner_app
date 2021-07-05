@@ -64,7 +64,8 @@ class PartnerUnavailableStatus extends State<PartnerUnavailable> {
       return;
     }
 
-    // clear gains so we can start counting them again
+    // clear gains so we can start counting them again. These gains are increased
+    // whenever the partner compeltes a new trip
     partner.updateGains(0, notify: false);
 
     // periodically report their position to firebase

@@ -1,6 +1,7 @@
 import 'dart:async';
 import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter/material.dart';
+import 'package:partner_app/utils/utils.dart';
 import 'package:partner_app/vendors/firebaseDatabase/interfaces.dart';
 
 extension AppFirebaseDatabase on FirebaseDatabase {
@@ -176,8 +177,8 @@ extension AppFirebaseDatabase on FirebaseDatabase {
     @required double longitude,
   }) async {
     // round latitude and longitude to at most 6 decimal places
-    latitude = (latitude * 1000000).round() / 1000000;
-    longitude = (longitude * 1000000).round() / 1000000;
+    latitude = toFixed(latitude, 6);
+    longitude = toFixed(longitude, 6);
     await this.reference().child("partners").child(partnerID).update({
       "current_latitude": latitude.toString(),
       "current_longitude": longitude.toString(),

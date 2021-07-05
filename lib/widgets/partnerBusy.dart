@@ -4,11 +4,13 @@ import 'package:map_launcher/map_launcher.dart';
 import 'package:partner_app/models/firebase.dart';
 import 'package:partner_app/models/partner.dart';
 import 'package:partner_app/models/trip.dart';
+import 'package:partner_app/screens/rateClient.dart';
 import 'package:partner_app/vendors/firebaseFunctions/interfaces.dart';
 import 'package:partner_app/vendors/firebaseFunctions/methods.dart';
 import 'package:partner_app/styles.dart';
 import 'package:partner_app/utils/utils.dart';
 import 'package:partner_app/vendors/urlLauncher.dart';
+import 'package:partner_app/widgets/circularImage.dart';
 import 'package:partner_app/widgets/floatingCard.dart';
 import 'package:partner_app/widgets/overallPadding.dart';
 import 'package:provider/provider.dart';
@@ -48,7 +50,6 @@ class PartnerBusyState extends State<PartnerBusy> {
 
   @override
   Widget build(BuildContext context) {
-    print("build partnerBusy");
     final screenHeight = MediaQuery.of(context).size.height;
     final screenWidth = MediaQuery.of(context).size.width;
     // listen for PartnerModel changes in case the partner approaches the client
@@ -63,7 +64,8 @@ class PartnerBusyState extends State<PartnerBusy> {
     // (when far) or "Start Trip" button (when near).
     if (trip.tripStatus == TripStatus.waitingPartner) {
       partnerIsFar = getDistanceBetweenCoordinates(
-            LatLng(partner.position.latitude, partner.position.longitude),
+            LatLng(toFixed(partner.position.latitude, 6),
+                toFixed(partner.position.longitude, 6)),
             LatLng(trip.originLat, trip.originLng),
           ) >
           150;
@@ -131,7 +133,9 @@ class PartnerBusyState extends State<PartnerBusy> {
       padding: EdgeInsets.only(bottom: screenHeight / 20),
       child: SliderButton(
         action: () async {
-          try {} catch (_) {
+          try {
+            await Navigator.pushNamed(context, RateClient.routeName);
+          } catch (_) {
             showOkDialog(
               context: context,
               title: "Falha ao finalizar a corrida",
@@ -250,18 +254,11 @@ class PartnerBusyState extends State<PartnerBusy> {
                             trip.clientPhone,
                           ),
                         ),
-                        Container(
-                          width: screenHeight / 10,
-                          height: screenHeight / 10,
-                          decoration: new BoxDecoration(
-                            shape: BoxShape.circle,
-                            image: new DecorationImage(
-                              fit: BoxFit.cover,
-                              image: partner.profileImage == null
-                                  ? AssetImage("images/user_icon.png")
-                                  : partner.profileImage.file,
-                            ),
-                          ),
+                        // TODO: get client image instead
+                        CircularImage(
+                          imageFile: partner.profileImage == null
+                              ? AssetImage("images/user_icon.png")
+                              : partner.profileImage.file,
                         ),
                         GestureDetector(
                           child: Icon(
