@@ -5,6 +5,7 @@ import 'package:partner_app/screens/profile.dart';
 import 'package:partner_app/screens/settings.dart';
 import 'package:partner_app/screens/wallet.dart';
 import 'package:partner_app/widgets/borderlessButton.dart';
+import 'package:partner_app/widgets/circularImage.dart';
 import 'package:partner_app/widgets/overallPadding.dart';
 import 'package:provider/provider.dart';
 
@@ -28,18 +29,10 @@ class Menu extends StatelessWidget {
                 child: Column(
                   children: [
                     Spacer(flex: 2),
-                    Container(
-                      width: screenHeight / 7,
-                      height: screenHeight / 7,
-                      decoration: new BoxDecoration(
-                        shape: BoxShape.circle,
-                        image: new DecorationImage(
-                          fit: BoxFit.cover,
-                          image: partner.profileImage == null
-                              ? AssetImage("images/user_icon.png")
-                              : partner.profileImage.file,
-                        ),
-                      ),
+                    CircularImage(
+                      imageFile: partner.profileImage == null
+                          ? AssetImage("images/user_icon.png")
+                          : partner.profileImage.file,
                     ),
                     Spacer(),
                     Text(

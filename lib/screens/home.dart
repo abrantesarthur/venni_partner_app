@@ -9,6 +9,7 @@ import 'package:partner_app/models/firebase.dart';
 import 'package:partner_app/models/timer.dart';
 import 'package:partner_app/models/trip.dart';
 import 'package:partner_app/screens/partnerAvailable.dart';
+import 'package:partner_app/utils/utils.dart';
 import 'package:partner_app/vendors/firebaseDatabase/interfaces.dart';
 import 'package:partner_app/vendors/firebaseDatabase/methods.dart';
 import 'package:partner_app/vendors/firebaseFunctions/interfaces.dart';
@@ -326,12 +327,13 @@ class HomeState extends State<Home> with WidgetsBindingObserver {
       // Once the timer stops, if the partner hasn't accepted
       // the trip request we call 'declineTrip' and udpate their status locally
       if (newPartnerStatus == PartnerStatus.requested) {
+        // before kicking off timer, set acceptedTrip to false. If partner accepts
+        // the trip before the timer goes out, acceptedTrip is set true and the
+        // callback won't set the partner available.
+        widget.partner.setAcceptedTrip(false, notify: false);
         widget.timer.kickOff(
             durationSeconds: 10,
             callback: () {
-              // TODO: adjust google maps height depending on partner status
-              // and thus on new UI configuration
-
               // if partner did not accept trip after 10s
               if (!widget.partner.acceptedTrip) {
                 // set partner status to available so that UI is updated and
@@ -340,10 +342,6 @@ class HomeState extends State<Home> with WidgetsBindingObserver {
                 // guarantees that 'confirmTrip' will set a partner
                 // available again if they fail to accept a trip.
                 widget.partner.updatePartnerStatus(PartnerStatus.available);
-              } else {
-                // if partner accepted trip, set acceptedTrip to false so next time
-                // this method is called, it is to set partner available.
-                widget.partner.setAcceptedTrip(false);
               }
             });
       }
@@ -383,11 +381,25 @@ class HomeState extends State<Home> with WidgetsBindingObserver {
         widget.partner.sendPositionToFirebase(true);
       }
 
-      // if partner is 'unavailable', stop reporting his position. We already do
-      // this when calling 'dissconnect', but it's important to do here too in case
-      // the partner relaunches the app.
+      // if partner is 'unavailable',
       if (newPartnerStatus == PartnerStatus.unavailable) {
+        // stop reporting his position. We already do this when calling
+        // 'disconnect', but it's important to do here too in case the partner
+        // relaunches the app.
         widget.partner.sendPositionToFirebase(false);
+      }
+
+      // if partner's status was 'requested' but was updated to 'available' it means
+      // they were denied a trip, so display a warning
+      if (newPartnerStatus == PartnerStatus.available &&
+          widget.partner.partnerStatus == PartnerStatus.requested) {
+        // cancel timer that was set off when partner was requested then display the warning
+        widget.timer.cancel();
+        await showOkDialog(
+          context: context,
+          title: "Corrida indisponível",
+          content: "Outro(a) parceiro(a) aceitou a corrida antes de você.",
+        );
       }
 
       // update partner model accordingly. This will trigger a tree rebuild
