@@ -254,11 +254,10 @@ class PartnerBusyState extends State<PartnerBusy> {
                             trip.clientPhone,
                           ),
                         ),
-                        // TODO: get client image instead
                         CircularImage(
-                          imageFile: partner.profileImage == null
+                          imageFile: trip.profileImage == null
                               ? AssetImage("images/user_icon.png")
-                              : partner.profileImage.file,
+                              : trip.profileImage.file,
                         ),
                         GestureDetector(
                           child: Icon(

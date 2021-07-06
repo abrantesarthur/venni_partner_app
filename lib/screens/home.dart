@@ -25,6 +25,7 @@ import 'package:partner_app/widgets/partnerBusy.dart';
 import 'package:partner_app/widgets/partnerRequested.dart';
 import 'package:partner_app/widgets/partnerUnavailable.dart';
 import 'package:provider/provider.dart';
+import 'package:vibration/vibration.dart';
 
 class HomeArguments {
   FirebaseModel firebase;
@@ -203,7 +204,17 @@ class HomeState extends State<Home> with WidgetsBindingObserver {
 
         // make sure we successfully got user position
         if (snapshot.data == null) {
-          return ShareLocation(push: Home.routeName);
+          return ShareLocation(
+            routeToPush: Home.routeName,
+            routeArguments: HomeArguments(
+              firebase: firebase,
+              partner: widget.partner,
+              googleMaps: widget.googleMaps,
+              timer: widget.timer,
+              trip: widget.trip,
+              connectivity: connectivity,
+            ),
+          );
         }
 
         return Scaffold(
@@ -344,6 +355,18 @@ class HomeState extends State<Home> with WidgetsBindingObserver {
                 widget.partner.updatePartnerStatus(PartnerStatus.available);
               }
             });
+
+        // snooze partners phone
+        if (await Vibration.hasVibrator()) {
+          try {
+            Vibration.vibrate(
+              pattern: [0, 250, 500, 250, 500, 250],
+              intensities: [254, 255],
+            );
+          } catch (e) {
+            print(e);
+          }
+        }
       }
       if (newPartnerStatus == PartnerStatus.busy) {
         // download trip data before updating PartnerModel status and thus UI

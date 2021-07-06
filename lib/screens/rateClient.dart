@@ -118,10 +118,9 @@ class RateClientState extends State<RateClient> {
                   SizedBox(height: screenHeight / 25),
                   CircularImage(
                     size: screenHeight / 9,
-                    // TODO: change for client image
-                    imageFile: partner.profileImage == null
+                    imageFile: trip.profileImage == null
                         ? AssetImage("images/user_icon.png")
-                        : partner.profileImage.file,
+                        : trip.profileImage.file,
                   ),
                   SizedBox(height: screenHeight / 25),
                   Column(

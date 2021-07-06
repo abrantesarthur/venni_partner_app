@@ -66,7 +66,10 @@ void main() {
           ),
         ],
         builder: (context, child) => MaterialApp(
-          home: Profile(),
+          home: Profile(
+            firebase: mockFirebaseModel,
+            partner: mockPartnerModel,
+          ),
           routes: {
             InsertNewPassword.routeName: (context) => InsertNewPassword(),
           },

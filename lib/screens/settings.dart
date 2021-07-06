@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:partner_app/models/firebase.dart';
+import 'package:partner_app/models/partner.dart';
 import 'package:partner_app/screens/bankAccountDetail.dart';
 import 'package:partner_app/screens/privacy.dart';
 import 'package:partner_app/screens/profile.dart';
@@ -19,11 +20,22 @@ class Settings extends StatelessWidget {
       context,
       listen: false,
     );
+    final PartnerModel partner = Provider.of<PartnerModel>(
+      context,
+      listen: false,
+    );
     return GoBackScaffold(
       title: "Configurações",
       children: [
         BorderlessButton(
-          onTap: () => Navigator.pushNamed(context, Profile.routeName),
+          onTap: () => Navigator.pushNamed(
+            context,
+            Profile.routeName,
+            arguments: ProfileArguments(
+              partner: partner,
+              firebase: firebase,
+            ),
+          ),
           iconLeft: Icons.account_circle_rounded,
           iconLeftSize: 26,
           primaryText: "Perfil",
