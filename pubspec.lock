@@ -659,7 +659,7 @@ packages:
     source: hosted
     version: "2.1.0"
   vibration:
-    dependency: transitive
+    dependency: "direct main"
     description:
       name: vibration
       url: "https://pub.dartlang.org"

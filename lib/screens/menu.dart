@@ -25,7 +25,14 @@ class Menu extends StatelessWidget {
             child: DrawerHeader(
               decoration: BoxDecoration(color: Colors.white),
               child: InkWell(
-                onTap: () => Navigator.pushNamed(context, Profile.routeName),
+                onTap: () => Navigator.pushNamed(
+                  context,
+                  Profile.routeName,
+                  arguments: ProfileArguments(
+                    partner: partner,
+                    firebase: firebase,
+                  ),
+                ),
                 child: Column(
                   children: [
                     Spacer(flex: 2),

@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:geolocator/geolocator.dart';
 import 'package:partner_app/models/partner.dart';
 import 'package:partner_app/screens/splash.dart';
 import 'package:partner_app/styles.dart';
@@ -7,15 +6,23 @@ import 'package:partner_app/widgets/appButton.dart';
 import 'package:provider/provider.dart';
 
 class ShareLocationArguments {
-  String push;
-  ShareLocationArguments({@required this.push});
+  String routeToPush;
+  Object routeArguments;
+  ShareLocationArguments({
+    @required this.routeToPush,
+    this.routeArguments,
+  });
 }
 
 class ShareLocation extends StatefulWidget {
   static String routeName = "ShareLocation";
-  final String push;
+  final String routeToPush;
+  final Object routeArguments;
 
-  ShareLocation({@required this.push});
+  ShareLocation({
+    @required this.routeToPush,
+    this.routeArguments,
+  });
 
   @override
   ShareLocationState createState() => ShareLocationState();
@@ -42,7 +49,8 @@ class ShareLocationState extends State<ShareLocation> {
               onTapCallBack: () async {
                 Navigator.pushReplacementNamed(
                   context,
-                  widget.push,
+                  widget.routeToPush,
+                  arguments: widget.routeArguments,
                 );
               },
             )

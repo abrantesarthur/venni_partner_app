@@ -366,7 +366,19 @@ class _AppState extends State<App> {
                 final ShareLocationArguments args = settings.arguments;
                 return MaterialPageRoute(builder: (context) {
                   return ShareLocation(
-                    push: args.push,
+                    routeToPush: args.routeToPush,
+                    routeArguments: args.routeArguments,
+                  );
+                });
+              }
+
+              // if Profile is pushed
+              if (settings.name == Profile.routeName) {
+                final ProfileArguments args = settings.arguments;
+                return MaterialPageRoute(builder: (context) {
+                  return Profile(
+                    firebase: args.firebase,
+                    partner: args.partner,
                   );
                 });
               }
@@ -389,7 +401,6 @@ class _AppState extends State<App> {
               SendPhotoWithCnh.routeName: (context) => SendPhotoWithCnh(),
               SendProfilePhoto.routeName: (context) => SendProfilePhoto(),
               Settings.routeName: (context) => Settings(),
-              Profile.routeName: (context) => Profile(),
               EditPhone.routeName: (context) => EditPhone(),
               InsertNewPhone.routeName: (context) => InsertNewPhone(),
               EditEmail.routeName: (context) => EditEmail(),

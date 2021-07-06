@@ -99,7 +99,7 @@ extension AppFirebaseStorage on FirebaseStorage {
     }
     ListResult results;
     try {
-      results = await this.ref().child("user-photos").child(id).list();
+      results = await this.ref().child("client-photos").child(id).list();
       if (results != null && results.items.length > 0) {
         Reference profilePhotoRef;
         results.items.forEach((item) {
