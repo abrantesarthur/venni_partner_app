@@ -2,14 +2,18 @@ import 'package:flutter/material.dart';
 import 'package:partner_app/styles.dart';
 
 class HorizontalBar extends StatelessWidget {
-  final String title;
-  final String value;
+  final String leftText;
+  final Widget leftWidget;
+  final String rightText;
   final double fill;
+  final double centerWidth;
 
   HorizontalBar({
-    @required this.title,
-    @required this.value,
+    this.leftText,
+    @required this.rightText,
     @required this.fill,
+    this.leftWidget,
+    this.centerWidth,
   });
 
   @override
@@ -18,24 +22,24 @@ class HorizontalBar extends StatelessWidget {
     final screenWidth = MediaQuery.of(context).size.width;
     return Row(
       children: [
-        Container(
-          width: screenWidth / 6,
-          child: Text(
-            title,
-            style: TextStyle(
-              color: Colors.black,
-              fontSize: 12,
-              fontWeight: FontWeight.w600,
-            ),
-          ),
+        Expanded(
+          child: leftWidget ??
+              Text(
+                leftText,
+                style: TextStyle(
+                  color: Colors.black,
+                  fontSize: 12,
+                  fontWeight: FontWeight.w600,
+                ),
+              ),
         ),
         Container(
           height: screenHeight / 100,
           width: fill > 1
-              ? screenWidth / 2
+              ? (centerWidth ?? screenWidth / 2)
               : fill < 0
                   ? 0
-                  : fill * screenWidth / 2,
+                  : fill * (centerWidth ?? screenWidth / 2),
           color: AppColor.primaryPink,
         ),
         Container(
@@ -43,17 +47,19 @@ class HorizontalBar extends StatelessWidget {
           width: fill > 1
               ? 0
               : fill < 0
-                  ? screenWidth / 2
-                  : (1 - fill) * screenWidth / 2,
+                  ? (centerWidth ?? screenWidth / 2)
+                  : (1 - fill) * (centerWidth ?? screenWidth / 2),
           color: Colors.black.withOpacity(0.15),
         ),
-        Spacer(),
-        Text(
-          value,
-          style: TextStyle(
-            color: Colors.black,
-            fontSize: 12,
-            fontWeight: FontWeight.w600,
+        Expanded(
+          child: Text(
+            rightText,
+            textAlign: TextAlign.right,
+            style: TextStyle(
+              color: Colors.black,
+              fontSize: 12,
+              fontWeight: FontWeight.w600,
+            ),
           ),
         ),
       ],
