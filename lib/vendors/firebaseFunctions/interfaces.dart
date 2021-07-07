@@ -183,6 +183,29 @@ extension PaymentMethodExtension on PaymentMethod {
   }
 }
 
+class GetPastTripsArguments {
+  int pageSize;
+  int maxRequestTime;
+  int minRequestTime;
+
+  GetPastTripsArguments({
+    this.pageSize,
+    this.maxRequestTime,
+    this.minRequestTime,
+  });
+}
+
+class Trips {
+  final List<Trip> items;
+
+  Trips({@required this.items});
+
+  factory Trips.fromJson(List<dynamic> json) {
+    List<Trip> pastTrips = json.map((pt) => Trip.fromJson(pt)).toList();
+    return Trips(items: pastTrips);
+  }
+}
+
 class Trip {
   String clientID;
   TripStatus tripStatus;
@@ -202,10 +225,8 @@ class Trip {
   String originAddress;
   String destinationAddress;
   PaymentMethod paymentMethod;
-  String
-      clientName; // added to firebase Trip's interface by partnerGetCurrentTrip
-  String
-      clientPhone; // added to firebase Trip's interface by partnerGetCurrentTrip
+  String clientName; // added to the response by partnerGetCurrentTrip
+  String clientPhone; // added to response by partnerGetCurrentTrip
 
   Trip({
     @required this.clientID,

@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:partner_app/models/connectivity.dart';
 import 'package:partner_app/models/firebase.dart';
 import 'package:partner_app/models/partner.dart';
+import 'package:partner_app/screens/pastTrips.dart';
 import 'package:partner_app/screens/profile.dart';
 import 'package:partner_app/screens/settings.dart';
 import 'package:partner_app/screens/wallet.dart';
@@ -16,6 +18,10 @@ class Menu extends StatelessWidget {
     final double screenWidth = MediaQuery.of(context).size.width;
     final FirebaseModel firebase = Provider.of<FirebaseModel>(context);
     final PartnerModel partner = Provider.of<PartnerModel>(context);
+    final ConnectivityModel connectivity = Provider.of<ConnectivityModel>(
+      context,
+      listen: false,
+    );
 
     return Drawer(
       child: ListView(
@@ -108,7 +114,16 @@ class Menu extends StatelessWidget {
                 ),
                 Divider(thickness: 0.1, color: Colors.black),
                 BorderlessButton(
-                  onTap: () {},
+                  onTap: () {
+                    Navigator.pushNamed(
+                      context,
+                      PastTrips.routeName,
+                      arguments: PastTripsArguments(
+                        firebase,
+                        connectivity,
+                      ),
+                    );
+                  },
                   iconLeft: Icons.motorcycle,
                   iconLeftSize: 24,
                   iconRight: Icons.keyboard_arrow_right,
