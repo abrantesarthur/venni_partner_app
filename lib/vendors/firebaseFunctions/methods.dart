@@ -101,6 +101,32 @@ extension AppFirebaseFunctions on FirebaseFunctions {
     return null;
   }
 
+  Future<Trips> getPastTrips({GetPastTripsArguments args}) async {
+    Map<String, int> data = {};
+    if (args != null) {
+      if (args.pageSize != null) {
+        data["page_size"] = args.pageSize;
+      }
+      if (args.maxRequestTime != null) {
+        data["max_request_time"] = args.maxRequestTime;
+      }
+      if (args.minRequestTime != null) {
+        data["min_request_time"] = args.minRequestTime;
+      }
+    }
+
+    try {
+      HttpsCallableResult result =
+          await this.httpsCallable("trip-partner_get_past_trips").call(data);
+      if (result != null && result.data != null) {
+        return Trips.fromJson(result.data);
+      }
+    } catch (e) {
+      throw e;
+    }
+    return null;
+  }
+
   Future<void> cancelTrip() async {
     await this.httpsCallable("trip-partner_cancel").call();
   }
