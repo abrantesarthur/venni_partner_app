@@ -4,6 +4,7 @@ import 'package:partner_app/models/firebase.dart';
 import 'package:partner_app/models/partner.dart';
 import 'package:partner_app/screens/pastTrips.dart';
 import 'package:partner_app/screens/profile.dart';
+import 'package:partner_app/screens/ratings.dart';
 import 'package:partner_app/screens/settings.dart';
 import 'package:partner_app/screens/wallet.dart';
 import 'package:partner_app/widgets/borderlessButton.dart';
@@ -103,7 +104,17 @@ class Menu extends StatelessWidget {
                 ),
                 Divider(thickness: 0.1, color: Colors.black),
                 BorderlessButton(
-                  onTap: () {},
+                  onTap: () {
+                    Navigator.pushNamed(
+                      context,
+                      Ratings.routeName,
+                      arguments: RatingsArguments(
+                        firebase,
+                        connectivity,
+                        partner,
+                      ),
+                    );
+                  },
                   iconLeft: Icons.stars,
                   iconLeftSize: 24,
                   iconRight: Icons.keyboard_arrow_right,

@@ -23,6 +23,7 @@ import 'package:partner_app/screens/pastTrips.dart';
 import 'package:partner_app/screens/privacy.dart';
 import 'package:partner_app/screens/profile.dart';
 import 'package:partner_app/screens/rateClient.dart';
+import 'package:partner_app/screens/ratings.dart';
 import 'package:partner_app/screens/sendBankAccount.dart';
 import 'package:partner_app/screens/sendCnh.dart';
 import 'package:partner_app/screens/sendCrlv.dart';
@@ -391,6 +392,18 @@ class _AppState extends State<App> {
                   return PastTrips(
                     firebase: args.firebase,
                     connectivity: args.connectivity,
+                  );
+                });
+              }
+
+              // if Ratings is pushed
+              if (settings.name == Ratings.routeName) {
+                final RatingsArguments args = settings.arguments;
+                return MaterialPageRoute(builder: (context) {
+                  return Ratings(
+                    firebase: args.firebase,
+                    connectivity: args.connectivity,
+                    partner: args.partner,
                   );
                 });
               }

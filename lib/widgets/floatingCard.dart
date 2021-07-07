@@ -11,6 +11,7 @@ class FloatingCard extends StatelessWidget {
   final double borderRadius;
   final double topPadding;
   final double bottomPadding;
+  final double elevation;
   final Color color;
 
   FloatingCard({
@@ -24,6 +25,7 @@ class FloatingCard extends StatelessWidget {
     this.rightPadding,
     this.topPadding,
     this.bottomPadding,
+    this.elevation,
     this.color,
   });
 
@@ -45,7 +47,7 @@ class FloatingCard extends StatelessWidget {
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(borderRadius ?? 10),
         ),
-        elevation: 10.0,
+        elevation: elevation ?? 10.0,
         child: Padding(
           padding: EdgeInsets.only(
             left: leftPadding ?? screenWidth / 30,

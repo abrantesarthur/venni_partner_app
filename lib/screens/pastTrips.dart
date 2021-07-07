@@ -210,7 +210,7 @@ class PastTripsState extends State<PastTrips> {
                                   children: [
                                     Center(
                                       child: Text(
-                                        "Ganhos Hoje",
+                                        "Ganhos Nas Últimas 24h",
                                         style: TextStyle(
                                           color: Colors.black,
                                           fontSize: 18,
@@ -245,8 +245,8 @@ class PastTripsState extends State<PastTrips> {
                                     ),
                                     SizedBox(height: screenHeight / 50),
                                     HorizontalBar(
-                                      title: "Dinheiro",
-                                      value: "R\$" +
+                                      leftText: "Dinheiro",
+                                      rightText: "R\$" +
                                           (lastDayCashRevenue / 100)
                                               .toStringAsFixed(2),
                                       fill: (lastDayCashRevenue == 0 &&
@@ -258,8 +258,8 @@ class PastTripsState extends State<PastTrips> {
                                     ),
                                     SizedBox(height: screenHeight / 50),
                                     HorizontalBar(
-                                      title: "Cartão",
-                                      value: "R\$" +
+                                      leftText: "Cartão",
+                                      rightText: "R\$" +
                                           (lastDayCardRevenue / 100)
                                               .toStringAsFixed(2),
                                       fill: (lastDayCashRevenue == 0 &&

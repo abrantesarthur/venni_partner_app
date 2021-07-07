@@ -206,6 +206,34 @@ class Trips {
   }
 }
 
+class PartnerRating {
+  int score;
+  bool cleanlinessWentWell;
+  bool safetyWentWell;
+  bool waitingTimeWentWell;
+  String feedback;
+
+  PartnerRating({
+    @required this.score,
+    @required this.cleanlinessWentWell,
+    @required this.safetyWentWell,
+    @required this.waitingTimeWentWell,
+    @required this.feedback,
+  });
+
+  factory PartnerRating.fromJson(Map json) {
+    return json == null
+        ? null
+        : PartnerRating(
+            score: json["score"],
+            cleanlinessWentWell: json["cleanliness_went_well"],
+            safetyWentWell: json["safety_went_well"],
+            waitingTimeWentWell: json["waiting_time_went_well"],
+            feedback: json["feedback"],
+          );
+  }
+}
+
 class Trip {
   String clientID;
   TripStatus tripStatus;
@@ -227,6 +255,7 @@ class Trip {
   PaymentMethod paymentMethod;
   String clientName; // added to the response by partnerGetCurrentTrip
   String clientPhone; // added to response by partnerGetCurrentTrip
+  PartnerRating partnerRating;
 
   Trip({
     @required this.clientID,
@@ -249,6 +278,7 @@ class Trip {
     @required this.paymentMethod,
     @required this.clientName,
     @required this.clientPhone,
+    @required this.partnerRating,
   });
 
   factory Trip.fromJson(Map json) {
@@ -298,6 +328,7 @@ class Trip {
       paymentMethod: paymentMethod,
       clientName: json["client_name"],
       clientPhone: json["client_phone"],
+      partnerRating: PartnerRating.fromJson(json["partner_rating"]),
     );
   }
 }
