@@ -234,6 +234,37 @@ class PartnerRating {
   }
 }
 
+class Payment {
+  bool success;
+  int venniCommission;
+  int previousOwedCommission;
+  int paidOwedCommission;
+  int currentOwedCommission;
+  int partnerAmountReceived;
+
+  Payment({
+    @required this.success,
+    @required this.venniCommission,
+    @required this.previousOwedCommission,
+    @required this.paidOwedCommission,
+    @required this.currentOwedCommission,
+    @required this.partnerAmountReceived,
+  });
+
+  factory Payment.fromJson(Map json) {
+    return json == null
+        ? null
+        : Payment(
+            success: json["success"],
+            venniCommission: json["venni_commission"],
+            previousOwedCommission: json["previous_owed_commission"],
+            paidOwedCommission: json["paid_owed_commission"],
+            currentOwedCommission: json["current_owed_commission"],
+            partnerAmountReceived: json["partner_amount_received"],
+          );
+  }
+}
+
 class Trip {
   String clientID;
   TripStatus tripStatus;
@@ -256,6 +287,7 @@ class Trip {
   String clientName; // added to the response by partnerGetCurrentTrip
   String clientPhone; // added to response by partnerGetCurrentTrip
   PartnerRating partnerRating;
+  Payment payment; // added when trip is paid and if with credit card
 
   Trip({
     @required this.clientID,
@@ -279,6 +311,7 @@ class Trip {
     @required this.clientName,
     @required this.clientPhone,
     @required this.partnerRating,
+    @required this.payment,
   });
 
   factory Trip.fromJson(Map json) {
@@ -329,6 +362,7 @@ class Trip {
       clientName: json["client_name"],
       clientPhone: json["client_phone"],
       partnerRating: PartnerRating.fromJson(json["partner_rating"]),
+      payment: Payment.fromJson(json["payment"]),
     );
   }
 }
