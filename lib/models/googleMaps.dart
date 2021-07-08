@@ -61,27 +61,6 @@ class GoogleMapsModel extends ChangeNotifier {
     _googleMapController = c;
   }
 
-  // Future<void> undrawPolyline(
-  //   BuildContext context, {
-  //   bool animateCamera = true,
-  // }) async {
-  //   // remove polylines
-  //   _polylines.clear();
-  //   // remove markers
-  //   undrawMarkers();
-
-  //   if (animateCamera) {
-  //     await _googleMapController.animateCamera(CameraUpdate.newLatLngZoom(
-  //       _initialCameraLatLng,
-  //       _initialZoom,
-  //     ));
-  //   }
-
-  //   // reset maps camera view by showing location button and removing padding
-  //   setGoogleMapsCameraView();
-  //   notifyListeners();
-  // }
-
   Future<void> drawDestinationMarker(
     BuildContext context, {
     bool notify = true,
@@ -105,7 +84,7 @@ class GoogleMapsModel extends ChangeNotifier {
     final screenHeight = MediaQuery.of(context).size.height;
     await drawMarkers(
       context: context,
-      markerCoordinates: destinationCoordinates,
+      firstMarkerPosition: destinationCoordinates,
       topPadding: screenHeight / 5,
       bottomPadding: screenHeight / 10,
       notify: notify,
@@ -135,7 +114,7 @@ class GoogleMapsModel extends ChangeNotifier {
     final screenHeight = MediaQuery.of(context).size.height;
     await drawMarkers(
       context: context,
-      markerCoordinates: originCoordinates,
+      firstMarkerPosition: originCoordinates,
       topPadding: screenHeight / 5,
       bottomPadding: screenHeight / 10,
       notify: notify,
@@ -144,12 +123,12 @@ class GoogleMapsModel extends ChangeNotifier {
 
   Future<void> drawMarkers({
     @required BuildContext context,
-    LatLng markerCoordinates,
+    @required LatLng firstMarkerPosition,
+    LatLng secondMarkerPosition,
     double topPadding,
     double bottomPadding,
     bool notify = true,
   }) async {
-    print("drawMarkers");
     // hide partners's location details and set maps padding
     setGoogleMapsCameraView(
       locationButtonEnabled: true,
@@ -159,36 +138,54 @@ class GoogleMapsModel extends ChangeNotifier {
       notify: false,
     );
 
-    // get partner cooridnates
-    PartnerModel partner = Provider.of<PartnerModel>(context, listen: false);
-    LatLng partnerCoordinates = LatLng(
-      partner.position.latitude,
-      partner.position.longitude,
-    );
+    BitmapDescriptor secondMarkerIcon;
+    if (secondMarkerPosition == null) {
+      // if second marker is null, it defaults to partner's position
+      PartnerModel partner = Provider.of<PartnerModel>(context, listen: false);
+      secondMarkerPosition = LatLng(
+        partner.position.latitude,
+        partner.position.longitude,
+      );
+    } else {
+      // otherwise, we pick the dropOffIcon as marker
+      secondMarkerIcon = await AppBitmapDescriptor.fromSvg(
+        context,
+        "images/dropOffIcon.svg",
+      );
+    }
 
     // add bounds to map view
-    animateCamera(partnerCoordinates, markerCoordinates);
+    animateCamera(secondMarkerPosition, firstMarkerPosition);
 
-    // get destination marker
-    BitmapDescriptor markerIcon = await AppBitmapDescriptor.fromSvg(
+    // get first marker icon
+    BitmapDescriptor firstMarkerIcon = await AppBitmapDescriptor.fromSvg(
       context,
       "images/pickUpIcon.svg",
     );
-    LatLng markerPosition = LatLng(
-      markerCoordinates.latitude,
-      markerCoordinates.longitude,
+
+    Marker firstMarker = Marker(
+      markerId: MarkerId("pickUpMarker"),
+      position: firstMarkerPosition,
+      icon: firstMarkerIcon,
     );
-    Marker marker = Marker(
-      markerId: MarkerId("dropOffMakrer"),
-      position: markerPosition,
-      icon: markerIcon,
-    );
+
+    Marker secondMarker;
+    if (secondMarkerIcon != null) {
+      secondMarker = Marker(
+        markerId: MarkerId("dropOffMakrer"),
+        position: secondMarkerPosition,
+        icon: secondMarkerIcon,
+      );
+    }
 
     // add marker
-    _markers.add(marker);
+    _markers.add(firstMarker);
+    if (secondMarker != null) {
+      print("draw second marker");
+      _markers.add(secondMarker);
+    }
 
     if (notify) {
-      print("drawMarkers notifyListeners");
       notifyListeners();
     }
   }

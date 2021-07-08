@@ -3,6 +3,7 @@ import 'package:flutter/rendering.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:partner_app/models/connectivity.dart';
 import 'package:partner_app/models/firebase.dart';
+import 'package:partner_app/screens/pastTripDetail.dart';
 import 'package:partner_app/styles.dart';
 import 'package:partner_app/vendors/firebaseFunctions/interfaces.dart';
 import 'package:partner_app/vendors/firebaseFunctions/methods.dart';
@@ -345,99 +346,111 @@ class PastTripsState extends State<PastTrips> {
       },
     );
   }
-}
 
-Widget buildPastTrip(
-  BuildContext context,
-  Trip trip,
-) {
-  final screenWidth = MediaQuery.of(context).size.width;
-  final screenHeight = MediaQuery.of(context).size.height;
-  return Column(
-    children: [
-      SizedBox(height: screenHeight / 100),
-      Row(
+  Widget buildPastTrip(
+    BuildContext context,
+    Trip trip,
+  ) {
+    final screenWidth = MediaQuery.of(context).size.width;
+    final screenHeight = MediaQuery.of(context).size.height;
+    return InkWell(
+      onTap: () {
+        Navigator.pushNamed(
+          context,
+          PastTripDetail.routeName,
+          arguments: PastTripDetailArguments(
+            pastTrip: trip,
+            firebase: widget.firebase,
+          ),
+        );
+      },
+      child: Column(
         children: [
-          Icon(
-            Icons.access_time,
-            size: 10,
+          SizedBox(height: screenHeight / 100),
+          Row(
+            children: [
+              Icon(
+                Icons.access_time,
+                size: 10,
+              ),
+              SizedBox(width: screenWidth / 50),
+              Text(
+                formatDatetime(trip.requestTime),
+                style: TextStyle(
+                  fontWeight: FontWeight.bold,
+                  fontSize: 14,
+                ),
+              ),
+              Spacer(),
+              Text(
+                // if payment was cash, display entire fare price, since partner
+                // actually got it. If was credit card, display amount he received
+                // after all discounts
+                "R\$ " +
+                    (trip.paymentMethod == PaymentMethod.cash
+                        ? (trip.farePrice / 100).toStringAsFixed(2)
+                        : ((trip.payment?.partnerAmountReceived ??
+                                    trip.farePrice * 0.8) /
+                                100)
+                            .toStringAsFixed(2)),
+                style: TextStyle(
+                  fontWeight: FontWeight.bold,
+                  fontSize: 14,
+                ),
+              ),
+            ],
           ),
-          SizedBox(width: screenWidth / 50),
-          Text(
-            formatDatetime(trip.requestTime),
-            style: TextStyle(
-              fontWeight: FontWeight.bold,
-              fontSize: 14,
-            ),
+          SizedBox(height: screenHeight / 100),
+          Row(
+            children: [
+              SvgPicture.asset(
+                "images/pickUpIcon.svg",
+                width: 8,
+              ),
+              SizedBox(width: screenWidth / 50),
+              Flexible(
+                flex: 3,
+                child: Text(
+                  trip.originAddress,
+                  overflow: TextOverflow.ellipsis,
+                  style: TextStyle(fontSize: 14),
+                ),
+              ),
+              Spacer(flex: 1),
+              Text(
+                trip.paymentMethod == PaymentMethod.cash
+                    ? "Dinheiro"
+                    : "Cartão de Crédito",
+                style: TextStyle(
+                  fontSize: 14,
+                  color: AppColor.disabled,
+                ),
+              ),
+            ],
           ),
-          Spacer(),
-          Text(
-            // if payment was cash, display entire fare price, since partner
-            // actually got it. If was credit card, display amount he received
-            // after all discounts
-            "R\$ " +
-                (trip.paymentMethod == PaymentMethod.cash
-                    ? (trip.farePrice / 100).toStringAsFixed(2)
-                    : ((trip.payment?.partnerAmountReceived ??
-                                trip.farePrice * 0.8) /
-                            100)
-                        .toStringAsFixed(2)),
-            style: TextStyle(
-              fontWeight: FontWeight.bold,
-              fontSize: 14,
-            ),
+          SizedBox(height: screenHeight / 100),
+          Row(
+            children: [
+              SvgPicture.asset(
+                "images/dropOffIcon.svg",
+                width: 8,
+              ),
+              SizedBox(width: screenWidth / 50),
+              Flexible(
+                child: Text(
+                  trip.destinationAddress,
+                  overflow: TextOverflow.ellipsis,
+                  style: TextStyle(fontSize: 14),
+                ),
+              ),
+              Spacer(),
+            ],
           ),
+          SizedBox(height: screenHeight / 100),
         ],
       ),
-      SizedBox(height: screenHeight / 100),
-      Row(
-        children: [
-          SvgPicture.asset(
-            "images/pickUpIcon.svg",
-            width: 8,
-          ),
-          SizedBox(width: screenWidth / 50),
-          Flexible(
-            flex: 3,
-            child: Text(
-              trip.originAddress,
-              overflow: TextOverflow.ellipsis,
-              style: TextStyle(fontSize: 14),
-            ),
-          ),
-          Spacer(flex: 1),
-          Text(
-            trip.paymentMethod == PaymentMethod.cash
-                ? "Dinheiro"
-                : "Cartão de Crédito",
-            style: TextStyle(
-              fontSize: 14,
-              color: AppColor.disabled,
-            ),
-          ),
-        ],
-      ),
-      SizedBox(height: screenHeight / 100),
-      Row(
-        children: [
-          SvgPicture.asset(
-            "images/dropOffIcon.svg",
-            width: 8,
-          ),
-          SizedBox(width: screenWidth / 50),
-          Flexible(
-            child: Text(
-              trip.destinationAddress,
-              overflow: TextOverflow.ellipsis,
-              style: TextStyle(fontSize: 14),
-            ),
-          ),
-          Spacer(),
-        ],
-      ),
-      SizedBox(height: screenHeight / 100),
-    ],
-  );
+    );
+  }
 }
 
 String formatDatetime(int ms) {
