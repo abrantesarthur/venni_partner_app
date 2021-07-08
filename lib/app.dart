@@ -19,6 +19,7 @@ import 'package:partner_app/screens/editPhone.dart';
 import 'package:partner_app/screens/insertNewEmail.dart';
 import 'package:partner_app/screens/insertNewPassword.dart';
 import 'package:partner_app/screens/insertNewPhone.dart';
+import 'package:partner_app/screens/pastTripDetail.dart';
 import 'package:partner_app/screens/pastTrips.dart';
 import 'package:partner_app/screens/privacy.dart';
 import 'package:partner_app/screens/profile.dart';
@@ -404,6 +405,17 @@ class _AppState extends State<App> {
                     firebase: args.firebase,
                     connectivity: args.connectivity,
                     partner: args.partner,
+                  );
+                });
+              }
+
+              // if PastTripDetail is pushed
+              if (settings.name == PastTripDetail.routeName) {
+                final PastTripDetailArguments args = settings.arguments;
+                return MaterialPageRoute(builder: (context) {
+                  return PastTripDetail(
+                    firebase: args.firebase,
+                    pastTrip: args.pastTrip,
                   );
                 });
               }
