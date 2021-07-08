@@ -45,7 +45,10 @@ class WalletState extends State<Wallet> {
     balance = downloadBalance();
   }
 
-  Future<Balance> downloadBalance() {
+  Future<Balance> downloadBalance() async {
+    // download partner data to update amount owed
+    await widget.partner.downloadData(widget.firebase);
+
     return widget.firebase.functions.getBalance(
       widget.partner.pagarmeRecipientID,
     );

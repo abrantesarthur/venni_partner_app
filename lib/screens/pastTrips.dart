@@ -80,15 +80,16 @@ class PastTripsState extends State<PastTrips> {
       // calculate cash and card revenues of the last 24 hours
       trips.items.forEach((trip) {
         if (trip.paymentMethod == PaymentMethod.cash) {
+          // for cash, we consider entire fare prace, which is, in fact, what
+          // the partner received
           lastDayCashRevenue += trip.farePrice;
         } else {
-          lastDayCardRevenue += trip.farePrice;
+          // for credit card payments, we consider what the partner received
+          // after paying Venni's commissions
+          lastDayCardRevenue += trip.payment?.partnerAmountReceived ??
+              (0.8 * trip.farePrice).round();
         }
       });
-
-      // discount Venni's commission
-      lastDayCardRevenue = (lastDayCardRevenue * 0.8).round();
-      lastDayCashRevenue = (lastDayCashRevenue * 0.8).round();
 
       lastDayTripAmount = trips.items.length;
 
@@ -371,7 +372,16 @@ Widget buildPastTrip(
           ),
           Spacer(),
           Text(
-            "R\$ " + (0.8 * trip.farePrice / 100).toStringAsFixed(2),
+            // if payment was cash, display entire fare price, since partner
+            // actually got it. If was credit card, display amount he received
+            // after all discounts
+            "R\$ " +
+                (trip.paymentMethod == PaymentMethod.cash
+                    ? (trip.farePrice / 100).toStringAsFixed(2)
+                    : ((trip.payment?.partnerAmountReceived ??
+                                trip.farePrice * 0.8) /
+                            100)
+                        .toStringAsFixed(2)),
             style: TextStyle(
               fontWeight: FontWeight.bold,
               fontSize: 14,

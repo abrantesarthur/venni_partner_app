@@ -328,7 +328,7 @@ class RatingsState extends State<Ratings> {
                             separatorBuilder: (context, index) {
                               return SizedBox(height: screenHeight / 25);
                             },
-                            itemCount: 20,
+                            itemCount: feedbackRatingMap.entries.length,
                           ),
                         ),
                       ),
