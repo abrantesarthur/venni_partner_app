@@ -8,11 +8,13 @@ import 'package:partner_app/models/connectivity.dart';
 import 'package:partner_app/models/firebase.dart';
 import 'package:partner_app/models/timer.dart';
 import 'package:partner_app/models/trip.dart';
+import 'package:partner_app/screens/accountLocked.dart';
 import 'package:partner_app/screens/partnerAvailable.dart';
 import 'package:partner_app/utils/utils.dart';
 import 'package:partner_app/vendors/firebaseDatabase/interfaces.dart';
 import 'package:partner_app/vendors/firebaseDatabase/methods.dart';
 import 'package:partner_app/vendors/firebaseFunctions/interfaces.dart';
+import 'package:partner_app/vendors/firebaseFunctions/methods.dart';
 import 'package:partner_app/models/googleMaps.dart';
 import 'package:partner_app/models/partner.dart';
 import 'package:partner_app/screens/menu.dart';
@@ -74,6 +76,7 @@ class HomeState extends State<Home> with WidgetsBindingObserver {
   bool _hasConnection;
   StreamSubscription partnerStatusSubscription;
   StreamSubscription tripStatusSubscription;
+  StreamSubscription accountStatusSubscription;
   bool lockScreen = false;
   Widget buttonChild;
 
@@ -102,6 +105,12 @@ class HomeState extends State<Home> with WidgetsBindingObserver {
     partnerStatusSubscription = widget.firebase.database.onPartnerStatusUpdate(
       widget.firebase.auth.currentUser.uid,
       onPartnerStatusUpdate,
+    );
+
+    // subscribe to changes in account_status so we know when partner is blocked
+    accountStatusSubscription = widget.firebase.database.onAccountStatusUpdate(
+      widget.firebase.auth.currentUser.uid,
+      onAccountStatusUpdate,
     );
 
     // add listeners after tree is built and we have context
@@ -148,6 +157,9 @@ class HomeState extends State<Home> with WidgetsBindingObserver {
     if (tripStatusSubscription != null) {
       tripStatusSubscription.cancel();
     }
+    if (accountStatusSubscription != null) {
+      accountStatusSubscription.cancel();
+    }
     super.dispose();
   }
 
@@ -173,6 +185,7 @@ class HomeState extends State<Home> with WidgetsBindingObserver {
         try {
           // download partner data
           widget.partner.downloadData(firebase, notify: false);
+
           // subscribe to changes in partner_status so UI is updated appropriately
           // this will also download trip information if partner is busy
           if (partnerStatusSubscription != null) {
@@ -256,30 +269,35 @@ class HomeState extends State<Home> with WidgetsBindingObserver {
                 ),
               ),
               Consumer<PartnerModel>(
-                builder: (context, p, _) => Stack(
-                  children: [
-                    p.partnerStatus == PartnerStatus.unavailable
-                        ? PartnerUnavailable()
-                        : Container(),
-                    p.partnerStatus == PartnerStatus.available
-                        ? PartnerAvailable()
-                        : Container(),
-                    // TODO: play a sound
-                    // TODO: retrieve client informatin later
-                    p.partnerStatus == PartnerStatus.requested
-                        ? PartnerRequested()
-                        : Container(),
-                    // TODO: PartnerBusy should return a Future that only resolves
-                    // once we retrieve the client information. Also, I should start thinking
-                    // or at least researching about how firebase deals with connectivity issues.
-                    p.partnerStatus == PartnerStatus.busy
-                        ? PartnerBusy(
-                            trip: widget.trip,
-                            partner: widget.partner,
+                builder: (context, p, _) =>
+                    p.accountStatus == AccountStatus.locked
+                        ? Stack(
+                            children: [AccountLocked()],
                           )
-                        : Container(),
-                  ],
-                ),
+                        : Stack(
+                            children: [
+                              p.partnerStatus == PartnerStatus.unavailable
+                                  ? PartnerUnavailable()
+                                  : Container(),
+                              p.partnerStatus == PartnerStatus.available
+                                  ? PartnerAvailable()
+                                  : Container(),
+                              // TODO: play a sound
+                              // TODO: retrieve client informatin later
+                              p.partnerStatus == PartnerStatus.requested
+                                  ? PartnerRequested()
+                                  : Container(),
+                              // TODO: PartnerBusy should return a Future that only resolves
+                              // once we retrieve the client information. Also, I should start thinking
+                              // or at least researching about how firebase deals with connectivity issues.
+                              p.partnerStatus == PartnerStatus.busy
+                                  ? PartnerBusy(
+                                      trip: widget.trip,
+                                      partner: widget.partner,
+                                    )
+                                  : Container(),
+                            ],
+                          ),
               ),
             ],
           ),
@@ -317,8 +335,9 @@ class HomeState extends State<Home> with WidgetsBindingObserver {
     FirebaseModel firebase = Provider.of<FirebaseModel>(context, listen: false);
     PartnerModel partner = Provider.of<PartnerModel>(context, listen: false);
     if (!firebase.isRegistered) {
-      // clear partner model
+      // clear relevant models
       partner.clear();
+      widget.trip.clear();
       Navigator.pushNamedAndRemoveUntil(
         context,
         Start.routeName,
@@ -387,12 +406,9 @@ class HomeState extends State<Home> with WidgetsBindingObserver {
       } else {
         // if partner is not busy, stop animating maps camera view
         widget.partner.animateMapsCameraView(false);
-        // undraw polylines
+        // undraw markers
         widget.googleMaps.undrawMarkers();
-        // cancel any previous trip status subscriptions
-        if (tripStatusSubscription != null) {
-          tripStatusSubscription.cancel();
-        }
+
         // clear trip model
         widget.trip.clear();
       }
@@ -446,6 +462,36 @@ class HomeState extends State<Home> with WidgetsBindingObserver {
       // if trip is 'inProgress', draw destination marker so partner
       // knows where to drop off the client
       await widget.googleMaps.drawDestinationMarker(context);
+    } else if (newTripStatus == TripStatus.cancelledByClient) {
+      await showOkDialog(
+        context: context,
+        title: "O cliente cancelou o pedido",
+      );
+      // cancel trip status subscriptions
+      if (tripStatusSubscription != null) {
+        tripStatusSubscription.cancel();
+      }
     }
+  }
+
+  void onAccountStatusUpdate(Event e) async {
+    AccountStatus newAccountStatus = AccountStatusExtension.fromString(
+      e.snapshot.value,
+    );
+    if (newAccountStatus == AccountStatus.locked) {
+      await showOkDialog(
+          context: context,
+          title: "Conta bloqueada",
+          content: "Entre em contato conosco para saber mais detalhes.");
+    } else if (newAccountStatus == AccountStatus.approved &&
+        widget.partner.accountStatus == AccountStatus.locked) {
+      await showOkDialog(
+          context: context,
+          title: "Conta aprovada",
+          content: "Contecte-se e comece a receber pedidos de corrida");
+    }
+
+    // update partner's account status
+    widget.partner.updateAccountStatus(newAccountStatus);
   }
 }

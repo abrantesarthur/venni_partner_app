@@ -5,7 +5,6 @@ enum Flavor { DEV, STAG, PROD }
 
 // TODO: add sensitive variables to secure storage package
 class ConfigValues {
-  final String geocodingBaseURL;
   final String autocompleteBaseURL;
   final String googleMapsApiKey;
   final bool emulateCloudFunctions;
@@ -14,7 +13,6 @@ class ConfigValues {
   final String directionsBaseURL;
 
   ConfigValues({
-    @required this.geocodingBaseURL,
     @required this.autocompleteBaseURL,
     @required this.googleMapsApiKey,
     @required this.emulateCloudFunctions,
@@ -38,7 +36,6 @@ class AppConfig {
 
   factory AppConfig({@required Flavor flavor}) {
     ConfigValues values = ConfigValues(
-      geocodingBaseURL: DotEnv.env["GEOCODING_BASE_URL"],
       autocompleteBaseURL: DotEnv.env["AUTOCOMPLETE_BASE_URL"],
       googleMapsApiKey: AppConfig._buildGoogleMapsApiKey(flavor),
       emulateCloudFunctions: DotEnv.env["EMULATE_CLOUD_FUNCTIONS"] == "true",

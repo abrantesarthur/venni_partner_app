@@ -4,6 +4,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:partner_app/models/connectivity.dart';
 import 'package:partner_app/models/firebase.dart';
 import 'package:partner_app/styles.dart';
 import 'package:partner_app/widgets/appInputText.dart';
@@ -260,6 +261,19 @@ class InsertSmsCodeState extends State<InsertSmsCode> {
   Future<void> verifySmsCode(BuildContext context) async {
     // dismiss keyboard
     FocusScope.of(context).requestFocus(FocusNode());
+
+    // make sure user is connected to the internet
+    ConnectivityModel connectivity = Provider.of<ConnectivityModel>(
+      context,
+      listen: false,
+    );
+    if (!connectivity.hasConnection) {
+      await connectivity.alertWhenOffline(
+        context,
+        message: "Conecte-se à internet para fazer login",
+      );
+      return;
+    }
 
     setState(() {
       warningMessage = null;

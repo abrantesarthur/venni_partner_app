@@ -52,7 +52,6 @@ class App extends StatefulWidget {
 }
 
 class _AppState extends State<App> {
-  bool _initialized = false;
   bool _error = false;
   FirebaseModel firebaseModel;
   PartnerModel partnerModel;
@@ -64,10 +63,11 @@ class _AppState extends State<App> {
   FirebaseDatabase firebaseDatabase;
   FirebaseStorage firebaseStorage;
   FirebaseFunctions firebaseFunctions;
+  Future<void> initializationFinished;
 
   @override
   void initState() {
-    initializeApp();
+    initializationFinished = initializeApp();
     super.initState();
   }
 
@@ -80,29 +80,25 @@ class _AppState extends State<App> {
   }
 
   Future<void> initializeApp() async {
-    // TODO: decide whether to set firebase.database.setPersistenceEnabled(true)
     try {
       await initializeFlutterFire();
-      initializeModels();
-      // download partner data so we can know their 'account_status' and decide
-      // whether to push Home or Start
-      await initializePartner();
-
-      setState(() {
-        _initialized = true;
-        _error = false;
-      });
     } catch (e) {
-      print(e);
-      // Set `_error` state to true if Firebase initialization fails
-      setState(() {
-        _error = true;
-      });
+      throw FirebaseAuthException(code: "firebase-initialization-error");
+    }
+    initializeModels();
+    // download partner data so we can know their 'account_status' and decide
+    // whether to push Home or Start
+    try {
+      await initializePartner();
+    } catch (e) {
+      throw FirebaseAuthException(code: "partner-initialization-error");
     }
   }
 
   // Define an async function to initialize FlutterFire
   Future<void> initializeFlutterFire() async {
+    // TODO: decide whether to set firebase.database.setPersistenceEnabled(true)
+
     /*
         By default, initializeApp references the FirebaseOptions object that
         read the configuration from GoogleService-Info.plist on iOS and
@@ -122,7 +118,8 @@ class _AppState extends State<App> {
     // check if cloud functions are being emulated locally
     if (AppConfig.env.values.emulateCloudFunctions) {
       firebaseFunctions.useFunctionsEmulator(
-          origin: AppConfig.env.values.cloudFunctionsBaseURL);
+        origin: AppConfig.env.values.cloudFunctionsBaseURL,
+      );
     }
 
     // set default authentication language as brazilian portuguese
@@ -148,7 +145,7 @@ class _AppState extends State<App> {
 
   Future<void> initializePartner() async {
     // download partner data
-    await partnerModel.downloadData(firebaseModel);
+    await partnerModel.downloadData(firebaseModel, notify: false);
     // if partner has active trip request, download it as well
     if (partnerModel.partnerStatus == PartnerStatus.busy) {
       await trip.downloadData(firebaseModel, notify: false);
@@ -170,285 +167,303 @@ class _AppState extends State<App> {
 
   @override
   Widget build(BuildContext context) {
-    if (_error) {
-      return MaterialApp(
-        home: Scaffold(
-          body: Container(
-            color: Colors.white,
-            child: Center(
-              child: Text(
-                "Algo deu errado :/\nReinicie o App.",
-                style: TextStyle(
-                  color: Colors.black,
-                  fontFamily: "OpenSans",
-                  fontSize: 18,
+    return FutureBuilder(
+      future: initializationFinished,
+      builder: (
+        BuildContext context,
+        AsyncSnapshot<void> snapshot,
+      ) {
+        // Show a loader while app is being initialized
+        if (snapshot.connectionState == ConnectionState.waiting) {
+          return Splash();
+        }
+
+        FirebaseAuthException error = snapshot.error;
+        if (snapshot.hasError &&
+            error.code == "firebase-initialization-error") {
+          return MaterialApp(
+            home: Scaffold(
+              body: Container(
+                color: Colors.white,
+                child: Center(
+                  child: Text(
+                    "Algo deu errado\n\nVerifique a sua conexão com a internet e reinicie o app",
+                    textAlign: TextAlign.center,
+                    style: TextStyle(
+                      color: Colors.black,
+                      fontFamily: "OpenSans",
+                      fontSize: 18,
+                    ),
+                  ),
                 ),
               ),
             ),
-          ),
-        ),
-      );
-    }
-
-    // Show a loader until FlutterFire is initialized
-    if (!_initialized) {
-      return Splash();
-    }
-
-    // if everything is setup, show Home screen or Start screen, depending
-    // on whether user is signed in
-    return MultiProvider(
-        providers: [
-          ChangeNotifierProvider<FirebaseModel>(
-            create: (context) => firebaseModel,
-          ),
-          ChangeNotifierProvider<PartnerModel>(
-            create: (context) => partnerModel,
-          ),
-          ChangeNotifierProvider<ConnectivityModel>(
-            create: (context) => connectivity,
-          ),
-          ChangeNotifierProvider<GoogleMapsModel>(
-            create: (context) => googleMaps,
-          ),
-          ChangeNotifierProvider<TimerModel>(
-            create: (context) => timer,
-          ),
-          ChangeNotifierProvider<TripModel>(
-            create: (context) => trip,
-          ),
-        ], // pass user model down
-        builder: (context, child) {
-          FirebaseModel firebase = Provider.of<FirebaseModel>(
-            context,
-            listen: false,
           );
-          PartnerModel partner = Provider.of<PartnerModel>(
-            context,
-            listen: false,
-          );
+        }
 
-          return MaterialApp(
-            theme: ThemeData(fontFamily: "OpenSans"),
-            // start screen depends on whether user is registered
-            initialRoute: firebase.isRegistered &&
-                    partner.accountStatus == AccountStatus.approved
-                ? Home.routeName
-                : Start.routeName,
-            // pass appropriate arguments to routes
-            onGenerateRoute: (RouteSettings settings) {
-              // if Home is pushed
-              if (settings.name == Home.routeName) {
-                final HomeArguments args = settings.arguments;
-                return MaterialPageRoute(builder: (context) {
-                  return Home(
-                    firebase: args.firebase,
-                    partner: args.partner,
-                    googleMaps: args.googleMaps,
-                    timer: args.timer,
-                    trip: args.trip,
-                    connectivity: args.connectivity,
-                  );
-                });
-              }
+        // if everything is setup, show Home screen or Start screen, depending
+        // on whether user is signed in
+        return MultiProvider(
+          providers: [
+            ChangeNotifierProvider<FirebaseModel>(
+              create: (context) => firebaseModel,
+            ),
+            ChangeNotifierProvider<PartnerModel>(
+              create: (context) => partnerModel,
+            ),
+            ChangeNotifierProvider<ConnectivityModel>(
+              create: (context) => connectivity,
+            ),
+            ChangeNotifierProvider<GoogleMapsModel>(
+              create: (context) => googleMaps,
+            ),
+            ChangeNotifierProvider<TimerModel>(
+              create: (context) => timer,
+            ),
+            ChangeNotifierProvider<TripModel>(
+              create: (context) => trip,
+            ),
+          ], // pass user model down
+          builder: (context, child) {
+            FirebaseModel firebase = Provider.of<FirebaseModel>(
+              context,
+              listen: false,
+            );
+            PartnerModel partner = Provider.of<PartnerModel>(
+              context,
+              listen: false,
+            );
 
-              // if InsertSmsCode is pushed
-              if (settings.name == InsertSmsCode.routeName) {
-                final InsertSmsCodeArguments args = settings.arguments;
-                return MaterialPageRoute(builder: (context) {
-                  return InsertSmsCode(
-                    verificationId: args.verificationId,
-                    resendToken: args.resendToken,
-                    phoneNumber: args.phoneNumber,
-                    mode: args.mode,
-                  );
-                });
-              }
+            return MaterialApp(
+              theme: ThemeData(fontFamily: "OpenSans"),
+              // push Start screen if user is not registered, his account is not
+              // approved, or we failed to download partner data. In this last case
+              // it will come a step in which he will be warned to connect to the
+              // internet if that's the reason why the download failed. Moreover,
+              // Home won't be pushed without downloading the data either way later on.
+              initialRoute: !firebase.isRegistered ||
+                      partner.accountStatus != AccountStatus.approved ||
+                      (snapshot.hasError &&
+                          error.code == "partner-initialization-error")
+                  ? Start.routeName
+                  : Home.routeName,
+              // pass appropriate arguments to routes
+              onGenerateRoute: (RouteSettings settings) {
+                // if Home is pushed
+                if (settings.name == Home.routeName) {
+                  final HomeArguments args = settings.arguments;
+                  return MaterialPageRoute(builder: (context) {
+                    return Home(
+                      firebase: args.firebase,
+                      partner: args.partner,
+                      googleMaps: args.googleMaps,
+                      timer: args.timer,
+                      trip: args.trip,
+                      connectivity: args.connectivity,
+                    );
+                  });
+                }
 
-              // if InsertEmail is pushed
-              if (settings.name == InsertEmail.routeName) {
-                final InsertEmailArguments args = settings.arguments;
-                return MaterialPageRoute(builder: (context) {
-                  return InsertEmail(
-                    userCredential: args.userCredential,
-                  );
-                });
-              }
+                // if InsertSmsCode is pushed
+                if (settings.name == InsertSmsCode.routeName) {
+                  final InsertSmsCodeArguments args = settings.arguments;
+                  return MaterialPageRoute(builder: (context) {
+                    return InsertSmsCode(
+                      verificationId: args.verificationId,
+                      resendToken: args.resendToken,
+                      phoneNumber: args.phoneNumber,
+                      mode: args.mode,
+                    );
+                  });
+                }
 
-              // if InsertName is pushed
-              if (settings.name == InsertName.routeName) {
-                final InsertNameArguments args = settings.arguments;
-                return MaterialPageRoute(builder: (context) {
-                  return InsertName(
-                    userCredential: args.userCredential,
-                    userEmail: args.userEmail,
-                  );
-                });
-              }
+                // if InsertEmail is pushed
+                if (settings.name == InsertEmail.routeName) {
+                  final InsertEmailArguments args = settings.arguments;
+                  return MaterialPageRoute(builder: (context) {
+                    return InsertEmail(
+                      userCredential: args.userCredential,
+                    );
+                  });
+                }
 
-              // if InsertAditionalInfo is pushed
-              if (settings.name == InsertAditionalInfo.routeName) {
-                final InsertAditionalInfoArguments args = settings.arguments;
-                return MaterialPageRoute(builder: (context) {
-                  return InsertAditionalInfo(
-                    userCredential: args.userCredential,
-                    userEmail: args.userEmail,
-                    name: args.name,
-                    surname: args.surname,
-                  );
-                });
-              }
+                // if InsertName is pushed
+                if (settings.name == InsertName.routeName) {
+                  final InsertNameArguments args = settings.arguments;
+                  return MaterialPageRoute(builder: (context) {
+                    return InsertName(
+                      userCredential: args.userCredential,
+                      userEmail: args.userEmail,
+                    );
+                  });
+                }
 
-              // if InsertPassword is pushed
-              if (settings.name == InsertPassword.routeName) {
-                final InsertPasswordArguments args = settings.arguments;
-                return MaterialPageRoute(builder: (context) {
-                  return InsertPassword(
-                    userCredential: args.userCredential,
-                    userEmail: args.userEmail,
-                    name: args.name,
-                    surname: args.surname,
-                    cpf: args.cpf,
-                    gender: args.gender,
-                  );
-                });
-              }
+                // if InsertAditionalInfo is pushed
+                if (settings.name == InsertAditionalInfo.routeName) {
+                  final InsertAditionalInfoArguments args = settings.arguments;
+                  return MaterialPageRoute(builder: (context) {
+                    return InsertAditionalInfo(
+                      userCredential: args.userCredential,
+                      userEmail: args.userEmail,
+                      name: args.name,
+                      surname: args.surname,
+                    );
+                  });
+                }
 
-              // if Documents is pushed
-              if (settings.name == Documents.routeName) {
-                final DocumentsArguments args = settings.arguments;
-                return MaterialPageRoute(builder: (context) {
-                  return Documents(
-                    firebase: args.firebase,
-                    partner: args.partner,
-                  );
-                });
-              }
+                // if InsertPassword is pushed
+                if (settings.name == InsertPassword.routeName) {
+                  final InsertPasswordArguments args = settings.arguments;
+                  return MaterialPageRoute(builder: (context) {
+                    return InsertPassword(
+                      userCredential: args.userCredential,
+                      userEmail: args.userEmail,
+                      name: args.name,
+                      surname: args.surname,
+                      cpf: args.cpf,
+                      gender: args.gender,
+                    );
+                  });
+                }
 
-              // if SendBankAccount is pushed
-              if (settings.name == SendBankAccount.routeName) {
-                final SendBankAccountArguments args = settings.arguments;
-                return MaterialPageRoute(builder: (context) {
-                  return SendBankAccount(mode: args.mode);
-                });
-              }
+                // if Documents is pushed
+                if (settings.name == Documents.routeName) {
+                  final DocumentsArguments args = settings.arguments;
+                  return MaterialPageRoute(builder: (context) {
+                    return Documents(
+                      firebase: args.firebase,
+                      partner: args.partner,
+                    );
+                  });
+                }
 
-              // if Wallet is pushed
-              if (settings.name == Wallet.routeName) {
-                final WalletArguments args = settings.arguments;
-                return MaterialPageRoute(builder: (context) {
-                  return Wallet(
-                    firebase: args.firebase,
-                    partner: args.partner,
-                  );
-                });
-              }
+                // if SendBankAccount is pushed
+                if (settings.name == SendBankAccount.routeName) {
+                  final SendBankAccountArguments args = settings.arguments;
+                  return MaterialPageRoute(builder: (context) {
+                    return SendBankAccount(mode: args.mode);
+                  });
+                }
 
-              // if Withdraw is pushed
-              if (settings.name == Withdraw.routeName) {
-                final WithdrawArguments args = settings.arguments;
-                return MaterialPageRoute(builder: (context) {
-                  return Withdraw(
-                    availableAmount: args.availableAmount,
-                  );
-                });
-              }
+                // if Wallet is pushed
+                if (settings.name == Wallet.routeName) {
+                  final WalletArguments args = settings.arguments;
+                  return MaterialPageRoute(builder: (context) {
+                    return Wallet(
+                      firebase: args.firebase,
+                      partner: args.partner,
+                    );
+                  });
+                }
 
-              // if Anticipate is pushed
-              if (settings.name == Anticipate.routeName) {
-                final AnticipateArguments args = settings.arguments;
-                return MaterialPageRoute(builder: (context) {
-                  return Anticipate(
-                    waitingAmount: args.waitingAmount,
-                  );
-                });
-              }
+                // if Withdraw is pushed
+                if (settings.name == Withdraw.routeName) {
+                  final WithdrawArguments args = settings.arguments;
+                  return MaterialPageRoute(builder: (context) {
+                    return Withdraw(
+                      availableAmount: args.availableAmount,
+                    );
+                  });
+                }
 
-              // if ShareLocation is pushed
-              if (settings.name == ShareLocation.routeName) {
-                final ShareLocationArguments args = settings.arguments;
-                return MaterialPageRoute(builder: (context) {
-                  return ShareLocation(
-                    routeToPush: args.routeToPush,
-                    routeArguments: args.routeArguments,
-                  );
-                });
-              }
+                // if Anticipate is pushed
+                if (settings.name == Anticipate.routeName) {
+                  final AnticipateArguments args = settings.arguments;
+                  return MaterialPageRoute(builder: (context) {
+                    return Anticipate(
+                      waitingAmount: args.waitingAmount,
+                    );
+                  });
+                }
 
-              // if Profile is pushed
-              if (settings.name == Profile.routeName) {
-                final ProfileArguments args = settings.arguments;
-                return MaterialPageRoute(builder: (context) {
-                  return Profile(
-                    firebase: args.firebase,
-                    partner: args.partner,
-                  );
-                });
-              }
+                // if ShareLocation is pushed
+                if (settings.name == ShareLocation.routeName) {
+                  final ShareLocationArguments args = settings.arguments;
+                  return MaterialPageRoute(builder: (context) {
+                    return ShareLocation(
+                      routeToPush: args.routeToPush,
+                      routeArguments: args.routeArguments,
+                    );
+                  });
+                }
 
-              // if PastTrips is pushed
-              if (settings.name == PastTrips.routeName) {
-                final PastTripsArguments args = settings.arguments;
-                return MaterialPageRoute(builder: (context) {
-                  return PastTrips(
-                    firebase: args.firebase,
-                    connectivity: args.connectivity,
-                  );
-                });
-              }
+                // if Profile is pushed
+                if (settings.name == Profile.routeName) {
+                  final ProfileArguments args = settings.arguments;
+                  return MaterialPageRoute(builder: (context) {
+                    return Profile(
+                      firebase: args.firebase,
+                      partner: args.partner,
+                    );
+                  });
+                }
 
-              // if Ratings is pushed
-              if (settings.name == Ratings.routeName) {
-                final RatingsArguments args = settings.arguments;
-                return MaterialPageRoute(builder: (context) {
-                  return Ratings(
-                    firebase: args.firebase,
-                    connectivity: args.connectivity,
-                    partner: args.partner,
-                  );
-                });
-              }
+                // if PastTrips is pushed
+                if (settings.name == PastTrips.routeName) {
+                  final PastTripsArguments args = settings.arguments;
+                  return MaterialPageRoute(builder: (context) {
+                    return PastTrips(
+                      firebase: args.firebase,
+                      connectivity: args.connectivity,
+                    );
+                  });
+                }
 
-              // if PastTripDetail is pushed
-              if (settings.name == PastTripDetail.routeName) {
-                final PastTripDetailArguments args = settings.arguments;
-                return MaterialPageRoute(builder: (context) {
-                  return PastTripDetail(
-                    firebase: args.firebase,
-                    pastTrip: args.pastTrip,
-                  );
-                });
-              }
+                // if Ratings is pushed
+                if (settings.name == Ratings.routeName) {
+                  final RatingsArguments args = settings.arguments;
+                  return MaterialPageRoute(builder: (context) {
+                    return Ratings(
+                      firebase: args.firebase,
+                      connectivity: args.connectivity,
+                      partner: args.partner,
+                    );
+                  });
+                }
 
-              assert(false, 'Need to implement ${settings.name}');
-              return null;
-            },
-            routes: {
-              Home.routeName: (context) => Home(
-                  firebase: firebaseModel,
-                  partner: partnerModel,
-                  googleMaps: googleMaps,
-                  timer: timer,
-                  trip: trip,
-                  connectivity: connectivity),
-              Start.routeName: (context) => Start(),
-              InsertPhone.routeName: (context) => InsertPhone(),
-              SendCrlv.routeName: (context) => SendCrlv(),
-              SendCnh.routeName: (context) => SendCnh(),
-              SendPhotoWithCnh.routeName: (context) => SendPhotoWithCnh(),
-              SendProfilePhoto.routeName: (context) => SendProfilePhoto(),
-              Settings.routeName: (context) => Settings(),
-              EditPhone.routeName: (context) => EditPhone(),
-              InsertNewPhone.routeName: (context) => InsertNewPhone(),
-              EditEmail.routeName: (context) => EditEmail(),
-              InsertNewEmail.routeName: (context) => InsertNewEmail(),
-              InsertNewPassword.routeName: (context) => InsertNewPassword(),
-              BankAccountDetail.routeName: (context) => BankAccountDetail(),
-              Privacy.routeName: (context) => Privacy(),
-              DeleteAccount.routeName: (context) => DeleteAccount(),
-              RateClient.routeName: (context) => RateClient(),
-            },
-          );
-        });
+                // if PastTripDetail is pushed
+                if (settings.name == PastTripDetail.routeName) {
+                  final PastTripDetailArguments args = settings.arguments;
+                  return MaterialPageRoute(builder: (context) {
+                    return PastTripDetail(
+                      firebase: args.firebase,
+                      pastTrip: args.pastTrip,
+                    );
+                  });
+                }
+
+                assert(false, 'Need to implement ${settings.name}');
+                return null;
+              },
+              routes: {
+                Home.routeName: (context) => Home(
+                    firebase: firebaseModel,
+                    partner: partnerModel,
+                    googleMaps: googleMaps,
+                    timer: timer,
+                    trip: trip,
+                    connectivity: connectivity),
+                Start.routeName: (context) => Start(),
+                InsertPhone.routeName: (context) => InsertPhone(),
+                SendCrlv.routeName: (context) => SendCrlv(),
+                SendCnh.routeName: (context) => SendCnh(),
+                SendPhotoWithCnh.routeName: (context) => SendPhotoWithCnh(),
+                SendProfilePhoto.routeName: (context) => SendProfilePhoto(),
+                Settings.routeName: (context) => Settings(),
+                EditPhone.routeName: (context) => EditPhone(),
+                InsertNewPhone.routeName: (context) => InsertNewPhone(),
+                EditEmail.routeName: (context) => EditEmail(),
+                InsertNewEmail.routeName: (context) => InsertNewEmail(),
+                InsertNewPassword.routeName: (context) => InsertNewPassword(),
+                BankAccountDetail.routeName: (context) => BankAccountDetail(),
+                Privacy.routeName: (context) => Privacy(),
+                DeleteAccount.routeName: (context) => DeleteAccount(),
+                RateClient.routeName: (context) => RateClient(),
+              },
+            );
+          },
+        );
+      },
+    );
   }
 }

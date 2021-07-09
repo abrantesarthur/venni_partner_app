@@ -9,166 +9,122 @@ extension AppFirebaseDatabase on FirebaseDatabase {
     if (pilotID == null || pilotID.isEmpty) {
       return null;
     }
-    try {
-      DataSnapshot snapshot =
-          await this.reference().child("partners").child(pilotID).once();
-      return PartnerInterface.fromJson(snapshot.value);
-    } catch (e) {
-      throw (e);
-    }
+    DataSnapshot snapshot =
+        await this.reference().child("partners").child(pilotID).once();
+    return PartnerInterface.fromJson(snapshot.value);
   }
 
   Future<void> createPartner(PartnerInterface partner) async {
-    try {
-      await this
-          .reference()
-          .child("partners")
-          .child(partner.id)
-          .set(partner.toJson());
-    } catch (e) {
-      throw e;
-    }
+    await this
+        .reference()
+        .child("partners")
+        .child(partner.id)
+        .set(partner.toJson());
   }
 
   Future<void> deletePartner(String id) async {
-    try {
-      await this.reference().child("partners").child(id).remove();
-    } catch (e) {
-      throw e;
-    }
+    await this.reference().child("partners").child(id).remove();
   }
 
   Future<void> setPhoneNumber({
     @required String partnerID,
     @required String phoneNumber,
   }) async {
-    try {
-      await this
-          .reference()
-          .child("partners")
-          .child(partnerID)
-          .child("phone_number")
-          .set(phoneNumber);
-    } catch (e) {
-      throw e;
-    }
+    await this
+        .reference()
+        .child("partners")
+        .child(partnerID)
+        .child("phone_number")
+        .set(phoneNumber);
   }
 
   Future<void> setSubmittedCnh({
     @required partnerID,
     @required bool value,
   }) async {
-    try {
-      await this
-          .reference()
-          .child("partners")
-          .child(partnerID)
-          .child("submitted_documents")
-          .child("cnh")
-          .set(value);
-    } catch (e) {
-      throw e;
-    }
+    await this
+        .reference()
+        .child("partners")
+        .child(partnerID)
+        .child("submitted_documents")
+        .child("cnh")
+        .set(value);
   }
 
   Future<void> setSubmittedCrlv({
     @required partnerID,
     @required bool value,
   }) async {
-    try {
-      await this
-          .reference()
-          .child("partners")
-          .child(partnerID)
-          .child("submitted_documents")
-          .child("crlv")
-          .set(value);
-    } catch (e) {
-      throw e;
-    }
+    await this
+        .reference()
+        .child("partners")
+        .child(partnerID)
+        .child("submitted_documents")
+        .child("crlv")
+        .set(value);
   }
 
   Future<void> setSubmittedPhotoWithCnh({
     @required partnerID,
     @required bool value,
   }) async {
-    try {
-      await this
-          .reference()
-          .child("partners")
-          .child(partnerID)
-          .child("submitted_documents")
-          .child("photo_with_cnh")
-          .set(value);
-    } catch (e) {
-      throw e;
-    }
+    await this
+        .reference()
+        .child("partners")
+        .child(partnerID)
+        .child("submitted_documents")
+        .child("photo_with_cnh")
+        .set(value);
   }
 
   Future<void> setSubmittedProfilePhoto({
     @required partnerID,
     @required bool value,
   }) async {
-    try {
-      await this
-          .reference()
-          .child("partners")
-          .child(partnerID)
-          .child("submitted_documents")
-          .child("profile_photo")
-          .set(value);
-    } catch (e) {
-      throw e;
-    }
+    await this
+        .reference()
+        .child("partners")
+        .child(partnerID)
+        .child("submitted_documents")
+        .child("profile_photo")
+        .set(value);
   }
 
   Future<void> setSubmittedBankAccount({
     @required partnerID,
     @required bool value,
   }) async {
-    try {
-      await this
-          .reference()
-          .child("partners")
-          .child(partnerID)
-          .child("submitted_documents")
-          .child("bank_account")
-          .set(value);
-    } catch (e) {
-      throw e;
-    }
+    await this
+        .reference()
+        .child("partners")
+        .child(partnerID)
+        .child("submitted_documents")
+        .child("bank_account")
+        .set(value);
   }
 
   Future<void> setBankAccount({
     @required partnerID,
     @required BankAccount bankAccount,
   }) async {
-    try {
-      await this
-          .reference()
-          .child("partners")
-          .child(partnerID)
-          .child("bank_account")
-          .set(bankAccount.toJson());
-    } catch (e) {
-      throw e;
-    }
+    await this
+        .reference()
+        .child("partners")
+        .child(partnerID)
+        .child("bank_account")
+        .set(bankAccount.toJson());
   }
 
   Future<void> setPartnerStatus({
     @required partnerID,
     @required PartnerStatus partnerStatus,
   }) async {
-    try {
-      await this
-          .reference()
-          .child("partners")
-          .child(partnerID)
-          .child("status")
-          .set(partnerStatus.getString());
-    } catch (e) {
-      throw e;
-    }
+    await this
+        .reference()
+        .child("partners")
+        .child(partnerID)
+        .child("status")
+        .set(partnerStatus.getString());
   }
 
   Future<void> updatePartnerPosition({
@@ -239,6 +195,19 @@ extension AppFirebaseDatabase on FirebaseDatabase {
         .child("trip-requests")
         .child(clientID)
         .child("trip_status")
+        .onValue
+        .listen(onData);
+  }
+
+  StreamSubscription onAccountStatusupdate(
+    String partnerID,
+    void Function(Event) onData,
+  ) {
+    return this
+        .reference()
+        .child("partners")
+        .child(partnerID)
+        .child("account_status")
         .onValue
         .listen(onData);
   }

@@ -56,7 +56,7 @@ class ConnectivityModel extends ChangeNotifier {
         return AlertDialog(
           title: Text("Você está offline."),
           content: Text(
-            message ?? "Conecte-se à internet para pedir uma corrida.",
+            message ?? "Conecte-se à internet",
             style: TextStyle(color: AppColor.disabled),
           ),
           actions: [

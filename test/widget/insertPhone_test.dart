@@ -6,6 +6,8 @@ import 'package:partner_app/models/connectivity.dart';
 import 'package:partner_app/models/firebase.dart';
 import 'package:partner_app/models/googleMaps.dart';
 import 'package:partner_app/models/partner.dart';
+import 'package:partner_app/models/timer.dart';
+import 'package:partner_app/models/trip.dart';
 import 'package:partner_app/screens/insertSmsCode.dart';
 import 'package:partner_app/screens/documents.dart';
 import 'package:partner_app/screens/home.dart';
@@ -295,6 +297,12 @@ void main() {
           ),
           ChangeNotifierProvider<GoogleMapsModel>(
             create: (context) => mockGoogleMapsModel,
+          ),
+          ChangeNotifierProvider<TimerModel>(
+            create: (context) => mockTimerModel,
+          ),
+          ChangeNotifierProvider<TripModel>(
+            create: (context) => mockTripModel,
           ),
         ],
         builder: (context, child) => MaterialApp(

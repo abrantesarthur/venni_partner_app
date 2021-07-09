@@ -128,6 +128,7 @@ class PartnerAvailableState extends State<PartnerAvailable> {
         try {
           await firebase.functions.disconnect();
         } catch (e) {
+          print(e);
           // warn user about failure
           await showOkDialog(
             context: context,
