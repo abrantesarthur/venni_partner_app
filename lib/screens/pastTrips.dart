@@ -252,7 +252,7 @@ class PastTripsState extends State<PastTrips> {
                                           (lastDayCashRevenue / 100)
                                               .toStringAsFixed(2),
                                       fill: (lastDayCashRevenue == 0 &&
-                                              lastDayCashRevenue == 0)
+                                              lastDayCardRevenue == 0)
                                           ? 0
                                           : lastDayCashRevenue /
                                               (lastDayCashRevenue +
@@ -265,7 +265,7 @@ class PastTripsState extends State<PastTrips> {
                                           (lastDayCardRevenue / 100)
                                               .toStringAsFixed(2),
                                       fill: (lastDayCashRevenue == 0 &&
-                                              lastDayCashRevenue == 0)
+                                              lastDayCardRevenue == 0)
                                           ? 0
                                           : lastDayCardRevenue /
                                               (lastDayCashRevenue +
