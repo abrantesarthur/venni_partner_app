@@ -125,8 +125,8 @@ class HomeState extends State<Home> with WidgetsBindingObserver {
       });
 
       // add listener to FirebaseModel so user is redirected to Start when logs out
-      _firebaseListener = () async {
-        await _signOut(context);
+      _firebaseListener = () {
+        _signOut(context);
       };
       widget.firebase.addListener(_firebaseListener);
     });
@@ -330,7 +330,7 @@ class HomeState extends State<Home> with WidgetsBindingObserver {
   }
 
   // push start screen when user logs out
-  Future<void> _signOut(BuildContext context) async {
+  void _signOut(BuildContext context) {
     FirebaseModel firebase = Provider.of<FirebaseModel>(context, listen: false);
     PartnerModel partner = Provider.of<PartnerModel>(context, listen: false);
     if (!firebase.isRegistered) {

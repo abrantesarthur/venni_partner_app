@@ -81,7 +81,6 @@ extension AppFirebaseFunctions on FirebaseFunctions {
   }
 
   Future<void> disconnect() async {
-    print("call disconnect");
     await this.httpsCallable("partner-disconnect").call();
   }
 
