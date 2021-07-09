@@ -14,7 +14,6 @@ import 'package:partner_app/utils/utils.dart';
 import 'package:partner_app/vendors/firebaseDatabase/interfaces.dart';
 import 'package:partner_app/vendors/firebaseDatabase/methods.dart';
 import 'package:partner_app/vendors/firebaseFunctions/interfaces.dart';
-import 'package:partner_app/vendors/firebaseFunctions/methods.dart';
 import 'package:partner_app/models/googleMaps.dart';
 import 'package:partner_app/models/partner.dart';
 import 'package:partner_app/screens/menu.dart';
@@ -126,8 +125,8 @@ class HomeState extends State<Home> with WidgetsBindingObserver {
       });
 
       // add listener to FirebaseModel so user is redirected to Start when logs out
-      _firebaseListener = () {
-        _signOut(context);
+      _firebaseListener = () async {
+        await _signOut(context);
       };
       widget.firebase.addListener(_firebaseListener);
     });
@@ -331,7 +330,7 @@ class HomeState extends State<Home> with WidgetsBindingObserver {
   }
 
   // push start screen when user logs out
-  void _signOut(BuildContext context) {
+  Future<void> _signOut(BuildContext context) async {
     FirebaseModel firebase = Provider.of<FirebaseModel>(context, listen: false);
     PartnerModel partner = Provider.of<PartnerModel>(context, listen: false);
     if (!firebase.isRegistered) {

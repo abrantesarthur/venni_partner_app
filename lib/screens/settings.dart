@@ -5,6 +5,8 @@ import 'package:partner_app/screens/bankAccountDetail.dart';
 import 'package:partner_app/screens/privacy.dart';
 import 'package:partner_app/screens/profile.dart';
 import 'package:partner_app/styles.dart';
+import 'package:partner_app/vendors/firebaseDatabase/interfaces.dart';
+import 'package:partner_app/vendors/firebaseFunctions/methods.dart';
 import 'package:partner_app/widgets/borderlessButton.dart';
 import 'package:partner_app/widgets/goBackScaffold.dart';
 import 'package:partner_app/widgets/yesNoDialog.dart';
@@ -77,6 +79,13 @@ class Settings extends StatelessWidget {
                   return YesNoDialog(
                     title: "Deseja sair?",
                     onPressedYes: () async {
+                      Navigator.pop(context);
+                      // try disconnecting partner if connected
+                      if (partner.partnerStatus == PartnerStatus.available) {
+                        try {
+                          await firebase.functions.disconnect();
+                        } catch (e) {}
+                      }
                       await firebase.auth.signOut();
                     },
                   );
