@@ -140,14 +140,6 @@ class PastTripsState extends State<PastTrips> {
     final screenHeight = MediaQuery.of(context).size.height;
     ConnectivityModel connectivity = Provider.of<ConnectivityModel>(context);
 
-    // get more past trips whenever connection changes from offline to online
-    if (_hasConnection != connectivity.hasConnection) {
-      _hasConnection = connectivity.hasConnection;
-      if (connectivity.hasConnection) {
-        getMorePastTrips();
-      }
-    }
-
     return FutureBuilder(
       future: getPastTripsResult,
       builder: (BuildContext context, AsyncSnapshot<Trips> snapshot) {
@@ -156,6 +148,10 @@ class PastTripsState extends State<PastTrips> {
         // added later to pastTrips by getMorePastTrips
         if (snapshot.hasData && pastTrips.length == 0) {
           pastTrips = snapshot.data.items;
+          // if we have less than 5 pastTrips initially, request more
+          if (pastTrips.length < 5) {
+            getMorePastTrips();
+          }
         }
 
         return Scaffold(
