@@ -304,6 +304,19 @@ class InsertPasswordState extends State<InsertPassword> {
 
   // buttonCallback tries signing user up by adding remainig data to its credential
   void buttonCallback(BuildContext context) async {
+    // make sure user is connected to the internet
+    ConnectivityModel connectivity = Provider.of<ConnectivityModel>(
+      context,
+      listen: false,
+    );
+    if (!connectivity.hasConnection) {
+      await connectivity.alertWhenOffline(
+        context,
+        message: "Conecte-se à internet para fazer login",
+      );
+      return;
+    }
+
     FirebaseModel firebase = Provider.of<FirebaseModel>(context, listen: false);
     PartnerModel partner = Provider.of<PartnerModel>(context, listen: false);
 
@@ -320,10 +333,6 @@ class InsertPasswordState extends State<InsertPassword> {
     screenHeight = MediaQuery.of(context).size.height;
     FirebaseModel firebase = Provider.of<FirebaseModel>(context, listen: false);
     PartnerModel partner = Provider.of<PartnerModel>(context, listen: false);
-    ConnectivityModel connectivity = Provider.of<ConnectivityModel>(
-      context,
-      listen: false,
-    );
 
     return FutureBuilder(
       future: successfullyRegisteredUser,

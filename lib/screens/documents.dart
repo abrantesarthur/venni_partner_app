@@ -628,6 +628,15 @@ class DocumentsState extends State<Documents> {
       context,
       listen: false,
     );
+
+    // make sure user is connected to the internet
+    if (!connectivity.hasConnection) {
+      await connectivity.alertWhenOffline(
+        context,
+        message: "Conecte-se à internet para fazer começar",
+      );
+      return;
+    }
     setState(() {
       buttonChild = CircularProgressIndicator(
         valueColor: AlwaysStoppedAnimation<Color>(

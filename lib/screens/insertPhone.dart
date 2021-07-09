@@ -1,6 +1,7 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter/material.dart';
+import 'package:partner_app/models/connectivity.dart';
 import 'package:partner_app/models/firebase.dart';
 import 'package:partner_app/screens/insertSmsCode.dart';
 import 'package:partner_app/styles.dart';
@@ -127,6 +128,19 @@ class InsertPhoneNumberState extends State<InsertPhone> {
     FirebaseAuth firebaseAuth,
     FirebaseDatabase firebaseDatabase,
   ) async {
+    // make sure user is connected to the internet
+    ConnectivityModel connectivity = Provider.of<ConnectivityModel>(
+      context,
+      listen: false,
+    );
+    if (!connectivity.hasConnection) {
+      await connectivity.alertWhenOffline(
+        context,
+        message: "Conecte-se à internet para fazer login",
+      );
+      return;
+    }
+
     if (phoneNumber != null) {
       // prevent users from editing phone number and show loading icon
       setState(() {
