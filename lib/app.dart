@@ -52,7 +52,6 @@ class App extends StatefulWidget {
 }
 
 class _AppState extends State<App> {
-  bool _error = false;
   FirebaseModel firebaseModel;
   PartnerModel partnerModel;
   ConnectivityModel connectivity;
