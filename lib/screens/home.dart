@@ -94,11 +94,7 @@ class HomeState extends State<Home> with WidgetsBindingObserver {
     WidgetsBinding.instance.addObserver(this);
 
     // trigger _getPartnerPosition
-    partnerPositionFuture = _getPartnerPosition(
-      widget.firebase,
-      widget.googleMaps,
-      widget.trip,
-    );
+    partnerPositionFuture = _getPartnerPosition();
 
     // subscribe to changes in partner_status so UI is updated appropriately
     partnerStatusSubscription = widget.firebase.database.onPartnerStatusUpdate(
@@ -138,11 +134,7 @@ class HomeState extends State<Home> with WidgetsBindingObserver {
   void didChangeAppLifecycleState(AppLifecycleState state) async {
     super.didChangeAppLifecycleState(state);
     // if user stopped sharing location, _getPartnerPosition asks them to reshare
-    await _getPartnerPosition(
-      widget.firebase,
-      widget.googleMaps,
-      widget.trip,
-    );
+    await _getPartnerPosition();
   }
 
   @override
@@ -305,11 +297,7 @@ class HomeState extends State<Home> with WidgetsBindingObserver {
     );
   }
 
-  Future<Position> _getPartnerPosition(
-    FirebaseModel firebase,
-    GoogleMapsModel googleMaps,
-    TripModel trip,
-  ) async {
+  Future<Position> _getPartnerPosition() async {
     // Try getting user position. If it returns null, it's because user stopped
     // sharing location. getPosition() will automatically handle that case, asking
     // the user to share again and preventing them from using the app if they
@@ -322,9 +310,9 @@ class HomeState extends State<Home> with WidgetsBindingObserver {
     // again, as the subscription may have been cancelled if user stopped
     // sharing location.
     widget.partner.handlePositionUpdates(
-      firebase,
-      googleMaps,
-      trip,
+      widget.firebase,
+      widget.googleMaps,
+      widget.trip,
     );
     return pos;
   }
