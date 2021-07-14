@@ -15,6 +15,14 @@
       },
       "oauth_client": [
         {
+          "client_id": "433294907451-jmcmh305cvi64djc6onlj4r2atrdpgm8.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.venni.partner.dev",
+            "certificate_hash": "efb97e4eb0fa75454cbfbfce0918762209580366"
+          }
+        },
+        {
           "client_id": "433294907451-kedg2iigemtftrmh3jlv6i9k3rcp96v1.apps.googleusercontent.com",
           "client_type": 3
         }

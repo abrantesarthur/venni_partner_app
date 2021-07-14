@@ -32,10 +32,10 @@
               "client_type": 3
             },
             {
-              "client_id": "393677487406-huociebg11kd0koc81mnmljg1883eo1l.apps.googleusercontent.com",
+              "client_id": "393677487406-h4869cavjh743qvpieeei4l2i2cj939c.apps.googleusercontent.com",
               "client_type": 2,
               "ios_info": {
-                "bundle_id": "com.venni.staging.riderapp"
+                "bundle_id": "com.venni.partner.stag"
               }
             }
           ]
@@ -76,10 +76,10 @@
               "client_type": 3
             },
             {
-              "client_id": "393677487406-huociebg11kd0koc81mnmljg1883eo1l.apps.googleusercontent.com",
+              "client_id": "393677487406-h4869cavjh743qvpieeei4l2i2cj939c.apps.googleusercontent.com",
               "client_type": 2,
               "ios_info": {
-                "bundle_id": "com.venni.staging.riderapp"
+                "bundle_id": "com.venni.partner.stag"
               }
             }
           ]
