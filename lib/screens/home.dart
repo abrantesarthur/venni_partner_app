@@ -20,6 +20,7 @@ import 'package:partner_app/screens/menu.dart';
 import 'package:partner_app/screens/shareLocation.dart';
 import 'package:partner_app/screens/splash.dart';
 import 'package:partner_app/screens/start.dart';
+import 'package:partner_app/vendors/geolocator.dart';
 import 'package:partner_app/widgets/menuButton.dart';
 import 'package:partner_app/widgets/overallPadding.dart';
 import 'package:partner_app/widgets/partnerBusy.dart';
@@ -78,6 +79,7 @@ class HomeState extends State<Home> with WidgetsBindingObserver {
   StreamSubscription accountStatusSubscription;
   bool lockScreen = false;
   Widget buttonChild;
+  VoidCallback didChangeAppLifecycleCallback;
 
   var _firebaseListener;
 
@@ -133,8 +135,13 @@ class HomeState extends State<Home> with WidgetsBindingObserver {
   @override
   void didChangeAppLifecycleState(AppLifecycleState state) async {
     super.didChangeAppLifecycleState(state);
-    // if user stopped sharing location, _getPartnerPosition asks them to reshare
-    await _getPartnerPosition();
+    // if user stopped sharing location, didChangeAppLifecycleCallback should
+    // ask them to reshare. The function is only defined once the tree has been
+    // built though, to avoid exceptions of trying to ask for location permission
+    // simultaneously. After all, we already ask for them in initState.
+    if (didChangeAppLifecycleCallback != null) {
+      didChangeAppLifecycleCallback();
+    }
   }
 
   @override
@@ -219,6 +226,18 @@ class HomeState extends State<Home> with WidgetsBindingObserver {
               connectivity: connectivity,
             ),
           );
+        }
+
+        // after having waited succesfully, define didChangeAppLifecycleCallback
+        // so if user stops sharing location, we will know.
+        if (didChangeAppLifecycleCallback == null) {
+          didChangeAppLifecycleCallback = () async {
+            try {
+              await determineUserPosition();
+            } catch (e) {
+              _getPartnerPosition();
+            }
+          };
         }
 
         return Scaffold(

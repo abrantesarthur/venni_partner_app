@@ -142,7 +142,6 @@ class DocumentsState extends State<Documents> {
                   GestureDetector(
                     onTap: lockScreen == true
                         ? () {}
-                        // TODO: insert final contact number here
                         : () => _showHelpDialog(context, "18575446592"),
                     child: Container(
                       width: screenWidth / 4.5,
