@@ -8,20 +8,12 @@
   "client": [
     {
       "client_info": {
-        "mobilesdk_app_id": "1:433294907451:android:2bce672204ceebb0a6e41e",
+        "mobilesdk_app_id": "1:433294907451:android:c5bd2c4bc60e572da6e41e",
         "android_client_info": {
           "package_name": "com.venni.partner.dev"
         }
       },
       "oauth_client": [
-        {
-          "client_id": "433294907451-jmcmh305cvi64djc6onlj4r2atrdpgm8.apps.googleusercontent.com",
-          "client_type": 1,
-          "android_info": {
-            "package_name": "com.venni.partner.dev",
-            "certificate_hash": "efb97e4eb0fa75454cbfbfce0918762209580366"
-          }
-        },
         {
           "client_id": "433294907451-kedg2iigemtftrmh3jlv6i9k3rcp96v1.apps.googleusercontent.com",
           "client_type": 3
