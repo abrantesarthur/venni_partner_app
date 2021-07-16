@@ -26,7 +26,7 @@ if (flutterVersionName == null) {
 def dartEnvironmentVariables = [
     DEV_GOOGLE_MAPS_API_KEY: '',
     STAG_GOOGLE_MAPS_API_KEY: '',
-    // GOOGLE_MAPS_API_KEY: ''
+    GOOGLE_MAPS_API_KEY: ''
 ];
 if (project.hasProperty('dart-defines')) {
     dartEnvironmentVariables = dartEnvironmentVariables + project.property('dart-defines')
@@ -70,23 +70,18 @@ android {
     productFlavors {
         dev {
             dimension "app"
-            resValue "string", "app_name", "Dev PartnerApp"
+            resValue "string", "app_name", "Dev Venni Parceiros"
+            resValue "string", "bundle_id", "com.venni.partner.dev"
             applicationIdSuffix ".dev"
             versionNameSuffix "-dev"
             resValue "string", "googleMapsApiKey", dartEnvironmentVariables.DEV_GOOGLE_MAPS_API_KEY
         }
-        stag {
+        prod {
             dimension "app"
-            resValue "string", "app_name", "Stag PartnerApp"
-            applicationIdSuffix ".stag"
-            versionNameSuffix "-stag"
-            resValue "string", "googleMapsApiKey", dartEnvironmentVariables.STAG_GOOGLE_MAPS_API_KEY
+            resValue "string", "app_name", "Venni Parceiros"
+            resValue "string", "bundle_id", "com.venni.partner"
+            resValue "string", "googleMapsApiKey", dartEnvironmentVariables.GOOGLE_MAPS_API_KEY
         }
-        // prod {
-        //     dimension "app"
-        //     resValue "string", "app_name", "RiderApp"
-        //     resValue "string", "googleMapsApiKey", dartEnvironmentVariables.GOOGLE_MAPS_API_KEY
-        // }
     }
 }
 

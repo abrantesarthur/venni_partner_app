@@ -3,23 +3,21 @@
 <plist version="1.0">
 <dict>
 	<key>CLIENT_ID</key>
-	<string>393677487406-h4869cavjh743qvpieeei4l2i2cj939c.apps.googleusercontent.com</string>
+	<string>110541534901-qt34a0dlat4e7lu8gtdbdnbgeekcdlrn.apps.googleusercontent.com</string>
 	<key>REVERSED_CLIENT_ID</key>
-	<string>com.googleusercontent.apps.393677487406-h4869cavjh743qvpieeei4l2i2cj939c</string>
-	<key>ANDROID_CLIENT_ID</key>
-	<string>393677487406-o66kdl19ba0gqjntkk3voon3o45t0k23.apps.googleusercontent.com</string>
+	<string>com.googleusercontent.apps.110541534901-qt34a0dlat4e7lu8gtdbdnbgeekcdlrn</string>
 	<key>API_KEY</key>
-	<string>AIzaSyDZxEZCAdTwanPW3k32BqireLw07wpqu1I</string>
+	<string>AIzaSyAVnW5WPfY8sAyHPXJLMDJHdTZnCpJlr58</string>
 	<key>GCM_SENDER_ID</key>
-	<string>393677487406</string>
+	<string>110541534901</string>
 	<key>PLIST_VERSION</key>
 	<string>1</string>
 	<key>BUNDLE_ID</key>
-	<string>com.venni.partner.stag</string>
+	<string>com.venni.partner</string>
 	<key>PROJECT_ID</key>
-	<string>venni-rider-staging</string>
+	<string>venni-production</string>
 	<key>STORAGE_BUCKET</key>
-	<string>venni-rider-staging.appspot.com</string>
+	<string>venni-production.appspot.com</string>
 	<key>IS_ADS_ENABLED</key>
 	<false></false>
 	<key>IS_ANALYTICS_ENABLED</key>
@@ -31,8 +29,8 @@
 	<key>IS_SIGNIN_ENABLED</key>
 	<true></true>
 	<key>GOOGLE_APP_ID</key>
-	<string>1:393677487406:ios:4451f7ed34598d93c34ebf</string>
+	<string>1:110541534901:ios:e05305bb822bec5d6c70fc</string>
 	<key>DATABASE_URL</key>
-	<string>https://venni-rider-staging-default-rtdb.firebaseio.com</string>
+	<string>https://venni-production-default-rtdb.firebaseio.com</string>
 </dict>
 </plist>
