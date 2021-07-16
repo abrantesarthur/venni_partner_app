@@ -25,7 +25,6 @@ if (flutterVersionName == null) {
 // reference: https://itnext.io/flutter-1-17-no-more-flavors-no-more-ios-schemas-command-argument-that-solves-everything-8b145ed4285d
 def dartEnvironmentVariables = [
     DEV_GOOGLE_MAPS_API_KEY: '',
-    STAG_GOOGLE_MAPS_API_KEY: '',
     GOOGLE_MAPS_API_KEY: ''
 ];
 if (project.hasProperty('dart-defines')) {
