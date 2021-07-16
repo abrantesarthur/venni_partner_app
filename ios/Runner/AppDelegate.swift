@@ -29,7 +29,7 @@ import GoogleMaps
     if(googleMapsApiKeyNameAndValue.count > 1) {
       googleMapsApiKey = googleMapsApiKeyNameAndValue[1]
     }
-    GMSServices.provideAPIKey("AIzaSyBBIJW3IUj9uU60BIpIFNlzcMhhSrsgegQ")
+    GMSServices.provideAPIKey("AIzaSyCK58KogR8m_I_unlhint9mwQkAy-_Ft3g")
 
     GeneratedPluginRegistrant.register(with: self)
     return super.application(application, didFinishLaunchingWithOptions: launchOptions)

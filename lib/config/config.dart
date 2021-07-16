@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart' as DotEnv;
 
@@ -68,7 +70,11 @@ class AppConfig {
       return DotEnv.env["STAG_GOOGLE_MAPS_API_KEY"];
     }
     if (flavor == Flavor.PROD) {
-      return DotEnv.env["GOOGLE_MAPS_API_KEY"];
+      if (Platform.isAndroid) {
+        return DotEnv.env["ANDROID_GOOGLE_MAPS_API_KEY"];
+      } else if (Platform.isIOS) {
+        return DotEnv.env["IOS_GOOGLE_MAPS_API_KEY"];
+      }
     }
     return "";
   }
