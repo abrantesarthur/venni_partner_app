@@ -19,7 +19,10 @@ ifndef HOST_IP_ADDRESS
 endif
 
 check-env:
-ifndef GOOGLE_MAPS_API_KEY
+ifndef IOS_GOOGLE_MAPS_API_KEY
+	$(error GOOGLE_MAPS_API_KEY is undefined)
+endif
+ifndef ANDROID_GOOGLE_MAPS_API_KEY
 	$(error GOOGLE_MAPS_API_KEY is undefined)
 endif
 
@@ -42,14 +45,16 @@ rundev: check-dev-env
 	$(FLUTTERRUN) \
 	-v \
 	--flavor dev \
-	--dart-define=DEV_GOOGLE_MAPS_API_KEY=$(DEV_GOOGLE_MAPS_API_KEY) \
+	--dart-define=DEV_ANDROID_GOOGLE_MAPS_API_KEY=$(DEV_ANDROID_GOOGLE_MAPS_API_KEY) \
+	--dart-define=DEV_IOS_GOOGLE_MAPS_API_KEY=$(DEV_IOS_GOOGLE_MAPS_API_KEY) \
 	-t lib/main_dev.dart
 
 .PHONY: run
 run: check-env
 	$(FLUTTERRUN) \
 	--flavor prod \
-	--dart-define=GOOGLE_MAPS_API_KEY=$(GOOGLE_MAPS_API_KEY) \
+	--dart-define=IOS_GOOGLE_MAPS_API_KEY=$(IOS_GOOGLE_MAPS_API_KEY) \
+	--dart-define=ANDROID_GOOGLE_MAPS_API_KEY=$(ANDROID_GOOGLE_MAPS_API_KEY) \
 	-t lib/main.dart
 
 ################################################################################

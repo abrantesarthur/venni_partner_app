@@ -17,7 +17,7 @@ import GoogleMaps
     // look for entry in dartEnvironmentVariablesArray containing 'GOOGLE_MAPS_API_KEY' string
     var googleMapsApiKeyEntry : String = ""
     for entry in dartEnvironmentVariablesArray {
-      if entry.contains("GOOGLE_MAPS_API_KEY") {
+      if entry.contains("IOS_GOOGLE_MAPS_API_KEY") {
         googleMapsApiKeyEntry = entry
         break
       }
