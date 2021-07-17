@@ -26,10 +26,10 @@ endif
 
 check-env:
 ifndef IOS_GOOGLE_MAPS_API_KEY
-	$(error GOOGLE_MAPS_API_KEY is undefined)
+	$(error IOS_GOOGLE_MAPS_API_KEY is undefined)
 endif
 ifndef ANDROID_GOOGLE_MAPS_API_KEY
-	$(error GOOGLE_MAPS_API_KEY is undefined)
+	$(error ANDROID_GOOGLE_MAPS_API_KEY is undefined)
 endif
 ifndef REALTIME_DATABASE_BASE_URL
 	$(error REALTIME_DATABASE_BASE_URL is undefined)
