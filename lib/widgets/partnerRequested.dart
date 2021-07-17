@@ -97,7 +97,6 @@ class PartnerRequestedState extends State<PartnerRequested> {
     // mark the pilot as having accepted trip, so if 10s timeout
     // finishes, we don't send a declineTrip request and don't update
     // the UI disposing this PartnerRequested widget
-    print("partner acepted the trip");
     partner.setAcceptedTrip(true, notify: false);
 
     // lock this widget and display circular progress indicator

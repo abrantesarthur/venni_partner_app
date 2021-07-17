@@ -90,7 +90,6 @@ class TripModel extends ChangeNotifier {
   }
 
   void updateTripStatus(TripStatus ts, {bool notify = true}) {
-    print("updateTripStatus to " + ts.toString());
     _tripStatus = ts;
     if (notify) {
       notifyListeners();

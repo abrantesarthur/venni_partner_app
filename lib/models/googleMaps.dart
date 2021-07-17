@@ -65,7 +65,6 @@ class GoogleMapsModel extends ChangeNotifier {
     BuildContext context, {
     bool notify = true,
   }) async {
-    print("drawDestinationMarker");
     // only draw marker if inProgress
     TripModel trip = Provider.of<TripModel>(context, listen: false);
     if (trip.tripStatus != TripStatus.inProgress) {
@@ -95,7 +94,6 @@ class GoogleMapsModel extends ChangeNotifier {
     BuildContext context, {
     bool notify = true,
   }) async {
-    print("drawOriginMarker");
     // only draw markers if waitingPartner
     TripModel trip = Provider.of<TripModel>(context, listen: false);
     if (trip.tripStatus != TripStatus.waitingPartner) {
@@ -181,7 +179,6 @@ class GoogleMapsModel extends ChangeNotifier {
     // add marker
     _markers.add(firstMarker);
     if (secondMarker != null) {
-      print("draw second marker");
       _markers.add(secondMarker);
     }
 
@@ -194,9 +191,7 @@ class GoogleMapsModel extends ChangeNotifier {
     LatLng firstCoordinates,
     LatLng secondCoordinates,
   ) {
-    print("schedule animateCamera");
     return Future.delayed(Duration(milliseconds: 250), () async {
-      print("actually animateCamera");
       await _googleMapController.animateCamera(CameraUpdate.newLatLngBounds(
         calculateBounds(firstCoordinates, secondCoordinates),
         50,

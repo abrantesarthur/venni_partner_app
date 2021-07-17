@@ -20,6 +20,7 @@ import 'package:partner_app/screens/menu.dart';
 import 'package:partner_app/screens/shareLocation.dart';
 import 'package:partner_app/screens/splash.dart';
 import 'package:partner_app/screens/start.dart';
+import 'package:partner_app/vendors/geolocator.dart';
 import 'package:partner_app/widgets/menuButton.dart';
 import 'package:partner_app/widgets/overallPadding.dart';
 import 'package:partner_app/widgets/partnerBusy.dart';
@@ -78,6 +79,7 @@ class HomeState extends State<Home> with WidgetsBindingObserver {
   StreamSubscription accountStatusSubscription;
   bool lockScreen = false;
   Widget buttonChild;
+  VoidCallback didChangeAppLifecycleCallback;
 
   var _firebaseListener;
 
@@ -94,11 +96,7 @@ class HomeState extends State<Home> with WidgetsBindingObserver {
     WidgetsBinding.instance.addObserver(this);
 
     // trigger _getPartnerPosition
-    partnerPositionFuture = _getPartnerPosition(
-      widget.firebase,
-      widget.googleMaps,
-      widget.trip,
-    );
+    partnerPositionFuture = _getPartnerPosition();
 
     // subscribe to changes in partner_status so UI is updated appropriately
     partnerStatusSubscription = widget.firebase.database.onPartnerStatusUpdate(
@@ -137,12 +135,13 @@ class HomeState extends State<Home> with WidgetsBindingObserver {
   @override
   void didChangeAppLifecycleState(AppLifecycleState state) async {
     super.didChangeAppLifecycleState(state);
-    // if user stopped sharing location, _getPartnerPosition asks them to reshare
-    await _getPartnerPosition(
-      widget.firebase,
-      widget.googleMaps,
-      widget.trip,
-    );
+    // if user stopped sharing location, didChangeAppLifecycleCallback should
+    // ask them to reshare. The function is only defined once the tree has been
+    // built though, to avoid exceptions of trying to ask for location permission
+    // simultaneously. After all, we already ask for them in initState.
+    if (didChangeAppLifecycleCallback != null) {
+      didChangeAppLifecycleCallback();
+    }
   }
 
   @override
@@ -229,6 +228,18 @@ class HomeState extends State<Home> with WidgetsBindingObserver {
           );
         }
 
+        // after having waited succesfully, define didChangeAppLifecycleCallback
+        // so if user stops sharing location, we will know.
+        if (didChangeAppLifecycleCallback == null) {
+          didChangeAppLifecycleCallback = () async {
+            try {
+              await determineUserPosition();
+            } catch (e) {
+              _getPartnerPosition();
+            }
+          };
+        }
+
         return Scaffold(
           key: _scaffoldKey,
           drawer: Menu(),
@@ -305,11 +316,7 @@ class HomeState extends State<Home> with WidgetsBindingObserver {
     );
   }
 
-  Future<Position> _getPartnerPosition(
-    FirebaseModel firebase,
-    GoogleMapsModel googleMaps,
-    TripModel trip,
-  ) async {
+  Future<Position> _getPartnerPosition() async {
     // Try getting user position. If it returns null, it's because user stopped
     // sharing location. getPosition() will automatically handle that case, asking
     // the user to share again and preventing them from using the app if they
@@ -322,9 +329,9 @@ class HomeState extends State<Home> with WidgetsBindingObserver {
     // again, as the subscription may have been cancelled if user stopped
     // sharing location.
     widget.partner.handlePositionUpdates(
-      firebase,
-      googleMaps,
-      trip,
+      widget.firebase,
+      widget.googleMaps,
+      widget.trip,
     );
     return pos;
   }
@@ -466,6 +473,11 @@ class HomeState extends State<Home> with WidgetsBindingObserver {
         context: context,
         title: "O cliente cancelou o pedido",
       );
+      // cancel trip status subscriptions
+      if (tripStatusSubscription != null) {
+        tripStatusSubscription.cancel();
+      }
+    } else if (newTripStatus == TripStatus.cancelledByPartner) {
       // cancel trip status subscriptions
       if (tripStatusSubscription != null) {
         tripStatusSubscription.cancel();

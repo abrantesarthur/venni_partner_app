@@ -10,24 +10,29 @@ export
 ################################################################################
 
 check-dev-env:
-ifndef DEV_GOOGLE_MAPS_API_KEY
-	$(error DEV_GOOGLE_MAPS_API_KEY is undefined)
+ifndef DEV_ANDROID_GOOGLE_MAPS_API_KEY
+	$(error DEV_ANDROID_GOOGLE_MAPS_API_KEY is undefined)
+endif
+ifndef DEV_IOS_GOOGLE_MAPS_API_KEY
+	$(error DEV_IOS_GOOGLE_MAPS_API_KEY is undefined)
+endif
+ifndef DEV_REALTIME_DATABASE_BASE_URL
+	$(error DEV_REALTIME_DATABASE_BASE_URL is undefined)
 endif
 # used to send requests from physycal device to firebase emulator suite
 ifndef HOST_IP_ADDRESS
 	$(error HOST_IP_ADDRESS is undefined)
 endif
 
-
-check-stag-env:
-ifndef STAG_GOOGLE_MAPS_API_KEY
-	$(error STAG_GOOGLE_MAPS_API_KEY is undefined)
+check-env:
+ifndef IOS_GOOGLE_MAPS_API_KEY
+	$(error IOS_GOOGLE_MAPS_API_KEY is undefined)
 endif
-
-
-check-env: prod.env
-ifndef GOOGLE_MAPS_API_KEY
-	$(error GOOGLE_MAPS_API_KEY is undefined)
+ifndef ANDROID_GOOGLE_MAPS_API_KEY
+	$(error ANDROID_GOOGLE_MAPS_API_KEY is undefined)
+endif
+ifndef REALTIME_DATABASE_BASE_URL
+	$(error REALTIME_DATABASE_BASE_URL is undefined)
 endif
 
 
@@ -49,22 +54,17 @@ rundev: check-dev-env
 	$(FLUTTERRUN) \
 	-v \
 	--flavor dev \
-	--dart-define=DEV_GOOGLE_MAPS_API_KEY=$(DEV_GOOGLE_MAPS_API_KEY) \
+	--dart-define=DEV_ANDROID_GOOGLE_MAPS_API_KEY=$(DEV_ANDROID_GOOGLE_MAPS_API_KEY) \
+	--dart-define=DEV_IOS_GOOGLE_MAPS_API_KEY=$(DEV_IOS_GOOGLE_MAPS_API_KEY) \
 	-t lib/main_dev.dart
-
-
-.PHONY: runstag
-runstag: check-stag-env
-	$(FLUTTERRUN) \
-	--flavor stag \
-	--dart-define=STAG_GOOGLE_MAPS_API_KEY=$(STAG_GOOGLE_MAPS_API_KEY) \
-	-t lib/main_stag.dart
 
 .PHONY: run
 run: check-env
 	$(FLUTTERRUN) \
+	-v \
 	--flavor prod \
-	--dart-define=GOOGLE_MAPS_API_KEY=$(GOOGLE_MAPS_API_KEY) \
+	--dart-define=IOS_GOOGLE_MAPS_API_KEY=$(IOS_GOOGLE_MAPS_API_KEY) \
+	--dart-define=ANDROID_GOOGLE_MAPS_API_KEY=$(ANDROID_GOOGLE_MAPS_API_KEY) \
 	-t lib/main.dart
 
 ################################################################################

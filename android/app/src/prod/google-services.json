@@ -1,0 +1,47 @@
+{
+  "project_info": {
+    "project_number": "110541534901",
+    "firebase_url": "https://venni-production-default-rtdb.firebaseio.com",
+    "project_id": "venni-production",
+    "storage_bucket": "venni-production.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:110541534901:android:05797864fab191e56c70fc",
+        "android_client_info": {
+          "package_name": "com.venni.partner"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "110541534901-tq36mdr2ths2ct8irq6svq88hqbdirq6.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAsjyvblIBjDa90HdIlsxHgrHRl_GYLCzU"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "110541534901-tq36mdr2ths2ct8irq6svq88hqbdirq6.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "110541534901-qt34a0dlat4e7lu8gtdbdnbgeekcdlrn.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "com.venni.partner"
+              }
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

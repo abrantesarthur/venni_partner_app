@@ -45,7 +45,6 @@ extension AppFirebaseAuth on FirebaseAuth {
         listen: false,
       );
       try {
-        print("firebasAuth donwloadData");
         await partner.downloadData(firebase);
       } catch (e) {
         throw FirebaseAuthException(code: "internal-error");
