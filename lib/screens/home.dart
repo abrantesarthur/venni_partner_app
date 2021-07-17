@@ -477,6 +477,11 @@ class HomeState extends State<Home> with WidgetsBindingObserver {
       if (tripStatusSubscription != null) {
         tripStatusSubscription.cancel();
       }
+    } else if (newTripStatus == TripStatus.cancelledByPartner) {
+      // cancel trip status subscriptions
+      if (tripStatusSubscription != null) {
+        tripStatusSubscription.cancel();
+      }
     }
   }
 
