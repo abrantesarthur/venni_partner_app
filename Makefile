@@ -61,6 +61,7 @@ rundev: check-dev-env
 .PHONY: run
 run: check-env
 	$(FLUTTERRUN) \
+	-v \
 	--flavor prod \
 	--dart-define=IOS_GOOGLE_MAPS_API_KEY=$(IOS_GOOGLE_MAPS_API_KEY) \
 	--dart-define=ANDROID_GOOGLE_MAPS_API_KEY=$(ANDROID_GOOGLE_MAPS_API_KEY) \
