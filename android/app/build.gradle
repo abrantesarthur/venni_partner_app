@@ -35,8 +35,6 @@ if (project.hasProperty('dart-defines')) {
             [(pair.first()): pair.last()]
         }
 }
-
-apply plugin: 'com.google.gms.google-services'
 apply plugin: 'com.android.application'
 apply plugin: 'kotlin-android'
 apply from: "$flutterRoot/packages/flutter_tools/gradle/flutter.gradle"
