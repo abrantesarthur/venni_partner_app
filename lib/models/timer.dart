@@ -10,11 +10,6 @@ class TimerModel extends ChangeNotifier {
   Timer get timer => _timer;
   int get remainingSeconds => _remainingSeconds;
 
-  void setDuration(int durationSeconds) {
-    _remainingSeconds = durationSeconds;
-    notifyListeners();
-  }
-
   // kickOffTimer decrements remainingSeconds once per second until 0
   void kickOff({
     @required durationSeconds,
