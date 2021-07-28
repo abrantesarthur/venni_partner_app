@@ -212,6 +212,15 @@ extension AppFirebaseDatabase on FirebaseDatabase {
         .listen(onData);
   }
 
+  Future<void> setPartnerIsNear(String clientID, bool value) async {
+    return await this
+        .reference()
+        .child("trip-requests")
+        .child(clientID)
+        .child("partner_is_near")
+        .set(value);
+  }
+
   Future<void> submitDeleteReasons({
     @required Map<DeleteReason, bool> reasons,
     @required String uid,

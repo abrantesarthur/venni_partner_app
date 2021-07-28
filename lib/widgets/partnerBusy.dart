@@ -7,6 +7,7 @@ import 'package:partner_app/models/trip.dart';
 import 'package:partner_app/screens/rateClient.dart';
 import 'package:partner_app/vendors/firebaseFunctions/interfaces.dart';
 import 'package:partner_app/vendors/firebaseFunctions/methods.dart';
+import 'package:partner_app/vendors/firebaseDatabase/methods.dart';
 import 'package:partner_app/styles.dart';
 import 'package:partner_app/utils/utils.dart';
 import 'package:partner_app/vendors/urlLauncher.dart';
@@ -56,6 +57,7 @@ class PartnerBusyState extends State<PartnerBusy> {
     PartnerModel partner = Provider.of<PartnerModel>(context);
     // listen for TripModel changes in case the status changes
     TripModel trip = Provider.of<TripModel>(context);
+    FirebaseModel firebase = Provider.of<FirebaseModel>(context, listen: false);
 
     // whenever we rebuild, it may be because PartnerModel notified listeners about
     // the partner's udpated position. if partner is going to pick up the client,
@@ -63,12 +65,21 @@ class PartnerBusyState extends State<PartnerBusy> {
     // This distance will be used to decide whether to display  a "Cancel Trip"
     // (when far) or "Start Trip" button (when near).
     if (trip.tripStatus == TripStatus.waitingPartner) {
-      partnerIsFar = getDistanceBetweenCoordinates(
+      bool _partnerIsFar = getDistanceBetweenCoordinates(
             LatLng(toFixed(partner.position.latitude, 6),
                 toFixed(partner.position.longitude, 6)),
             LatLng(trip.originLat, trip.originLng),
           ) >
           150;
+
+      if (!_partnerIsFar && partnerIsFar) {
+        // if partner just got close, set him as nearby in database
+        firebase.database.setPartnerIsNear(trip.clientID, true);
+      } else if (_partnerIsFar && !partnerIsFar) {
+        // if partner just got far, set him as not nearby in database
+        firebase.database.setPartnerIsNear(trip.clientID, false);
+      }
+      partnerIsFar = _partnerIsFar;
     }
 
     return Column(
