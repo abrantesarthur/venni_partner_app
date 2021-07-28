@@ -79,7 +79,8 @@ class PartnerBusyState extends State<PartnerBusy> {
         // if partner just got far, set him as not nearby in database so client is notified
         firebase.database.setPartnerIsNear(trip.clientID, false);
       }
-      partnerIsFar = _partnerIsFar;
+      // partnerIsFar = _partnerIsFar;
+      partnerIsFar = false;
     }
 
     return Column(
@@ -284,14 +285,6 @@ class PartnerBusyState extends State<PartnerBusy> {
                       ],
                     ),
                     SizedBox(height: screenHeight / 50),
-                    Text(
-                      trip.clientPhone?.withoutCountryCode() ?? "",
-                      style: TextStyle(
-                        fontWeight: FontWeight.bold,
-                        fontSize: 24,
-                        color: Colors.white,
-                      ),
-                    ),
                   ],
                 ),
               ),
