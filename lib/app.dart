@@ -16,6 +16,7 @@ import 'package:partner_app/screens/bankAccountDetail.dart';
 import 'package:partner_app/screens/deleteAccount.dart';
 import 'package:partner_app/screens/editEmail.dart';
 import 'package:partner_app/screens/editPhone.dart';
+import 'package:partner_app/screens/help.dart';
 import 'package:partner_app/screens/insertNewEmail.dart';
 import 'package:partner_app/screens/insertNewPassword.dart';
 import 'package:partner_app/screens/insertNewPhone.dart';
@@ -458,6 +459,7 @@ class _AppState extends State<App> {
                 Privacy.routeName: (context) => Privacy(),
                 DeleteAccount.routeName: (context) => DeleteAccount(),
                 RateClient.routeName: (context) => RateClient(),
+                Help.routeName: (context) => Help(),
               },
             );
           },
