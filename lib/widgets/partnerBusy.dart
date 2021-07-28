@@ -199,7 +199,7 @@ class PartnerBusyState extends State<PartnerBusy> {
                 action: () async {
                   try {
                     if (partnerIsFar) {
-                      await firebase.functions.startTrip();
+                      await firebase.functions.cancelTrip();
                     } else {
                       await firebase.functions.startTrip();
                     }
