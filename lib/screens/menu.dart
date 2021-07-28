@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:partner_app/models/connectivity.dart';
 import 'package:partner_app/models/firebase.dart';
 import 'package:partner_app/models/partner.dart';
+import 'package:partner_app/screens/help.dart';
 import 'package:partner_app/screens/pastTrips.dart';
 import 'package:partner_app/screens/profile.dart';
 import 'package:partner_app/screens/ratings.dart';
@@ -139,6 +140,18 @@ class Menu extends StatelessWidget {
                   iconLeftSize: 24,
                   iconRight: Icons.keyboard_arrow_right,
                   primaryText: "Corridas",
+                  primaryTextSize: 18,
+                  paddingTop: screenHeight / 80,
+                  paddingBottom: screenHeight / 80,
+                ),
+                Divider(thickness: 0.1, color: Colors.black),
+                BorderlessButton(
+                  onTap: () {
+                    Navigator.pushNamed(context, Help.routeName);
+                  },
+                  iconLeft: Icons.headset_mic,
+                  iconRight: Icons.keyboard_arrow_right,
+                  primaryText: "Ajuda",
                   primaryTextSize: 18,
                   paddingTop: screenHeight / 80,
                   paddingBottom: screenHeight / 80,

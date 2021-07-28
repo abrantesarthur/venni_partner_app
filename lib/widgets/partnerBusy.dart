@@ -73,10 +73,10 @@ class PartnerBusyState extends State<PartnerBusy> {
           150;
 
       if (!_partnerIsFar && partnerIsFar) {
-        // if partner just got close, set him as nearby in database
+        // if partner just got close, set him as nearby in database so client is notified
         firebase.database.setPartnerIsNear(trip.clientID, true);
       } else if (_partnerIsFar && !partnerIsFar) {
-        // if partner just got far, set him as not nearby in database
+        // if partner just got far, set him as not nearby in database so client is notified
         firebase.database.setPartnerIsNear(trip.clientID, false);
       }
       partnerIsFar = _partnerIsFar;
