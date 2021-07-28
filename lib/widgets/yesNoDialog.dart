@@ -6,10 +6,12 @@ class YesNoDialog extends StatelessWidget {
   final String content;
   final VoidCallback onPressedNo; // defaults to Navigator.pop(context)
   final VoidCallback onPressedYes;
+  final Widget child;
 
   YesNoDialog({
     @required this.title,
     this.content,
+    this.child,
     @required this.onPressedYes,
     this.onPressedNo,
   });
@@ -18,12 +20,13 @@ class YesNoDialog extends StatelessWidget {
   Widget build(BuildContext context) {
     return AlertDialog(
       title: Text(title),
-      content: content != null
-          ? Text(
-              content,
-              style: TextStyle(color: AppColor.disabled),
-            )
-          : null,
+      content: child ??
+          (content != null
+              ? Text(
+                  content,
+                  style: TextStyle(color: AppColor.disabled),
+                )
+              : null),
       actions: [
         TextButton(
           child: Text(

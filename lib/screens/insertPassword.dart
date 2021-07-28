@@ -1,4 +1,5 @@
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/scheduler.dart';
 import 'package:partner_app/models/connectivity.dart';
@@ -19,6 +20,7 @@ import 'package:partner_app/widgets/passwordWarning.dart';
 import 'package:partner_app/widgets/warning.dart';
 import 'package:partner_app/vendors/firebaseAuth.dart';
 import 'package:provider/provider.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 class InsertPasswordArguments {
   final UserCredential userCredential;
@@ -320,12 +322,47 @@ class InsertPasswordState extends State<InsertPassword> {
     FirebaseModel firebase = Provider.of<FirebaseModel>(context, listen: false);
     PartnerModel partner = Provider.of<PartnerModel>(context, listen: false);
 
-    setState(() {
-      successfullyRegisteredUser = registerUser(
-        firebase,
-        partner,
-      );
-    });
+    // ask user to abide by privacy terms
+    await showYesNoDialog(
+      context,
+      title: "Termos de Uso",
+      child: RichText(
+        text: TextSpan(
+          text: "Você precisa aceitar os nossos ",
+          style: TextStyle(
+            color: Colors.black,
+            fontSize: 14,
+          ),
+          children: [
+            TextSpan(
+                text: "termos de uso",
+                style: TextStyle(color: Colors.blue),
+                recognizer: TapGestureRecognizer()
+                  ..onTap = () async {
+                    String _url = "https://venni.app/termos/parceiros";
+                    if (await canLaunch(_url)) {
+                      try {
+                        await launch(_url);
+                      } catch (_) {}
+                    }
+                  }),
+            TextSpan(
+              text: " para criar a sua conta. Deseja aceitar os termos?",
+            ),
+          ],
+        ),
+      ),
+      onPressedYes: () {
+        // dismiss dialog
+        Navigator.pop(context);
+        setState(() {
+          successfullyRegisteredUser = registerUser(
+            firebase,
+            partner,
+          );
+        });
+      },
+    );
   }
 
   @override
