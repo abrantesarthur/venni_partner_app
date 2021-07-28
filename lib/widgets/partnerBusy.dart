@@ -11,6 +11,8 @@ import 'package:partner_app/vendors/firebaseDatabase/methods.dart';
 import 'package:partner_app/styles.dart';
 import 'package:partner_app/utils/utils.dart';
 import 'package:partner_app/vendors/urlLauncher.dart';
+import 'package:partner_app/widgets/appButton.dart';
+import 'package:partner_app/widgets/cancelButton.dart';
 import 'package:partner_app/widgets/circularImage.dart';
 import 'package:partner_app/widgets/floatingCard.dart';
 import 'package:partner_app/widgets/overallPadding.dart';
@@ -79,8 +81,7 @@ class PartnerBusyState extends State<PartnerBusy> {
         // if partner just got far, set him as not nearby in database so client is notified
         firebase.database.setPartnerIsNear(trip.clientID, false);
       }
-      // partnerIsFar = _partnerIsFar;
-      partnerIsFar = false;
+      partnerIsFar = _partnerIsFar;
     }
 
     return Column(
@@ -130,6 +131,28 @@ class PartnerBusyState extends State<PartnerBusy> {
             ),
           ),
         ),
+        SizedBox(height: screenHeight / 25),
+        !partnerIsFar
+            ? AppButton(
+                textData: "cancelar",
+                width: screenWidth / 1.5,
+                height: 60,
+                onTapCallBack: () async {
+                  await showYesNoDialog(
+                    context,
+                    title: "Cancelar corrida?",
+                    onPressedYes: () async {
+                      Navigator.pop(context);
+                      setState(() {
+                        lockScreen = true;
+                      });
+                      await firebase.functions.cancelTrip();
+                    },
+                  );
+                },
+                iconRight: Icons.clear,
+              )
+            : Container(),
         Spacer(),
         trip.tripStatus == TripStatus.inProgress
             ? buildTripInProgressPanel(context)
@@ -185,7 +208,6 @@ class PartnerBusyState extends State<PartnerBusy> {
     final screenWidth = MediaQuery.of(context).size.width;
     FirebaseModel firebase = Provider.of<FirebaseModel>(context, listen: false);
     TripModel trip = Provider.of<TripModel>(context, listen: false);
-    PartnerModel partner = Provider.of<PartnerModel>(context, listen: false);
 
     return SlidingUpPanel(
       color: AppColor.primaryPink,
@@ -208,25 +230,27 @@ class PartnerBusyState extends State<PartnerBusy> {
             crossAxisAlignment: CrossAxisAlignment.center,
             children: [
               SliderButton(
-                action: () async {
-                  try {
-                    if (partnerIsFar) {
-                      await firebase.functions.cancelTrip();
-                    } else {
-                      await firebase.functions.startTrip();
-                    }
-                  } catch (e) {
-                    showOkDialog(
-                      context: context,
-                      title: "Falha ao " +
-                          (partnerIsFar ? "cancelar" : "iniciar") +
-                          " a corrida",
-                      content: partnerIsFar
-                          ? "Busque o cliente ou entre em contato com ele para que cancele a corrida"
-                          : "Tente novamente",
-                    );
-                  }
-                },
+                action: lockScreen
+                    ? () {}
+                    : () async {
+                        try {
+                          if (partnerIsFar) {
+                            await firebase.functions.cancelTrip();
+                          } else {
+                            await firebase.functions.startTrip();
+                          }
+                        } catch (e) {
+                          showOkDialog(
+                            context: context,
+                            title: "Falha ao " +
+                                (partnerIsFar ? "cancelar" : "iniciar") +
+                                " a corrida",
+                            content: partnerIsFar
+                                ? "Busque o cliente ou entre em contato com ele para que cancele a corrida"
+                                : "Tente novamente",
+                          );
+                        }
+                      },
                 label: Text(
                   partnerIsFar ? "CANCELAR CORRIDA" : "INICIAR CORRIDA",
                   style: TextStyle(

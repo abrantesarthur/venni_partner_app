@@ -3,8 +3,14 @@ import 'package:partner_app/styles.dart';
 
 class CancelButton extends StatelessWidget {
   final VoidCallback onPressed;
+  final Color backgroundColor;
+  final Color iconColor;
 
-  CancelButton({@required this.onPressed});
+  CancelButton({
+    @required this.onPressed,
+    this.backgroundColor,
+    this.iconColor,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -13,7 +19,7 @@ class CancelButton extends StatelessWidget {
       child: Container(
         padding: EdgeInsets.all(10),
         decoration: BoxDecoration(
-          color: Colors.white,
+          color: backgroundColor ?? Colors.white,
           borderRadius: BorderRadius.circular(100),
           boxShadow: [
             BoxShadow(
@@ -26,7 +32,7 @@ class CancelButton extends StatelessWidget {
         ),
         child: Icon(
           Icons.clear,
-          color: AppColor.primaryPink,
+          color: iconColor ?? AppColor.primaryPink,
           size: 28,
         ),
       ),
