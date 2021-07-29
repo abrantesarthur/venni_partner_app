@@ -108,6 +108,9 @@ class SettingsState extends State<Settings> {
                               } catch (_) {}
                             }
                             await firebase.auth.signOut();
+                            setState(() {
+                              lockScreen = false;
+                            });
                           },
                         );
                       },
