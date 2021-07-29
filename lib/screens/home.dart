@@ -234,7 +234,7 @@ class HomeState extends State<Home> with WidgetsBindingObserver {
           didChangeAppLifecycleCallback = () async {
             try {
               await determineUserPosition();
-            } catch (e) {
+            } catch (_) {
               _getPartnerPosition();
             }
           };

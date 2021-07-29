@@ -44,8 +44,18 @@ extension AppFirebaseAuth on FirebaseAuth {
         context,
         listen: false,
       );
+      TripModel trip = Provider.of<TripModel>(
+        context,
+        listen: false,
+      );
+
       try {
+        // download partner data
         await partner.downloadData(firebase);
+        // if partner has active trip request, download it as well
+        if (partner.partnerStatus == PartnerStatus.busy) {
+          await trip.downloadData(firebase, notify: false);
+        }
       } catch (e) {
         throw FirebaseAuthException(code: "internal-error");
       }
@@ -62,10 +72,7 @@ extension AppFirebaseAuth on FirebaseAuth {
             context,
             listen: false,
           );
-          TripModel trip = Provider.of<TripModel>(
-            context,
-            listen: false,
-          );
+
           ConnectivityModel connectivity = Provider.of<ConnectivityModel>(
             context,
             listen: false,
