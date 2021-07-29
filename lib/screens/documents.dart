@@ -645,9 +645,10 @@ class DocumentsState extends State<Documents> {
       lockScreen = true;
     });
     await Future.delayed(Duration(seconds: 2));
-    Navigator.pushReplacementNamed(
+    Navigator.pushNamedAndRemoveUntil(
       context,
       Home.routeName,
+      (_) => false,
       arguments: HomeArguments(
         firebase: firebase,
         partner: partner,

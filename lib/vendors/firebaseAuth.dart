@@ -70,9 +70,10 @@ extension AppFirebaseAuth on FirebaseAuth {
             context,
             listen: false,
           );
-          Navigator.pushReplacementNamed(
+          Navigator.pushNamedAndRemoveUntil(
             context,
             Home.routeName,
+            (_) => false,
             arguments: HomeArguments(
               firebase: firebase,
               partner: partner,
