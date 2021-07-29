@@ -12,8 +12,15 @@ import 'package:partner_app/widgets/goBackScaffold.dart';
 import 'package:partner_app/widgets/yesNoDialog.dart';
 import 'package:provider/provider.dart';
 
-class Settings extends StatelessWidget {
+class Settings extends StatefulWidget {
   static const String routeName = "Settings";
+
+  @override
+  SettingsState createState() => SettingsState();
+}
+
+class SettingsState extends State<Settings> {
+  bool lockScreen = false;
 
   @override
   Widget build(BuildContext context) {
@@ -28,16 +35,19 @@ class Settings extends StatelessWidget {
     );
     return GoBackScaffold(
       title: "Configurações",
+      onPressed: lockScreen ? () {} : () => Navigator.pop(context),
       children: [
         BorderlessButton(
-          onTap: () => Navigator.pushNamed(
-            context,
-            Profile.routeName,
-            arguments: ProfileArguments(
-              partner: partner,
-              firebase: firebase,
-            ),
-          ),
+          onTap: lockScreen
+              ? () {}
+              : () => Navigator.pushNamed(
+                    context,
+                    Profile.routeName,
+                    arguments: ProfileArguments(
+                      partner: partner,
+                      firebase: firebase,
+                    ),
+                  ),
           iconLeft: Icons.account_circle_rounded,
           iconLeftSize: 26,
           primaryText: "Perfil",
@@ -47,10 +57,12 @@ class Settings extends StatelessWidget {
         ),
         Divider(thickness: 0.1, color: Colors.black),
         BorderlessButton(
-          onTap: () => Navigator.pushNamed(
-            context,
-            BankAccountDetail.routeName,
-          ),
+          onTap: lockScreen
+              ? () {}
+              : () => Navigator.pushNamed(
+                    context,
+                    BankAccountDetail.routeName,
+                  ),
           iconLeft: Icons.account_balance,
           iconLeftSize: 26,
           primaryText: "Informações Bancárias",
@@ -60,7 +72,9 @@ class Settings extends StatelessWidget {
         ),
         Divider(thickness: 0.1, color: Colors.black),
         BorderlessButton(
-          onTap: () => Navigator.pushNamed(context, Privacy.routeName),
+          onTap: lockScreen
+              ? () {}
+              : () => Navigator.pushNamed(context, Privacy.routeName),
           iconLeft: Icons.lock_rounded,
           iconLeftSize: 26,
           primaryText: "Privacidade",
@@ -72,26 +86,33 @@ class Settings extends StatelessWidget {
         Padding(
           padding: EdgeInsets.only(top: screenHeight / 80),
           child: GestureDetector(
-            onTap: () {
-              showDialog(
-                context: context,
-                builder: (BuildContext context) {
-                  return YesNoDialog(
-                    title: "Deseja sair?",
-                    onPressedYes: () async {
-                      Navigator.pop(context);
-                      // try disconnecting partner if connected
-                      if (partner.partnerStatus == PartnerStatus.available) {
-                        try {
-                          await firebase.functions.disconnect();
-                        } catch (e) {}
-                      }
-                      await firebase.auth.signOut();
-                    },
-                  );
-                },
-              );
-            },
+            onTap: lockScreen
+                ? () {}
+                : () {
+                    showDialog(
+                      context: context,
+                      builder: (BuildContext context) {
+                        return YesNoDialog(
+                          title: "Deseja sair?",
+                          onPressedYes: () async {
+                            setState(() {
+                              lockScreen = true;
+                            });
+                            Navigator.pop(context);
+
+                            // try disconnecting partner if connected
+                            if (partner.partnerStatus ==
+                                PartnerStatus.available) {
+                              try {
+                                await firebase.functions.disconnect();
+                              } catch (_) {}
+                            }
+                            await firebase.auth.signOut();
+                          },
+                        );
+                      },
+                    );
+                  },
             child: Text(
               "Sair",
               style: TextStyle(
