@@ -644,6 +644,19 @@ class DocumentsState extends State<Documents> {
       );
       lockScreen = true;
     });
+
+    // download partner data
+    try {
+      await partner.downloadData(firebase, notify: false);
+    } catch (_) {
+      await showOkDialog(
+        context: context,
+        title: "Algo deu errado",
+        content: "Verifique a sua conexão com a internet e tente novamente.",
+      );
+      return;
+    }
+
     await Future.delayed(Duration(seconds: 2));
     Navigator.pushNamedAndRemoveUntil(
       context,
