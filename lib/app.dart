@@ -1,4 +1,5 @@
 import 'package:cloud_functions/cloud_functions.dart';
+import 'package:firebase_analytics/firebase_analytics.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_database/firebase_database.dart';
@@ -65,6 +66,7 @@ class _AppState extends State<App> {
   FirebaseStorage firebaseStorage;
   FirebaseFunctions firebaseFunctions;
   FirebaseMessaging firebaseMessaging;
+  FirebaseAnalytics firebaseAnalytics;
   Future<void> initializationFinished;
 
   @override
@@ -111,12 +113,13 @@ class _AppState extends State<App> {
       await Firebase.initializeApp();
     }
 
-    // // insantiate authentication, database, and storage
+    // insantiate authentication, database, and storage
     firebaseAuth = FirebaseAuth.instance;
     firebaseDatabase = FirebaseDatabase.instance;
     firebaseStorage = FirebaseStorage.instance;
     firebaseFunctions = FirebaseFunctions.instance;
     firebaseMessaging = FirebaseMessaging.instance;
+    firebaseAnalytics = FirebaseAnalytics();
 
     // check if cloud functions are being emulated locally
     if (AppConfig.env.values.emulateCloudFunctions) {
@@ -137,6 +140,7 @@ class _AppState extends State<App> {
       firebaseStorage: firebaseStorage,
       firebaseFunctions: firebaseFunctions,
       firebaseMessaging: firebaseMessaging,
+      firebaseAnalytics: firebaseAnalytics,
     );
 
     // initialize models
