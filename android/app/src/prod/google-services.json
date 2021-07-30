@@ -8,12 +8,20 @@
   "client": [
     {
       "client_info": {
-        "mobilesdk_app_id": "1:110541534901:android:05797864fab191e56c70fc",
+        "mobilesdk_app_id": "1:110541534901:android:a54039557aa947976c70fc",
         "android_client_info": {
-          "package_name": "com.venni.partner"
+          "package_name": "com.venni.client"
         }
       },
       "oauth_client": [
+        {
+          "client_id": "110541534901-ij3m5r5vq5ap4aojstf6p442brugrl4v.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.venni.client",
+            "certificate_hash": "efb97e4eb0fa75454cbfbfce0918762209580366"
+          }
+        },
         {
           "client_id": "110541534901-tq36mdr2ths2ct8irq6svq88hqbdirq6.apps.googleusercontent.com",
           "client_type": 3
@@ -32,10 +40,54 @@
               "client_type": 3
             },
             {
-              "client_id": "110541534901-qt34a0dlat4e7lu8gtdbdnbgeekcdlrn.apps.googleusercontent.com",
+              "client_id": "110541534901-g4954q6tes6hberjsg293pvqnb8og0oc.apps.googleusercontent.com",
               "client_type": 2,
               "ios_info": {
-                "bundle_id": "com.venni.partner"
+                "bundle_id": "com.venni.client"
+              }
+            }
+          ]
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:110541534901:android:05797864fab191e56c70fc",
+        "android_client_info": {
+          "package_name": "com.venni.partner"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "110541534901-em77jb871fgn09gunpgpt3aqcb0h3pbn.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.venni.partner",
+            "certificate_hash": "efb97e4eb0fa75454cbfbfce0918762209580366"
+          }
+        },
+        {
+          "client_id": "110541534901-tq36mdr2ths2ct8irq6svq88hqbdirq6.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAsjyvblIBjDa90HdIlsxHgrHRl_GYLCzU"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "110541534901-tq36mdr2ths2ct8irq6svq88hqbdirq6.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "110541534901-g4954q6tes6hberjsg293pvqnb8og0oc.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "com.venni.client"
               }
             }
           ]

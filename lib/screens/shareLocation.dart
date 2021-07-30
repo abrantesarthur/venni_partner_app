@@ -4,6 +4,7 @@ import 'package:partner_app/screens/splash.dart';
 import 'package:partner_app/styles.dart';
 import 'package:partner_app/widgets/appButton.dart';
 import 'package:provider/provider.dart';
+import 'package:system_settings/system_settings.dart';
 
 class ShareLocationArguments {
   String routeToPush;
@@ -63,10 +64,10 @@ class ShareLocationState extends State<ShareLocation> {
               borderRadius: 10.0,
               textData: "Abrir Configurações",
               onTapCallBack: () async {
-                await partner.getPosition();
                 setState(() {
                   reload = true;
                 });
+                await SystemSettings.location();
               },
             ),
     );

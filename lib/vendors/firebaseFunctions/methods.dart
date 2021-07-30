@@ -18,14 +18,12 @@ extension AppFirebaseFunctions on FirebaseFunctions {
     if (bankAccount.agencyDv != null && bankAccount.agencyDv.isNotEmpty) {
       data["agency_dv"] = bankAccount.agencyDv;
     }
+    HttpsCallableResult result =
+        await this.httpsCallable("payment-create_bank_account").call(data);
+    if (result != null && result.data != null) {
+      return BankAccount.fromJson(result.data);
+    }
 
-    try {
-      HttpsCallableResult result =
-          await this.httpsCallable("payment-create_bank_account").call(data);
-      if (result != null && result.data != null) {
-        return BankAccount.fromJson(result.data);
-      }
-    } catch (e) {}
     return null;
   }
 
@@ -33,14 +31,10 @@ extension AppFirebaseFunctions on FirebaseFunctions {
     Map<String, String> data = {
       "pagarme_recipient_id": pagarmeRecipientID,
     };
-    try {
-      HttpsCallableResult result =
-          await this.httpsCallable("payment-get_balance").call(data);
-      if (result != null && result.data != null) {
-        return Balance.fromJson(result.data);
-      }
-    } catch (e) {
-      throw e;
+    HttpsCallableResult result =
+        await this.httpsCallable("payment-get_balance").call(data);
+    if (result != null && result.data != null) {
+      return Balance.fromJson(result.data);
     }
     return null;
   }
@@ -53,14 +47,10 @@ extension AppFirebaseFunctions on FirebaseFunctions {
       "pagarme_recipient_id": pagarmeRecipientID,
       "amount": amount,
     };
-    try {
-      HttpsCallableResult result =
-          await this.httpsCallable("payment-create_transfer").call(data);
-      if (result != null && result.data != null) {
-        return Transfer.fromJson(result.data);
-      }
-    } catch (e) {
-      throw e;
+    HttpsCallableResult result =
+        await this.httpsCallable("payment-create_transfer").call(data);
+    if (result != null && result.data != null) {
+      return Transfer.fromJson(result.data);
     }
     return null;
   }
@@ -89,14 +79,10 @@ extension AppFirebaseFunctions on FirebaseFunctions {
   }
 
   Future<Trip> getCurrentTrip() async {
-    try {
-      HttpsCallableResult result =
-          await this.httpsCallable("trip-partner_get_current_trip").call();
-      if (result != null && result.data != null) {
-        return Trip.fromJson(result.data);
-      }
-    } catch (e) {
-      throw e;
+    HttpsCallableResult result =
+        await this.httpsCallable("trip-partner_get_current_trip").call();
+    if (result != null && result.data != null) {
+      return Trip.fromJson(result.data);
     }
     return null;
   }
@@ -115,14 +101,10 @@ extension AppFirebaseFunctions on FirebaseFunctions {
       }
     }
 
-    try {
-      HttpsCallableResult result =
-          await this.httpsCallable("trip-partner_get_past_trips").call(data);
-      if (result != null && result.data != null) {
-        return Trips.fromJson(result.data);
-      }
-    } catch (e) {
-      throw e;
+    HttpsCallableResult result =
+        await this.httpsCallable("trip-partner_get_past_trips").call(data);
+    if (result != null && result.data != null) {
+      return Trips.fromJson(result.data);
     }
     return null;
   }

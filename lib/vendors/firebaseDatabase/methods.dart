@@ -221,6 +221,16 @@ extension AppFirebaseDatabase on FirebaseDatabase {
         .set(value);
   }
 
+  // updateFCMToken updates the user's firebase cloud messaging token so they
+  // can receive targeted notifications from the backend
+  Future<void> updateFCMToken({String uid, String token}) async {
+    return await this
+        .reference()
+        .child("partners")
+        .child(uid)
+        .update({"fcm_token": token});
+  }
+
   Future<void> submitDeleteReasons({
     @required Map<DeleteReason, bool> reasons,
     @required String uid,
