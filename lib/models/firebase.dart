@@ -1,4 +1,5 @@
 import 'package:cloud_functions/cloud_functions.dart';
+import 'package:firebase_analytics/firebase_analytics.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_database/firebase_database.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
@@ -13,6 +14,7 @@ class FirebaseModel extends ChangeNotifier {
   FirebaseStorage _firebaseStorage;
   FirebaseFunctions _firebaseFunctions;
   FirebaseMessaging _firebaseMessaging;
+  FirebaseAnalytics _firebaseAnalytics;
   bool _isRegistered = false;
   bool _notificationDialogOn = false;
 
@@ -21,6 +23,7 @@ class FirebaseModel extends ChangeNotifier {
   FirebaseStorage get storage => _firebaseStorage;
   FirebaseFunctions get functions => _firebaseFunctions;
   FirebaseMessaging get messaging => _firebaseMessaging;
+  FirebaseAnalytics get analytics => _firebaseAnalytics;
   bool get isRegistered => _isRegistered;
 
   FirebaseModel({
@@ -29,6 +32,7 @@ class FirebaseModel extends ChangeNotifier {
     @required FirebaseStorage firebaseStorage,
     @required FirebaseFunctions firebaseFunctions,
     @required FirebaseMessaging firebaseMessaging,
+    @required FirebaseAnalytics firebaseAnalytics,
   }) {
     // set firebase instances
     _firebaseAuth = firebaseAuth;
@@ -36,6 +40,7 @@ class FirebaseModel extends ChangeNotifier {
     _firebaseStorage = firebaseStorage;
     _firebaseFunctions = firebaseFunctions;
     _firebaseMessaging = firebaseMessaging;
+    _firebaseAnalytics = firebaseAnalytics;
     _isRegistered = _userIsRegistered(firebaseAuth.currentUser);
     // _userIsRegisteredAsPartner(firebaseAuth.currentUser)
     //     .then((value) => _isRegisteredAsPartner = value);
