@@ -78,7 +78,7 @@ class RateClientState extends State<RateClient> {
                 crossAxisAlignment: CrossAxisAlignment.center,
                 children: [
                   Text(
-                    "R\$ " + (trip.farePrice / 100).toString(),
+                    "R\$ " + (trip.farePrice / 100).toStringAsFixed(2),
                     style: TextStyle(
                       fontSize: 42,
                       fontWeight: FontWeight.w800,

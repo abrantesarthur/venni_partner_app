@@ -28,6 +28,7 @@ dependencies:
   firebase_auth: ^1.2.0
   firebase_database: ^7.0.0
   firebase_storage: ^8.1.0
+  firebase_messaging: ^10.0.4
   cloud_functions: ^1.1.0
   provider: ^4.3.3
   connectivity: ^3.0.4
@@ -44,6 +45,9 @@ dependencies:
   slider_button: ^1.0.0
   map_launcher: ^2.1.1
   vibration: ^1.7.3
+  system_settings: ^2.0.0
+  audioplayers: ^0.19.1
+
 
 
   # The following adds the Cupertino Icons font to your application.
@@ -64,4 +68,5 @@ flutter:
   assets:
     - images/
     - assets/map_style.txt
+    - assets/trip_request_notification.mp3
     - .env

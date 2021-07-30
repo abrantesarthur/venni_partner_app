@@ -1,6 +1,8 @@
 import 'dart:async';
 
+import 'package:audioplayers/audioplayers.dart';
 import 'package:firebase_database/firebase_database.dart';
+import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
@@ -14,6 +16,7 @@ import 'package:partner_app/utils/utils.dart';
 import 'package:partner_app/vendors/firebaseDatabase/interfaces.dart';
 import 'package:partner_app/vendors/firebaseDatabase/methods.dart';
 import 'package:partner_app/vendors/firebaseFunctions/interfaces.dart';
+import 'package:partner_app/vendors/firebaseFunctions/methods.dart';
 import 'package:partner_app/models/googleMaps.dart';
 import 'package:partner_app/models/partner.dart';
 import 'package:partner_app/screens/menu.dart';
@@ -127,6 +130,16 @@ class HomeState extends State<Home> with WidgetsBindingObserver {
         _signOut(context);
       };
       widget.firebase.addListener(_firebaseListener);
+
+      await ensureNotificationsAreOn();
+
+      try {
+        String token = await widget.firebase.messaging.getToken();
+        await saveTokenToDatabase(token);
+
+        // Any time the token refreshes, store this in the database too.
+        FirebaseMessaging.instance.onTokenRefresh.listen(saveTokenToDatabase);
+      } catch (_) {}
     });
   }
 
@@ -194,6 +207,11 @@ class HomeState extends State<Home> with WidgetsBindingObserver {
             widget.firebase.auth.currentUser.uid,
             onPartnerStatusUpdate,
           );
+
+          // save fcm token to database
+          firebase.messaging.getToken().then(
+                (token) => saveTokenToDatabase(token),
+              );
         } catch (_) {}
       }
     }
@@ -232,11 +250,9 @@ class HomeState extends State<Home> with WidgetsBindingObserver {
         // so if user stops sharing location, we will know.
         if (didChangeAppLifecycleCallback == null) {
           didChangeAppLifecycleCallback = () async {
-            try {
-              await determineUserPosition();
-            } catch (_) {
-              _getPartnerPosition();
-            }
+            // make sure user didn't disable location sharing or otifications
+            await ensureLocationSharingIsOn();
+            await ensureNotificationsAreOn();
           };
         }
 
@@ -316,6 +332,46 @@ class HomeState extends State<Home> with WidgetsBindingObserver {
     );
   }
 
+  // ensureNotificationsAreOn enforces that the partner must have notifications.
+  // Disconnect partner if notifications are off and partner is not busy.
+  // if partner is busy, he will be disconnected as soon as his current trip is over.
+  // by onPartnerStatusUpdate
+  Future<void> ensureNotificationsAreOn() async {
+    bool notificationsOn = await widget.firebase.requestNotifications(context);
+
+    if (!notificationsOn &&
+        widget.partner.partnerStatus == PartnerStatus.available) {
+      try {
+        await widget.firebase.functions.disconnect();
+      } catch (_) {}
+    }
+  }
+
+  // ensureLocationSharing is on disconnects partner if they are available and
+  // stops sharing location
+  Future<void> ensureLocationSharingIsOn() async {
+    Position partnerPos;
+    try {
+      partnerPos = await determineUserPosition();
+    } catch (_) {
+      partnerPos = await _getPartnerPosition();
+    }
+    if (partnerPos == null &&
+        widget.partner.partnerStatus == PartnerStatus.available) {
+      try {
+        await widget.firebase.functions.disconnect();
+      } catch (e) {}
+    }
+  }
+
+  // save firebase cloud messaging token on database
+  Future<void> saveTokenToDatabase(String token) async {
+    await widget.firebase.database.updateFCMToken(
+      uid: widget.firebase.auth.currentUser.uid,
+      token: token,
+    );
+  }
+
   Future<Position> _getPartnerPosition() async {
     // Try getting user position. If it returns null, it's because user stopped
     // sharing location. getPosition() will automatically handle that case, asking
@@ -380,18 +436,6 @@ class HomeState extends State<Home> with WidgetsBindingObserver {
                 widget.partner.updatePartnerStatus(PartnerStatus.available);
               }
             });
-
-        // snooze partners phone
-        if (await Vibration.hasVibrator()) {
-          try {
-            Vibration.vibrate(
-              pattern: [0, 250, 500, 250, 500, 250],
-              intensities: [254, 255],
-            );
-          } catch (e) {
-            print(e);
-          }
-        }
       }
       if (newPartnerStatus == PartnerStatus.busy) {
         // download trip data before updating PartnerModel status and thus UI

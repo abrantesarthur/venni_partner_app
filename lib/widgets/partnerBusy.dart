@@ -132,7 +132,7 @@ class PartnerBusyState extends State<PartnerBusy> {
           ),
         ),
         SizedBox(height: screenHeight / 25),
-        !partnerIsFar
+        (!partnerIsFar && trip.tripStatus != TripStatus.inProgress)
             ? AppButton(
                 textData: "cancelar",
                 width: screenWidth / 1.5,

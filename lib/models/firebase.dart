@@ -1,21 +1,26 @@
 import 'package:cloud_functions/cloud_functions.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_database/firebase_database.dart';
+import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
+import 'package:partner_app/utils/utils.dart';
+import 'package:system_settings/system_settings.dart';
 
 class FirebaseModel extends ChangeNotifier {
   FirebaseAuth _firebaseAuth;
   FirebaseDatabase _firebaseDatabase;
   FirebaseStorage _firebaseStorage;
   FirebaseFunctions _firebaseFunctions;
+  FirebaseMessaging _firebaseMessaging;
   bool _isRegistered = false;
-  // bool _isRegisteredAsPartner = false;
+  bool _notificationDialogOn = false;
 
   FirebaseAuth get auth => _firebaseAuth;
   FirebaseDatabase get database => _firebaseDatabase;
   FirebaseStorage get storage => _firebaseStorage;
   FirebaseFunctions get functions => _firebaseFunctions;
+  FirebaseMessaging get messaging => _firebaseMessaging;
   bool get isRegistered => _isRegistered;
 
   FirebaseModel({
@@ -23,12 +28,14 @@ class FirebaseModel extends ChangeNotifier {
     @required FirebaseDatabase firebaseDatabase,
     @required FirebaseStorage firebaseStorage,
     @required FirebaseFunctions firebaseFunctions,
+    @required FirebaseMessaging firebaseMessaging,
   }) {
     // set firebase instances
     _firebaseAuth = firebaseAuth;
     _firebaseDatabase = firebaseDatabase;
     _firebaseStorage = firebaseStorage;
     _firebaseFunctions = firebaseFunctions;
+    _firebaseMessaging = firebaseMessaging;
     _isRegistered = _userIsRegistered(firebaseAuth.currentUser);
     // _userIsRegisteredAsPartner(firebaseAuth.currentUser)
     //     .then((value) => _isRegisteredAsPartner = value);
@@ -47,11 +54,6 @@ class FirebaseModel extends ChangeNotifier {
       } else {
         _updateIsRegistered(false);
       }
-      // if (await this._userIsRegisteredAsPartner(user)) {
-      //   _updateIsRegisteredAsPartner(true);
-      // } else {
-      //   _updateIsRegisteredAsPartner(false);
-      // }
     });
   }
 
@@ -65,5 +67,40 @@ class FirebaseModel extends ChangeNotifier {
   // here.
   bool _userIsRegistered(User user) {
     return user != null && user.displayName != null;
+  }
+
+  // checks whether notifications are turned on.
+  Future<bool> areNotificationsOn() async {
+    NotificationSettings settings =
+        await _firebaseMessaging.requestPermission();
+    return settings.authorizationStatus == AuthorizationStatus.authorized;
+  }
+
+  // request permission to send notifications. If denied, shows dialog prompting
+  // user to open settings and set notifications
+  Future<bool> requestNotifications(BuildContext context) async {
+    if (await areNotificationsOn()) {
+      return true;
+    }
+
+    // ask user to activate notifications. We check notificationDialogOn so we
+    // don't display stacks of Dialogs in case this function is called multiple
+    // successive times
+    if (!_notificationDialogOn) {
+      _notificationDialogOn = true;
+      await showYesNoDialog(
+        context,
+        title: "Notificações desativadas",
+        content:
+            "Ative as notificações para poder se conectar. Abrir configurações?",
+        onPressedYes: () async {
+          Navigator.pop(context);
+          await SystemSettings.appNotifications();
+        },
+      );
+      _notificationDialogOn = false;
+    }
+
+    return await areNotificationsOn();
   }
 }

@@ -34,6 +34,13 @@ class PartnerUnavailableStatus extends State<PartnerUnavailable> {
   Future<void> connect(BuildContext context) async {
     FirebaseModel firebase = Provider.of<FirebaseModel>(context, listen: false);
     PartnerModel partner = Provider.of<PartnerModel>(context, listen: false);
+
+    // make sure notifications are on
+    bool notificationsOn = await firebase.requestNotifications(context);
+    if (!notificationsOn) {
+      return;
+    }
+
     // lock screen and display circularProgressIndicator
     setState(() {
       buttonChild = CircularProgressIndicator(
@@ -41,6 +48,21 @@ class PartnerUnavailableStatus extends State<PartnerUnavailable> {
       );
       lock = true;
     });
+
+    // make sure partner has shared his location
+    if (partner.position == null) {
+      await showOkDialog(
+        context: context,
+        title: "Algo deu errado",
+        content: "Feche e abra o aplicativo e tente novamente",
+      );
+      // unlock screen and hide circularProgressIndicator
+      setState(() {
+        buttonChild = null;
+        lock = false;
+      });
+      return;
+    }
 
     // send request to connect, thus updating partner's status to 'available'
     // and setting his position
@@ -50,6 +72,7 @@ class PartnerUnavailableStatus extends State<PartnerUnavailable> {
         currentLongitude: partner.position.longitude,
       );
     } catch (e) {
+      print(e);
       // warn user about failure
       await showOkDialog(
         context: context,

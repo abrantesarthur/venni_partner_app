@@ -1,3 +1,4 @@
+import 'package:audioplayers/audioplayers.dart';
 import 'package:flutter/material.dart';
 import 'package:partner_app/models/firebase.dart';
 import 'package:partner_app/models/partner.dart';
@@ -9,6 +10,7 @@ import 'package:partner_app/widgets/appButton.dart';
 import 'package:partner_app/widgets/floatingCard.dart';
 import 'package:partner_app/vendors/firebaseFunctions/methods.dart';
 import 'package:provider/provider.dart';
+import 'package:vibration/vibration.dart';
 
 class PartnerRequested extends StatefulWidget {
   @override
@@ -71,13 +73,25 @@ class PartnerRequestedState extends State<PartnerRequested> {
                   // only display seconds if we are not displaying circular progress indicator
                   widgetRight: buttonChild == null
                       ? Consumer<TimerModel>(
-                          builder: (context, timer, _) => Text(
-                            timer.remainingSeconds.toString() + "s",
-                            style: TextStyle(
-                              color: Colors.white,
-                              fontSize: 28,
-                            ),
-                          ),
+                          builder: (context, timer, _) {
+                            // play notification sound and vibrate every 2 seconds
+                            if (timer.remainingSeconds % 2 == 0) {
+                              // snooze partners phone and play sound
+                              try {
+                                AudioCache player = AudioCache();
+                                player.play("trip_request_notification.mp3");
+                                Vibration.vibrate();
+                              } catch (_) {}
+                            }
+
+                            return Text(
+                              timer.remainingSeconds.toString() + "s",
+                              style: TextStyle(
+                                color: Colors.white,
+                                fontSize: 28,
+                              ),
+                            );
+                          },
                         )
                       : null,
                   onTapCallBack:
