@@ -14,6 +14,7 @@ import 'package:partner_app/models/partner.dart';
 import 'package:partner_app/models/timer.dart';
 import 'package:partner_app/models/trip.dart';
 import 'package:partner_app/screens/anticipate.dart';
+import 'package:partner_app/screens/balance.dart';
 import 'package:partner_app/screens/bankAccountDetail.dart';
 import 'package:partner_app/screens/deleteAccount.dart';
 import 'package:partner_app/screens/editEmail.dart';
@@ -45,9 +46,12 @@ import 'package:partner_app/screens/settings.dart';
 import 'package:partner_app/screens/shareLocation.dart';
 import 'package:partner_app/screens/splash.dart';
 import 'package:partner_app/screens/start.dart';
+import 'package:partner_app/screens/transferDetail.dart';
+import 'package:partner_app/screens/transfers.dart';
 import 'package:partner_app/screens/wallet.dart';
 import 'package:partner_app/screens/withdraw.dart';
 import 'package:partner_app/vendors/firebaseDatabase/interfaces.dart';
+import 'package:partner_app/vendors/firebaseFunctions/interfaces.dart';
 import 'package:provider/provider.dart';
 
 class App extends StatefulWidget {
@@ -440,6 +444,25 @@ class _AppState extends State<App> {
                   });
                 }
 
+                // if TransfersRoute is pushed
+                if (settings.name == TransfersRoute.routeName) {
+                  final TransfersRouteArguments args = settings.arguments;
+                  return MaterialPageRoute(builder: (context) {
+                    return TransfersRoute(
+                      firebase: args.firebase,
+                      connectivity: args.connectivity,
+                    );
+                  });
+                }
+
+                // if TransferDetail is pushed
+                if (settings.name == TransferDetail.routeName) {
+                  final TransferDetailArguments args = settings.arguments;
+                  return MaterialPageRoute(builder: (context) {
+                    return TransferDetail(transfer: args.transfer);
+                  });
+                }
+
                 assert(false, 'Need to implement ${settings.name}');
                 return null;
               },
@@ -468,6 +491,7 @@ class _AppState extends State<App> {
                 DeleteAccount.routeName: (context) => DeleteAccount(),
                 RateClient.routeName: (context) => RateClient(),
                 Help.routeName: (context) => Help(),
+                BalanceRoute.routeName: (context) => BalanceRoute(),
               },
             );
           },

@@ -8,7 +8,6 @@ import 'package:partner_app/styles.dart';
 import 'package:partner_app/vendors/firebaseFunctions/interfaces.dart';
 import 'package:partner_app/vendors/firebaseFunctions/methods.dart';
 import 'package:partner_app/widgets/goBackButton.dart';
-import 'package:partner_app/widgets/horizontalBar.dart';
 import 'package:partner_app/widgets/overallPadding.dart';
 import 'package:provider/provider.dart';
 
@@ -35,19 +34,12 @@ class PastTripsState extends State<PastTrips> {
   Future<Trips> getPastTripsResult;
   bool isLoading;
   ScrollController scrollController;
-  bool _hasConnection;
-  int lastDayCashRevenue;
-  int lastDayCardRevenue;
-  int lastDayTripAmount;
 
   @override
   void initState() {
     super.initState();
     pastTrips = [];
     isLoading = false;
-    _hasConnection = widget.connectivity.hasConnection;
-    lastDayCashRevenue = 0;
-    lastDayCardRevenue = 0;
 
     // create scroll controller that triggers getMorePastTrips once user
     // scrolls all the way down to the bottom of the past trips list
@@ -69,32 +61,13 @@ class PastTripsState extends State<PastTrips> {
   }
 
   Future<Trips> getPastTrips() async {
-    Trips trips;
     try {
       // initially get all partner's trips of the last 24 hours
       int now = DateTime.now().millisecondsSinceEpoch;
       GetPastTripsArguments args = GetPastTripsArguments(
         minRequestTime: now - 24 * 60 * 60 * 1000,
       );
-      trips = await widget.firebase.functions.getPastTrips(args: args);
-
-      // calculate cash and card revenues of the last 24 hours
-      trips.items.forEach((trip) {
-        if (trip.paymentMethod == PaymentMethod.cash) {
-          // for cash, we consider entire fare prace, which is, in fact, what
-          // the partner received
-          lastDayCashRevenue += trip.farePrice;
-        } else {
-          // for credit card payments, we consider what the partner received
-          // after paying Venni's commissions
-          lastDayCardRevenue += trip.payment?.partnerAmountReceived ??
-              (0.8 * trip.farePrice).round();
-        }
-      });
-
-      lastDayTripAmount = trips.items.length;
-
-      return trips;
+      return await widget.firebase.functions.getPastTrips(args: args);
     } catch (_) {
       // on error, return empty list
       return Future.value(Trips(items: []));
@@ -206,101 +179,6 @@ class PastTripsState extends State<PastTrips> {
                                     )
                               : Column(
                                   children: [
-                                    Center(
-                                      child: Text(
-                                        "Ganhos Nas Últimas 24h",
-                                        style: TextStyle(
-                                          color: Colors.black,
-                                          fontSize: 18,
-                                          fontWeight: FontWeight.w600,
-                                        ),
-                                      ),
-                                    ),
-                                    SizedBox(height: screenHeight / 50),
-                                    RichText(
-                                      text: TextSpan(
-                                        style: TextStyle(color: Colors.black),
-                                        children: [
-                                          TextSpan(
-                                            style: TextStyle(
-                                              fontSize: 16,
-                                              fontWeight: FontWeight.w600,
-                                            ),
-                                            text: "R\$",
-                                          ),
-                                          TextSpan(
-                                            style: TextStyle(
-                                              fontSize: 28,
-                                              fontWeight: FontWeight.bold,
-                                            ),
-                                            text: ((lastDayCashRevenue +
-                                                        lastDayCardRevenue) /
-                                                    100)
-                                                .toStringAsFixed(2),
-                                          ),
-                                        ],
-                                      ),
-                                    ),
-                                    SizedBox(height: screenHeight / 50),
-                                    HorizontalBar(
-                                      leftText: "Dinheiro",
-                                      rightText: "R\$" +
-                                          (lastDayCashRevenue / 100)
-                                              .toStringAsFixed(2),
-                                      fill: (lastDayCashRevenue == 0 &&
-                                              lastDayCardRevenue == 0)
-                                          ? 0
-                                          : lastDayCashRevenue /
-                                              (lastDayCashRevenue +
-                                                  lastDayCardRevenue),
-                                    ),
-                                    SizedBox(height: screenHeight / 50),
-                                    HorizontalBar(
-                                      leftText: "Cartão",
-                                      rightText: "R\$" +
-                                          (lastDayCardRevenue / 100)
-                                              .toStringAsFixed(2),
-                                      fill: (lastDayCashRevenue == 0 &&
-                                              lastDayCardRevenue == 0)
-                                          ? 0
-                                          : lastDayCardRevenue /
-                                              (lastDayCashRevenue +
-                                                  lastDayCardRevenue),
-                                    ),
-                                    SizedBox(height: screenHeight / 50),
-                                    Row(
-                                      children: [
-                                        Text(
-                                          "Corridas Realizadas",
-                                          style: TextStyle(
-                                            fontSize: 12,
-                                            fontWeight: FontWeight.w600,
-                                          ),
-                                        ),
-                                        Spacer(),
-                                        Text(
-                                          lastDayTripAmount.toString(),
-                                          style: TextStyle(
-                                            fontSize: 12,
-                                            fontWeight: FontWeight.w600,
-                                          ),
-                                        ),
-                                      ],
-                                    ),
-                                    SizedBox(height: screenHeight / 50),
-                                    Divider(
-                                        thickness: 0.1, color: Colors.black),
-                                    SizedBox(height: screenHeight / 50),
-                                    Center(
-                                      child: Text(
-                                        "Corridas",
-                                        style: TextStyle(
-                                          color: Colors.black,
-                                          fontSize: 18,
-                                          fontWeight: FontWeight.w600,
-                                        ),
-                                      ),
-                                    ),
                                     SizedBox(height: screenHeight / 50),
                                     Expanded(
                                       child: ListView.separated(

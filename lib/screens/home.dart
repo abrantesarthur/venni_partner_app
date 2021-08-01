@@ -1,6 +1,5 @@
 import 'dart:async';
 
-import 'package:audioplayers/audioplayers.dart';
 import 'package:firebase_database/firebase_database.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
@@ -30,7 +29,6 @@ import 'package:partner_app/widgets/partnerBusy.dart';
 import 'package:partner_app/widgets/partnerRequested.dart';
 import 'package:partner_app/widgets/partnerUnavailable.dart';
 import 'package:provider/provider.dart';
-import 'package:vibration/vibration.dart';
 
 class HomeArguments {
   FirebaseModel firebase;

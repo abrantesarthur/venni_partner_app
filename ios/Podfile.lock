@@ -8,14 +8,12 @@ PODS:
   - connectivity (0.0.1):
     - Flutter
     - Reachability
-  - Firebase/Analytics (8.3.0):
-    - Firebase/Core
+  - Firebase/AnalyticsWithoutAdIdSupport (8.3.0):
+    - Firebase/CoreOnly
+    - FirebaseAnalytics/WithoutAdIdSupport (~> 8.3.0)
   - Firebase/Auth (8.3.0):
     - Firebase/CoreOnly
     - FirebaseAuth (~> 8.3.0)
-  - Firebase/Core (8.3.0):
-    - Firebase/CoreOnly
-    - FirebaseAnalytics (~> 8.3.0)
   - Firebase/CoreOnly (8.3.0):
     - FirebaseCore (= 8.3.0)
   - Firebase/Database (8.3.0):
@@ -31,7 +29,7 @@ PODS:
     - Firebase/CoreOnly
     - FirebaseStorage (~> 8.3.0)
   - firebase_analytics (8.2.0):
-    - Firebase/Analytics (= 8.3.0)
+    - Firebase/AnalyticsWithoutAdIdSupport (= 8.3.0)
     - firebase_core
     - Flutter
   - firebase_auth (1.4.1):
@@ -53,19 +51,10 @@ PODS:
     - Firebase/Storage (= 8.3.0)
     - firebase_core
     - Flutter
-  - FirebaseAnalytics (8.3.0):
-    - FirebaseAnalytics/AdIdSupport (= 8.3.0)
+  - FirebaseAnalytics/WithoutAdIdSupport (8.3.0):
     - FirebaseCore (~> 8.0)
     - FirebaseInstallations (~> 8.0)
-    - GoogleUtilities/AppDelegateSwizzler (~> 7.4)
-    - GoogleUtilities/MethodSwizzler (~> 7.4)
-    - GoogleUtilities/Network (~> 7.4)
-    - "GoogleUtilities/NSData+zlib (~> 7.4)"
-    - nanopb (~> 2.30908.0)
-  - FirebaseAnalytics/AdIdSupport (8.3.0):
-    - FirebaseCore (~> 8.0)
-    - FirebaseInstallations (~> 8.0)
-    - GoogleAppMeasurement (= 8.3.0)
+    - GoogleAppMeasurement/WithoutAdIdSupport (= 8.3.0)
     - GoogleUtilities/AppDelegateSwizzler (~> 7.4)
     - GoogleUtilities/MethodSwizzler (~> 7.4)
     - GoogleUtilities/Network (~> 7.4)
@@ -112,14 +101,7 @@ PODS:
   - google_maps_flutter (0.0.1):
     - Flutter
     - GoogleMaps
-  - GoogleAppMeasurement (8.3.0):
-    - GoogleAppMeasurement/AdIdSupport (= 8.3.0)
-    - GoogleUtilities/AppDelegateSwizzler (~> 7.4)
-    - GoogleUtilities/MethodSwizzler (~> 7.4)
-    - GoogleUtilities/Network (~> 7.4)
-    - "GoogleUtilities/NSData+zlib (~> 7.4)"
-    - nanopb (~> 2.30908.0)
-  - GoogleAppMeasurement/AdIdSupport (8.3.0):
+  - GoogleAppMeasurement/WithoutAdIdSupport (8.3.0):
     - GoogleUtilities/AppDelegateSwizzler (~> 7.4)
     - GoogleUtilities/MethodSwizzler (~> 7.4)
     - GoogleUtilities/Network (~> 7.4)
@@ -265,7 +247,7 @@ SPEC CHECKSUMS:
   cloud_functions: cd6630d9a3fce737f31b784b34d5fdb77e2b55f6
   connectivity: c4130b2985d4ef6fd26f9702e886bd5260681467
   Firebase: 817b9171d0d51dccc458b94a5e8edff6b1dd323d
-  firebase_analytics: 25a03006c041a3be10bbd8e7313f87f59b9857bf
+  firebase_analytics: 960bf7a27a2bf7cd04cacce66962c13561efd0b8
   firebase_auth: 5d48a6c2c9de6d8f7946269ef904136298c6aa12
   firebase_core: 72374607c8c6f5a0adc0559e5c5bf57deda975e3
   firebase_database: 27de7affa8b73e25afe25ee7ec18e3216d8d279c
@@ -300,6 +282,6 @@ SPEC CHECKSUMS:
   url_launcher: 6fef411d543ceb26efce54b05a0a40bfd74cbbef
   vibration: b5a33e764c3f609a975b9dca73dce20fdde627dc
 
-PODFILE CHECKSUM: fe0e1ee7f3d1f7d00b11b474b62dd62134535aea
+PODFILE CHECKSUM: 82336120f4ee2c4e014efd4c19a19f19d5216285
 
 COCOAPODS: 1.10.1

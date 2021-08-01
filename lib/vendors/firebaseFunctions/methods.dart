@@ -8,15 +8,15 @@ extension AppFirebaseFunctions on FirebaseFunctions {
   Future<BankAccount> createBankAccount(BankAccount bankAccount) async {
     Map<String, String> data = {
       "bank_code": bankAccount.bankCode,
-      "agency": bankAccount.agency,
-      "account": bankAccount.account,
-      "account_dv": bankAccount.accountDv,
+      "agencia": bankAccount.agencia,
+      "conta": bankAccount.conta,
+      "conta_dv": bankAccount.contaDv,
       "type": bankAccount.type.getString(),
       "document_number": bankAccount.documentNumber,
       "legal_name": bankAccount.legalName,
     };
-    if (bankAccount.agencyDv != null && bankAccount.agencyDv.isNotEmpty) {
-      data["agency_dv"] = bankAccount.agencyDv;
+    if (bankAccount.agenciaDv != null && bankAccount.agenciaDv.isNotEmpty) {
+      data["agencia_dv"] = bankAccount.agenciaDv;
     }
     HttpsCallableResult result =
         await this.httpsCallable("payment-create_bank_account").call(data);
@@ -120,5 +120,19 @@ extension AppFirebaseFunctions on FirebaseFunctions {
   Future<void> completeTrip(int clientRating) async {
     Map<String, int> data = {"client_rating": clientRating};
     await this.httpsCallable("trip-complete").call(data);
+  }
+
+  Future<Transfers> getTransfers(GetTransfersArguments args) async {
+    Map<String, dynamic> data = {};
+    data["count"] = args.count;
+    data["page"] = args.page;
+    data["pagarme_recipient_id"] = args.pagarmeRecipientID;
+    HttpsCallableResult result =
+        await this.httpsCallable("payment-get_transfers").call(data);
+    if (result != null && result.data != null) {
+      return Transfers.fromJson(result.data);
+    }
+
+    return null;
   }
 }

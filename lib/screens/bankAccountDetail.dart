@@ -23,10 +23,10 @@ class BankAccountDetailState extends State<BankAccountDetail> {
       BorderlessButton(
         primaryText: "Agência",
         primaryTextWeight: FontWeight.w600,
-        secondaryText: partner.bankAccount.agency +
-            (partner.bankAccount.agencyDv == null
+        secondaryText: partner.bankAccount.agencia +
+            (partner.bankAccount.agenciaDv == null
                 ? ""
-                : ("-" + partner.bankAccount.agencyDv)),
+                : ("-" + partner.bankAccount.agenciaDv)),
         primaryTextSize: 14,
         secondaryTextSize: 16,
         paddingTop: screenHeight / 150,
@@ -36,10 +36,10 @@ class BankAccountDetailState extends State<BankAccountDetail> {
       BorderlessButton(
         primaryText: "Conta",
         primaryTextWeight: FontWeight.w600,
-        secondaryText: partner.bankAccount.account +
-            (partner.bankAccount.accountDv == null
+        secondaryText: partner.bankAccount.conta +
+            (partner.bankAccount.contaDv == null
                 ? ""
-                : ("-" + partner.bankAccount.accountDv)),
+                : ("-" + partner.bankAccount.contaDv)),
         primaryTextSize: 14,
         secondaryTextSize: 16,
         paddingTop: screenHeight / 150,

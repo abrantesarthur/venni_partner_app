@@ -248,10 +248,10 @@ Map<BankAccountType, String> accountTypeMap = {
 class BankAccount {
   final int id;
   final String bankCode; // 3 chars max, all numbers
-  final String agency; // 4 chars max, all numbers
-  final String agencyDv; // optional
-  final String account;
-  final String accountDv;
+  final String agencia; // 4 chars max, all numbers
+  final String agenciaDv; // optional
+  final String conta;
+  final String contaDv;
   final BankAccountType type;
   final String documentNumber;
   final String legalName;
@@ -259,10 +259,10 @@ class BankAccount {
   BankAccount({
     this.id,
     @required this.bankCode,
-    @required this.agency,
-    this.agencyDv,
-    @required this.account,
-    @required this.accountDv,
+    @required this.agencia,
+    this.agenciaDv,
+    @required this.conta,
+    @required this.contaDv,
     @required this.type,
     @required this.documentNumber,
     @required this.legalName,
@@ -274,10 +274,10 @@ class BankAccount {
         : BankAccount(
             id: json["id"],
             bankCode: json["bank_code"],
-            agency: json["agency"],
-            agencyDv: json["agency_dv"],
-            account: json["account"],
-            accountDv: json["account_dv"],
+            agencia: json["agencia"],
+            agenciaDv: json["agencia_dv"],
+            conta: json["conta"],
+            contaDv: json["conta_dv"],
             type: BankAccountTypeExtension.fromString(json["type"]),
             documentNumber: json["document_number"],
             legalName: json["legal_name"],
@@ -289,17 +289,17 @@ class BankAccount {
     if (this.bankCode != null) {
       map["bank_code"] = this.bankCode;
     }
-    if (this.agency != null) {
-      map["agency"] = this.agency;
+    if (this.agencia != null) {
+      map["agencia"] = this.agencia;
     }
-    if (this.agencyDv != null) {
-      map["agency_dv"] = this.agencyDv;
+    if (this.agenciaDv != null) {
+      map["agencia_dv"] = this.agenciaDv;
     }
-    if (this.account != null) {
-      map["account"] = this.account;
+    if (this.conta != null) {
+      map["conta"] = this.conta;
     }
-    if (this.accountDv != null) {
-      map["account_dv"] = this.accountDv;
+    if (this.contaDv != null) {
+      map["conta_dv"] = this.contaDv;
     }
     if (this.type != null) {
       map["type"] = this.type.getString();
@@ -504,10 +504,10 @@ class PartnerInterface {
     if (this.bankAccount != null) {
       json["bank_account"] = {
         "bank_code": this.bankAccount.bankCode,
-        "agency": this.bankAccount.agency,
-        "agency_dv": this.bankAccount.agencyDv,
-        "account": this.bankAccount.account,
-        "account_dv": this.bankAccount.accountDv,
+        "agencia": this.bankAccount.agencia,
+        "agencia_dv": this.bankAccount.agenciaDv,
+        "conta": this.bankAccount.conta,
+        "conta_dv": this.bankAccount.contaDv,
         "type": this.bankAccount.type.getString(),
         "document_number": this.bankAccount.documentNumber,
         "legal_name": this.bankAccount.legalName,

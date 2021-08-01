@@ -33,13 +33,13 @@ class SendBankAccount extends StatefulWidget {
 
 // TOOD: display warnings if something goes wrong
 class SendBankAccountState extends State<SendBankAccount> with RouteAware {
-  TextEditingController agencyController;
-  TextEditingController agencyDvController;
-  TextEditingController accountController;
-  TextEditingController accountDvController;
-  bool agencyIsValid = false;
-  bool accountIsValid = false;
-  bool accountDvIsValid = false;
+  TextEditingController agenciaController;
+  TextEditingController agenciaDvController;
+  TextEditingController contaController;
+  TextEditingController contaDvController;
+  bool agenciaIsValid = false;
+  bool contaIsValid = false;
+  bool contaDvIsValid = false;
   bool lockScreen = false;
   Banks selectedBank;
   BankAccountType selectedAccountType;
@@ -47,23 +47,23 @@ class SendBankAccountState extends State<SendBankAccount> with RouteAware {
 
   @override
   void initState() {
-    agencyController = TextEditingController();
-    agencyDvController = TextEditingController();
-    accountController = TextEditingController();
-    accountDvController = TextEditingController();
-    agencyController.addListener(() {
+    agenciaController = TextEditingController();
+    agenciaDvController = TextEditingController();
+    contaController = TextEditingController();
+    contaDvController = TextEditingController();
+    agenciaController.addListener(() {
       setState(() {
-        agencyIsValid = agencyController.text.length > 0;
+        agenciaIsValid = agenciaController.text.length > 0;
       });
     });
-    accountController.addListener(() {
+    contaController.addListener(() {
       setState(() {
-        accountIsValid = accountController.text.length > 0;
+        contaIsValid = contaController.text.length > 0;
       });
     });
-    accountDvController.addListener(() {
+    contaDvController.addListener(() {
       setState(() {
-        accountDvIsValid = accountDvController.text.length > 0;
+        contaDvIsValid = contaDvController.text.length > 0;
       });
     });
     super.initState();
@@ -71,10 +71,10 @@ class SendBankAccountState extends State<SendBankAccount> with RouteAware {
 
   @override
   void dispose() {
-    agencyController.dispose();
-    agencyDvController.dispose();
-    accountController.dispose();
-    accountDvController.dispose();
+    agenciaController.dispose();
+    agenciaDvController.dispose();
+    contaController.dispose();
+    contaDvController.dispose();
     super.dispose();
   }
 
@@ -186,7 +186,7 @@ class SendBankAccountState extends State<SendBankAccount> with RouteAware {
                               ],
                               keyboardType:
                                   TextInputType.numberWithOptions(signed: true),
-                              controller: agencyController,
+                              controller: agenciaController,
                               enabled: !lockScreen,
                             ),
                             Spacer(),
@@ -200,7 +200,7 @@ class SendBankAccountState extends State<SendBankAccount> with RouteAware {
                               ],
                               keyboardType:
                                   TextInputType.numberWithOptions(signed: true),
-                              controller: agencyDvController,
+                              controller: agenciaDvController,
                               enabled: !lockScreen,
                             ),
                           ],
@@ -218,7 +218,7 @@ class SendBankAccountState extends State<SendBankAccount> with RouteAware {
                               ],
                               keyboardType:
                                   TextInputType.numberWithOptions(signed: true),
-                              controller: accountController,
+                              controller: contaController,
                               enabled: !lockScreen,
                             ),
                             Spacer(),
@@ -232,7 +232,7 @@ class SendBankAccountState extends State<SendBankAccount> with RouteAware {
                               ],
                               keyboardType:
                                   TextInputType.numberWithOptions(signed: true),
-                              controller: accountDvController,
+                              controller: contaDvController,
                               enabled: !lockScreen,
                             ),
                           ],
@@ -337,10 +337,10 @@ class SendBankAccountState extends State<SendBankAccount> with RouteAware {
       BankAccount ba = await firebase.functions.createBankAccount(
         BankAccount(
           bankCode: selectedBank.getCode(),
-          agency: agencyController.text,
-          agencyDv: agencyDvController.text,
-          account: accountController.text,
-          accountDv: accountDvController.text,
+          agencia: agenciaController.text,
+          agenciaDv: agenciaDvController.text,
+          conta: contaController.text,
+          contaDv: contaDvController.text,
           type: selectedAccountType,
           documentNumber: partner.cpf,
           legalName: partner.name + " " + partner.lastName,
@@ -364,6 +364,7 @@ class SendBankAccountState extends State<SendBankAccount> with RouteAware {
       // go back to previous screen screen
       Navigator.pop(context);
     } catch (e) {
+      print(e);
       // unlock screen and display warning on error
       setState(() {
         buttonChild = null;
@@ -396,9 +397,9 @@ class SendBankAccountState extends State<SendBankAccount> with RouteAware {
   }
 
   bool allFieldsAreValid() {
-    return agencyIsValid &&
-        accountIsValid &&
-        accountDvIsValid &&
+    return agenciaIsValid &&
+        contaIsValid &&
+        contaDvIsValid &&
         selectedBank != null &&
         selectedAccountType != null;
   }
