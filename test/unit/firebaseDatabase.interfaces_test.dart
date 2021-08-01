@@ -232,10 +232,10 @@ void main() {
       BankAccount ba = BankAccount.fromJson({});
       expect(ba, isNotNull);
       expect(ba.bankCode, isNull);
-      expect(ba.agency, isNull);
-      expect(ba.agencyDv, isNull);
-      expect(ba.account, isNull);
-      expect(ba.accountDv, isNull);
+      expect(ba.agencia, isNull);
+      expect(ba.agenciaDv, isNull);
+      expect(ba.conta, isNull);
+      expect(ba.contaDv, isNull);
       expect(ba.type, isNull);
       expect(ba.documentNumber, isNull);
       expect(ba.legalName, isNull);
@@ -243,20 +243,20 @@ void main() {
     test("fromJson with valid json", () {
       BankAccount ba = BankAccount.fromJson({
         "bank_code": "000",
-        "agency": "0000",
-        "agency_dv": "0",
-        "account": "00000",
-        "account_dv": "0",
+        "agencia": "0000",
+        "agencia_dv": "0",
+        "conta": "00000",
+        "conta_dv": "0",
         "type": "conta_corrente",
         "document_number": "00000000000",
         "legal_name": "Fulano de Tal",
       });
       expect(ba, isNotNull);
       expect(ba.bankCode, equals("000"));
-      expect(ba.agency, equals("0000"));
-      expect(ba.agencyDv, equals("0"));
-      expect(ba.account, equals("00000"));
-      expect(ba.accountDv, equals("0"));
+      expect(ba.agencia, equals("0000"));
+      expect(ba.agenciaDv, equals("0"));
+      expect(ba.conta, equals("00000"));
+      expect(ba.contaDv, equals("0"));
       expect(ba.type, equals(BankAccountType.conta_corrente));
       expect(ba.documentNumber, equals("00000000000"));
       expect(ba.legalName, equals("Fulano de Tal"));
@@ -265,10 +265,10 @@ void main() {
     test("toJson", () {
       Map originalJson = {
         "bank_code": "000",
-        "agency": "0000",
-        "agency_dv": "0",
-        "account": "00000",
-        "account_dv": "0",
+        "agencia": "0000",
+        "agencia_dv": "0",
+        "conta": "00000",
+        "conta_dv": "0",
         "type": "conta_corrente",
         "document_number": "00000000000",
       };
@@ -278,10 +278,10 @@ void main() {
       Map producedJson = ba.toJson();
 
       expect(producedJson["bank_code"], equals(originalJson["bank_code"]));
-      expect(producedJson["agency"], equals(originalJson["agency"]));
-      expect(producedJson["agency_dv"], equals(originalJson["agency_dv"]));
-      expect(producedJson["account"], equals(originalJson["account"]));
-      expect(producedJson["account_dv"], equals(originalJson["account_dv"]));
+      expect(producedJson["agencia"], equals(originalJson["agencia"]));
+      expect(producedJson["agencia_dv"], equals(originalJson["agencia_dv"]));
+      expect(producedJson["conta"], equals(originalJson["conta"]));
+      expect(producedJson["conta_dv"], equals(originalJson["conta_dv"]));
       expect(producedJson["type"], equals(originalJson["type"]));
       expect(producedJson["document_number"],
           equals(originalJson["document_number"]));
@@ -358,10 +358,10 @@ void main() {
         },
         "bank_account": {
           "bank_code": "000",
-          "agency": "0000",
-          "agency_dv": "0",
-          "account": "00000",
-          "account_dv": "0",
+          "agencia": "0000",
+          "agencia_dv": "0",
+          "conta": "00000",
+          "conta_dv": "0",
           "type": "conta_corrente",
           "legal_name": "Fulano de Tal",
         }
@@ -395,10 +395,10 @@ void main() {
       expect(pi.submittedDocuments.profilePhoto, equals(true));
       expect(pi.submittedDocuments.bankAccount, equals(true));
       expect(pi.bankAccount.bankCode, equals("000"));
-      expect(pi.bankAccount.agency, equals("0000"));
-      expect(pi.bankAccount.agencyDv, equals("0"));
-      expect(pi.bankAccount.account, equals("00000"));
-      expect(pi.bankAccount.accountDv, equals("0"));
+      expect(pi.bankAccount.agencia, equals("0000"));
+      expect(pi.bankAccount.agenciaDv, equals("0"));
+      expect(pi.bankAccount.conta, equals("00000"));
+      expect(pi.bankAccount.contaDv, equals("0"));
       expect(pi.bankAccount.type, equals(BankAccountType.conta_corrente));
       expect(pi.bankAccount.legalName, equals("Fulano de Tal"));
     });
@@ -438,10 +438,10 @@ void main() {
         },
         "bank_account": {
           "bank_code": "000",
-          "agency": "0000",
-          "agency_dv": "0",
-          "account": "00000",
-          "account_dv": "0",
+          "agencia": "0000",
+          "agencia_dv": "0",
+          "conta": "00000",
+          "conta_dv": "0",
           "type": "conta_corrente",
           "legal_name": "Fulano de Tal",
         }

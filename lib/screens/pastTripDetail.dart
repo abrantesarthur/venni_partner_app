@@ -236,6 +236,30 @@ Widget _buildFloatingCard({
                   ],
                 ),
                 SizedBox(height: screenHeight / 100),
+                pastTrip.paymentMethod == PaymentMethod.cash
+                    ? Column(
+                        children: [
+                          Row(
+                            children: [
+                              Text(
+                                "Saldo devedor (+)",
+                                style: TextStyle(
+                                  fontSize: 14,
+                                ),
+                              ),
+                              Spacer(),
+                              Text(
+                                "R\$ " +
+                                    (pastTrip.farePrice * 0.2 / 100)
+                                        .toStringAsFixed(2),
+                                style: TextStyle(fontSize: 14),
+                              ),
+                            ],
+                          ),
+                          SizedBox(height: screenHeight / 100),
+                        ],
+                      )
+                    : Container(),
                 pastTrip.paymentMethod == PaymentMethod.creditCard
                     ? Column(
                         children: [

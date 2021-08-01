@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:partner_app/vendors/firebaseDatabase/interfaces.dart';
 
 class BalanceProperty {
   int amount; // in cents
@@ -81,17 +82,35 @@ extension TransferStatusExtension on TransferStatus {
         return null;
     }
   }
+
+  String getString() {
+    switch (this) {
+      case TransferStatus.pendingTransfer:
+        return "pendente";
+      case TransferStatus.transferred:
+        return "concluída";
+      case TransferStatus.failed:
+        return "falhou";
+      case TransferStatus.processing:
+        return "processando";
+      case TransferStatus.canceled:
+        return "cancelada";
+      default:
+        return "";
+    }
+  }
 }
 
 class Transfer {
   int id;
-  int amount;
+  int amount; // after fees
   TransferType type;
   TransferStatus status;
   int fee;
-  int fundingDate;
-  int fundingEstimatedDate;
-  int transactionID;
+  DateTime fundingDate; // TODO: maybe it's a string
+  DateTime fundingEstimatedDate; // TODO: maybe it's a string
+  DateTime dateCreated; //  TODO: maybe it's a string
+  BankAccount bankAccount;
 
   Transfer({
     @required this.id,
@@ -101,7 +120,8 @@ class Transfer {
     @required this.fee,
     @required this.fundingDate,
     @required this.fundingEstimatedDate,
-    @required this.transactionID,
+    @required this.dateCreated,
+    @required this.bankAccount,
   });
 
   factory Transfer.fromJson(Map json) {
@@ -109,19 +129,34 @@ class Transfer {
       return null;
     }
 
-    TransferType type = TransferTypeExtension.fromString(json["type"]);
-    TransferStatus status = TransferStatusExtension.fromString(json["status"]);
-
     return Transfer(
       id: json["id"],
       amount: json["amount"],
-      type: type,
-      status: status,
+      type: TransferTypeExtension.fromString(json["type"]),
+      status: TransferStatusExtension.fromString(json["status"]),
       fee: json["fee"],
-      fundingDate: json["funding_date"],
-      fundingEstimatedDate: json["funding_estimated_date"],
-      transactionID: json["transaction_id"],
+      fundingDate: json["funding_date"] == null
+          ? null
+          : DateTime.parse(json["funding_date"]),
+      fundingEstimatedDate: json["funding_estimated_date"] == null
+          ? null
+          : DateTime.parse(json["funding_estimated_date"]),
+      dateCreated: json["date_created"] == null
+          ? null
+          : DateTime.parse(json["date_created"]),
+      bankAccount: BankAccount.fromJson(json["bank_account"]),
     );
+  }
+}
+
+class Transfers {
+  List<Transfer> items;
+
+  Transfers({@required this.items});
+
+  factory Transfers.fromJson(List<dynamic> json) {
+    List<Transfer> transfers = json.map((t) => Transfer.fromJson(t)).toList();
+    return Transfers(items: transfers);
   }
 }
 
@@ -192,6 +227,18 @@ class GetPastTripsArguments {
     this.pageSize,
     this.maxRequestTime,
     this.minRequestTime,
+  });
+}
+
+class GetTransfersArguments {
+  int count;
+  int page;
+  String pagarmeRecipientID;
+
+  GetTransfersArguments({
+    @required this.count,
+    @required this.page,
+    @required this.pagarmeRecipientID,
   });
 }
 
