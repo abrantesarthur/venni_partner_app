@@ -30,6 +30,7 @@ import 'package:partner_app/widgets/partnerBusy.dart';
 import 'package:partner_app/widgets/partnerRequested.dart';
 import 'package:partner_app/widgets/partnerUnavailable.dart';
 import 'package:provider/provider.dart';
+import 'package:wakelock/wakelock.dart';
 
 class HomeArguments {
   FirebaseModel firebase;
@@ -139,6 +140,9 @@ class HomeState extends State<Home> with WidgetsBindingObserver {
         // Any time the token refreshes, store this in the database too.
         FirebaseMessaging.instance.onTokenRefresh.listen(saveTokenToDatabase);
       } catch (_) {}
+
+      // keep app alive
+      Wakelock.enable();
     });
   }
 
