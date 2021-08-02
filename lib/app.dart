@@ -91,6 +91,7 @@ class _AppState extends State<App> {
     try {
       await initializeFlutterFire();
     } catch (e) {
+      print(e);
       throw FirebaseAuthException(code: "firebase-initialization-error");
     }
     initializeModels();
