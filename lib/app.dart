@@ -204,6 +204,7 @@ class _AppState extends State<App> {
         FirebaseAuthException error = snapshot.error;
         if (snapshot.hasError &&
             error.code == "firebase-initialization-error") {
+          print(error);
           return MaterialApp(
             home: Scaffold(
               body: Container(
