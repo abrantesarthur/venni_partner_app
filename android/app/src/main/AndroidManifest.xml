@@ -6,6 +6,12 @@
    <application
         android:label="@string/app_name"
         android:icon="@mipmap/ic_launcher">
+        <meta-data
+            android:name="com.google.firebase.messaging.default_notification_icon"
+            android:resource="@drawable/notification_icon" />
+        <meta-data
+            android:name="com.google.firebase.messaging.default_notification_color"
+            android:resource="@color/colorPrimary" />
         <activity
             android:name=".MainActivity"
             android:launchMode="singleTop"
@@ -44,12 +50,6 @@
         <meta-data
             android:name="com.google.android.geo.API_KEY"
             android:value="@string/googleMapsApiKey" />
-        <meta-data
-            android:name="com.google.firebase.messaging.default_notification_icon"
-            android:resource="@drawable/notification_icon.png" />
-        <meta-data
-            android:name="com.google.firebase.messaging.default_notification_color"
-            android:resource="@color/colorPrimary" />
     </application>
     <queries>
         <!-- Our app opens other URLs, for instance to open whatsapp -->
