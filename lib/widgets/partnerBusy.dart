@@ -237,7 +237,7 @@ class PartnerBusyState extends State<PartnerBusy> {
                           if (partnerIsFar) {
                             await firebase.functions.cancelTrip();
                           } else {
-                            await firebase.functions.startTrip();
+                            await firebase.functions.startTrip(context);
                           }
                         } catch (e) {
                           showOkDialog(

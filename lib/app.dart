@@ -51,7 +51,7 @@ import 'package:partner_app/screens/transfers.dart';
 import 'package:partner_app/screens/wallet.dart';
 import 'package:partner_app/screens/withdraw.dart';
 import 'package:partner_app/vendors/firebaseDatabase/interfaces.dart';
-import 'package:partner_app/vendors/firebaseFunctions/interfaces.dart';
+import 'package:partner_app/vendors/firebaseAnalytics.dart';
 import 'package:provider/provider.dart';
 
 class App extends StatefulWidget {
@@ -94,6 +94,8 @@ class _AppState extends State<App> {
       throw FirebaseAuthException(code: "firebase-initialization-error");
     }
     initializeModels();
+    await logEvents();
+
     // download partner data so we can know their 'account_status' and decide
     // whether to push Home or Start
     try {
@@ -153,6 +155,15 @@ class _AppState extends State<App> {
     connectivity = ConnectivityModel();
     timer = TimerModel();
     trip = TripModel();
+  }
+
+  Future<void> logEvents() async {
+    try {
+      await Future.wait([
+        firebaseAnalytics.logAppOpen(),
+        firebaseAnalytics.setPartnerUserProperty(),
+      ]);
+    } catch (_) {}
   }
 
   Future<void> initializePartner() async {

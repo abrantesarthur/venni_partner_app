@@ -257,7 +257,7 @@ class RateClientState extends State<RateClient> {
 
     //call completeTrip
     try {
-      firebase.functions.completeTrip(rate);
+      firebase.functions.completeTrip(context: context, clientRating: rate);
     } catch (e) {
       showOkDialog(
         context: context,

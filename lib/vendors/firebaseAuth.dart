@@ -62,6 +62,11 @@ extension AppFirebaseAuth on FirebaseAuth {
 
       // if user already has a partner account
       if (partner.id != null && firebase.isRegistered) {
+        // log sign in event
+        try {
+          await firebase.analytics.logLogin();
+        } catch (_) {}
+
         // if accountStatus is 'approved', push Home screen
         if (partner.accountStatus == AccountStatus.approved) {
           GoogleMapsModel googleMaps = Provider.of<GoogleMapsModel>(
@@ -219,6 +224,11 @@ extension AppFirebaseAuth on FirebaseAuth {
       if (!firebase.auth.currentUser.emailVerified) {
         await credential.user.sendEmailVerification();
       }
+
+      // log sign up event
+      try {
+        await firebase.analytics.logSignUp(signUpMethod: "phone_number");
+      } catch (_) {}
     } on FirebaseAuthException catch (e) {
       throw e;
     }
