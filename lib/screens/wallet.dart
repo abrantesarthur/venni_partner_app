@@ -481,9 +481,7 @@ extension PeriodExtension on Period {
         return DateTime(now.year, now.month, now.day).millisecondsSinceEpoch;
       // week starts on monday at midnight
       case Period.thisWeek:
-        return now
-            .subtract(Duration(days: now.weekday - 1))
-            .millisecondsSinceEpoch;
+        return now.subtract(Duration(days: now.weekday)).millisecondsSinceEpoch;
       case Period.thisMonth:
         return DateTime(now.year, now.month).millisecondsSinceEpoch;
       default:
