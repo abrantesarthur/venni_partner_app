@@ -342,7 +342,7 @@ class HomeState extends State<Home> with WidgetsBindingObserver {
   Future<void> ensureNotificationsAreOn() async {
     bool notificationsOn = await widget.firebase.requestNotifications(context);
 
-    if (!notificationsOn &&
+    if ((notificationsOn == null || !notificationsOn) &&
         widget.partner.partnerStatus == PartnerStatus.available) {
       try {
         await widget.firebase.functions.disconnect();

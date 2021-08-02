@@ -307,9 +307,15 @@ void main() {
       // verify that partner was not created in database yet
       verifyNever(mockDatabaseReference.set(any));
 
-      // tap button
+      // tap button to show dialog
       await tester.tap(find.byType(CircularButton));
       await tester.pumpAndSettle();
+
+      // simulate tapping 'sim' button to register the user
+      final yesButtonFinder = find.widgetWithText(TextButton, "sim");
+      expect(yesButtonFinder, findsOneWidget);
+      await tester.tap(yesButtonFinder);
+      await tester.pump();
 
       // verify that partner was created in database
       verify(mockDatabaseReference.set(any)).called(1);
@@ -371,6 +377,12 @@ void main() {
 
       // simulate tapping button to register the user
       await tester.tap(find.byType(CircularButton));
+      await tester.pump();
+
+      // simulate tapping 'sim' button to register the user
+      final yesButtonFinder = find.widgetWithText(TextButton, "sim");
+      expect(yesButtonFinder, findsOneWidget);
+      await tester.tap(yesButtonFinder);
       await tester.pump();
 
       // expect registrationErrorWarnings not to be null
@@ -443,6 +455,12 @@ void main() {
       // simulate tapping button to register the user
       await tester.tap(find.byType(CircularButton));
       await tester.pumpAndSettle();
+
+      // simulate tapping 'sim' button to register the user
+      final yesButtonFinder = find.widgetWithText(TextButton, "sim");
+      expect(yesButtonFinder, findsOneWidget);
+      await tester.tap(yesButtonFinder);
+      await tester.pump();
 
       // verify that user was deleted
       verify(mockUser.delete()).called(1);
