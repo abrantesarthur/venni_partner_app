@@ -16,6 +16,7 @@ import 'package:partner_app/vendors/firebaseDatabase/interfaces.dart';
 import 'package:partner_app/vendors/firebaseDatabase/methods.dart';
 import 'package:partner_app/vendors/firebaseFunctions/interfaces.dart';
 import 'package:partner_app/vendors/firebaseFunctions/methods.dart';
+import 'package:partner_app/vendors/firebaseAnalytics.dart';
 import 'package:partner_app/models/googleMaps.dart';
 import 'package:partner_app/models/partner.dart';
 import 'package:partner_app/screens/menu.dart';
@@ -422,18 +423,24 @@ class HomeState extends State<Home> with WidgetsBindingObserver {
         // callback won't set the partner available.
         widget.partner.setAcceptedTrip(false, notify: false);
         widget.timer.kickOff(
-            durationSeconds: 10,
-            callback: () {
-              // if partner did not accept trip after 10s
-              if (!widget.partner.acceptedTrip) {
-                // set partner status to available so that UI is updated and
-                // they can no longer accept trip requests. It's ok to do this
-                // without sending request to firebase. The trip protocol
-                // guarantees that 'confirmTrip' will set a partner
-                // available again if they fail to accept a trip.
-                widget.partner.updatePartnerStatus(PartnerStatus.available);
-              }
-            });
+          durationSeconds: 10,
+          callback: () {
+            // if partner did not accept trip after 10s
+            if (!widget.partner.acceptedTrip) {
+              // set partner status to available so that UI is updated and
+              // they can no longer accept trip requests. It's ok to do this
+              // without sending request to firebase. The trip protocol
+              // guarantees that 'confirmTrip' will set a partner
+              // available again if they fail to accept a trip.
+              widget.partner.updatePartnerStatus(PartnerStatus.available);
+
+              // log event
+              try {
+                widget.firebase.analytics.logPartnerIgnoreRequest();
+              } catch (_) {}
+            }
+          },
+        );
       }
       if (newPartnerStatus == PartnerStatus.busy) {
         // download trip data before updating PartnerModel status and thus UI
@@ -488,6 +495,15 @@ class HomeState extends State<Home> with WidgetsBindingObserver {
           content: "Outro(a) parceiro(a) aceitou a corrida antes de você.",
         );
       }
+
+      // log events
+      try {
+        await widget.firebase.analytics.logEventOnPartnerStatus(
+          context: context,
+          newStatus: newPartnerStatus,
+          oldStatus: widget.partner.partnerStatus,
+        );
+      } catch (_) {}
 
       // update partner model accordingly. This will trigger a tree rebuild
       widget.partner.updatePartnerStatus(newPartnerStatus);

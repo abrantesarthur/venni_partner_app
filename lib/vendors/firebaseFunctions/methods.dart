@@ -1,8 +1,13 @@
 import 'package:cloud_functions/cloud_functions.dart';
 import 'package:flutter/material.dart';
+import 'package:partner_app/models/firebase.dart';
+import 'package:partner_app/models/partner.dart';
+import 'package:partner_app/models/trip.dart';
 import 'package:partner_app/utils/utils.dart';
 import 'package:partner_app/vendors/firebaseDatabase/interfaces.dart';
 import 'package:partner_app/vendors/firebaseFunctions/interfaces.dart';
+import 'package:partner_app/vendors/firebaseAnalytics.dart';
+import 'package:provider/provider.dart';
 
 extension AppFirebaseFunctions on FirebaseFunctions {
   Future<BankAccount> createBankAccount(BankAccount bankAccount) async {
@@ -113,13 +118,48 @@ extension AppFirebaseFunctions on FirebaseFunctions {
     await this.httpsCallable("trip-partner_cancel").call();
   }
 
-  Future<void> startTrip() async {
-    await this.httpsCallable("trip-start").call();
+  Future<void> startTrip(BuildContext context) async {
+    TripModel trip = Provider.of<TripModel>(context, listen: false);
+    FirebaseModel firebase = Provider.of<FirebaseModel>(context, listen: false);
+
+    try {
+      await this.httpsCallable("trip-start").call();
+      // calculate client waiting time and log event
+      int clientWaitingTime =
+          DateTime.now().millisecondsSinceEpoch - trip.requestTime;
+      try {
+        firebase.analytics.logPartnerStartTrip(
+          clientWaitingTime: clientWaitingTime,
+        );
+      } catch (_) {}
+    } catch (e) {
+      throw e;
+    }
   }
 
-  Future<void> completeTrip(int clientRating) async {
+  Future<void> completeTrip({
+    @required BuildContext context,
+    @required int clientRating,
+  }) async {
+    FirebaseModel firebase = Provider.of<FirebaseModel>(context, listen: false);
+    PartnerModel partner = Provider.of<PartnerModel>(context, listen: false);
+
     Map<String, int> data = {"client_rating": clientRating};
-    await this.httpsCallable("trip-complete").call(data);
+    try {
+      await this.httpsCallable("trip-complete").call(data);
+      int tripDuration =
+          DateTime.now().millisecondsSinceEpoch - partner.busySince;
+      try {
+        await Future.wait([
+          firebase.analytics.logPartnerCompleteTrip(
+            tripDuration: tripDuration,
+          ),
+          firebase.analytics.logPartnerRateClient(clientRating)
+        ]);
+      } catch (_) {}
+    } catch (e) {
+      throw e;
+    }
   }
 
   Future<Transfers> getTransfers(GetTransfersArguments args) async {

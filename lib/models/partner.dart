@@ -78,6 +78,8 @@ class PartnerModel extends ChangeNotifier {
   StreamSubscription get positionSubscription => _positionSubscription;
   int get gains => _gains;
   bool get acceptedTrip => _acceptedTrip;
+  int availableSince = DateTime.now().millisecondsSinceEpoch;
+  int busySince = DateTime.now().millisecondsSinceEpoch;
 
   void sendPositionToFirebase(bool v) {
     _sendPositionToFirebase = v;

@@ -7,6 +7,7 @@ import 'package:partner_app/screens/profile.dart';
 import 'package:partner_app/styles.dart';
 import 'package:partner_app/vendors/firebaseDatabase/interfaces.dart';
 import 'package:partner_app/vendors/firebaseFunctions/methods.dart';
+import 'package:partner_app/vendors/firebaseAnalytics.dart';
 import 'package:partner_app/widgets/borderlessButton.dart';
 import 'package:partner_app/widgets/goBackScaffold.dart';
 import 'package:partner_app/widgets/yesNoDialog.dart';
@@ -107,7 +108,13 @@ class SettingsState extends State<Settings> {
                                 await firebase.functions.disconnect();
                               } catch (_) {}
                             }
+
+                            // log logout event
+                            try {
+                              await firebase.analytics.logLogout();
+                            } catch (_) {}
                             await firebase.auth.signOut();
+
                             setState(() {
                               lockScreen = false;
                             });
