@@ -108,7 +108,7 @@ class RateClientState extends State<RateClient> {
                   Divider(thickness: 0.1, color: Colors.black),
                   SizedBox(height: screenHeight / 50),
                   Text(
-                    "Avalie a sua corrida com " + partner.name,
+                    "Avalie a sua corrida com " + trip?.clientName,
                     textAlign: TextAlign.center,
                     style: TextStyle(
                       fontSize: 24,
