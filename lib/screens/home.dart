@@ -515,6 +515,7 @@ class HomeState extends State<Home> with WidgetsBindingObserver {
   }
 
   void onTripStatusUpdate(Event e) async {
+    print("onTripStatusUpdate");
     TripStatus newTripStatus = TripStatusExtension.fromString(
       e.snapshot.value,
     );

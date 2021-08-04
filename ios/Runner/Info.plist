@@ -60,11 +60,11 @@
 	<key>NSCameraUsageDescription</key>
 	<string>O aplicativo precisa de acesso à camera para tirar fotos de documentos.</string>
 	<key>NSLocationAlwaysUsageDescription</key>
-	<string>This app needs access to location when in background.</string>
+	<string>A Venni usa a sua localização para encontrar pedidos de corridas próximos a você, te permitir navegar até os pontos de partida e chegada, e melhorar a sua experiência.</string>
 	<key>NSLocationWhenInUseUsageDescription</key>
 	<string>This app needs access to location when open.</string>
 	<key>NSPhotoLibraryUsageDescription</key>
-	<string>O aplicativo precisa de acesso à biblioteca de fotos para adicionar documentos.</string>
+	<string>A Venni usa a sua localização para encontrar pedidos de corridas próximos a você, te permitir navegar até os pontos de partida e chegada, e melhorar a sua experiência.</string>
 	<key>UIBackgroundModes</key>
 	<array>
 		<string>fetch</string>
@@ -77,8 +77,6 @@
 	<key>UISupportedInterfaceOrientations</key>
 	<array>
 		<string>UIInterfaceOrientationPortrait</string>
-		<string>UIInterfaceOrientationLandscapeLeft</string>
-		<string>UIInterfaceOrientationLandscapeRight</string>
 	</array>
 	<key>UISupportedInterfaceOrientations~ipad</key>
 	<array>

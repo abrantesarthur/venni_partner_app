@@ -162,6 +162,7 @@ class PartnerModel extends ChangeNotifier {
     FirebaseModel firebase, {
     bool notify = true,
   }) async {
+    print("partner.downloadData");
     // download partner profile photo
     firebase.storage
         .getPartnerProfilePicture(firebase.auth.currentUser.uid)

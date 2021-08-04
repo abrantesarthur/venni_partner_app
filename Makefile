@@ -1,5 +1,6 @@
 FLUTTER ?= flutter
 FLUTTERRUN ?= $(FLUTTER) run
+FLUTTERBUILD ?= $(FLUTTER) build
 
 # load environment variabels
 include .env
@@ -62,7 +63,32 @@ rundev: check-dev-env
 run: check-env
 	$(FLUTTERRUN) \
 	-v \
-	--debug \
+	--release \
+	--flavor prod \
+	--dart-define=IOS_GOOGLE_MAPS_API_KEY=$(IOS_GOOGLE_MAPS_API_KEY) \
+	--dart-define=ANDROID_GOOGLE_MAPS_API_KEY=$(ANDROID_GOOGLE_MAPS_API_KEY) \
+	-t lib/main.dart
+
+################################################################################
+## build targets
+################################################################################
+#IOS
+.PHONY: build-ipa
+build-ipa: check-env
+	$(FLUTTERBUILD) ipa \
+	-v \
+	--obfuscate \
+	--split-debug-info=./partner_app/. \
+	--flavor prod \
+	--dart-define=IOS_GOOGLE_MAPS_API_KEY=$(IOS_GOOGLE_MAPS_API_KEY) \
+	--dart-define=ANDROID_GOOGLE_MAPS_API_KEY=$(ANDROID_GOOGLE_MAPS_API_KEY) \
+	-t lib/main.dart
+
+#ANDROID
+.PHONY: build-appbundle
+build-appbundle: check-env
+	$(FLUTTERBUILD) appbundle \
+	-v \
 	--flavor prod \
 	--dart-define=IOS_GOOGLE_MAPS_API_KEY=$(IOS_GOOGLE_MAPS_API_KEY) \
 	--dart-define=ANDROID_GOOGLE_MAPS_API_KEY=$(ANDROID_GOOGLE_MAPS_API_KEY) \

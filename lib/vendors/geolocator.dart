@@ -5,6 +5,7 @@ Position userPosition;
 
 // Determine the current position of the device
 Future<Position> determineUserPosition() async {
+  print("determineUserPosition");
   bool serviceEnabled = await Geolocator.isLocationServiceEnabled();
   if (!serviceEnabled) {
     return Future.error("Location services are disabled.");

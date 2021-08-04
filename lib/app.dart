@@ -101,6 +101,7 @@ class _AppState extends State<App> {
     // whether to push Home or Start
     try {
       await initializePartner();
+      print("done initializing fucking partner");
     } catch (e) {
       throw FirebaseAuthException(code: "partner-initialization-error");
     }
@@ -260,6 +261,7 @@ class _AppState extends State<App> {
             );
 
             return MaterialApp(
+              debugShowCheckedModeBanner: false,
               theme: ThemeData(fontFamily: "OpenSans"),
               // push Start screen if user is not registered, his account is not
               // approved, or we failed to download partner data. In this last case
