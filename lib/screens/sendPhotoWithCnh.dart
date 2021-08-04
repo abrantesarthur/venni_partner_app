@@ -71,7 +71,7 @@ class SendPhotoWithCnhState extends State<SendPhotoWithCnh> {
                         ),
                         SizedBox(height: screenHeight / 50),
                         Text(
-                          "1. A CNH deve estar próxima do seu rosto, como na ilustração abaixo",
+                          "1. A CNH deve estar próxima do seu rosto e aberta como na ilustração abaixo",
                           style: TextStyle(color: Colors.black, fontSize: 14),
                         ),
                         SizedBox(height: screenHeight / 50),
