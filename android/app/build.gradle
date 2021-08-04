@@ -35,6 +35,13 @@ if (project.hasProperty('dart-defines')) {
             [(pair.first()): pair.last()]
         }
 }
+
+def keystoreProperties = new Properties()
+def keystorePropertiesFile = rootProject.file('key.properties')
+if (keystorePropertiesFile.exists()) {
+    keystoreProperties.load(new FileInputStream(keystorePropertiesFile))
+}
+
 apply plugin: 'com.android.application'
 apply plugin: 'kotlin-android'
 apply from: "$flutterRoot/packages/flutter_tools/gradle/flutter.gradle"
@@ -57,13 +64,20 @@ android {
         versionName flutterVersionName
     }
 
-    buildTypes {
+    signingConfigs {
         release {
-            // TODO: Add your own signing config for the release build.
-            // Signing with the debug keys for now, so `flutter run --release` works.
-            signingConfig signingConfigs.debug
+            keyAlias keystoreProperties['keyAlias']
+            keyPassword keystoreProperties['keyPassword']
+            storeFile keystoreProperties['storeFile'] ? file(keystoreProperties['storeFile']) : null
+            storePassword keystoreProperties['storePassword']
         }
     }
+    buildTypes {
+        release {
+            signingConfig signingConfigs.release
+        }
+    }
+
 
     productFlavors {
         dev {
@@ -80,6 +94,10 @@ android {
             resValue "string", "bundle_id", "com.venni.partner"
             resValue "string", "googleMapsApiKey", dartEnvironmentVariables.ANDROID_GOOGLE_MAPS_API_KEY
         }
+    }
+
+    lintOptions {
+        checkReleaseBuilds false
     }
 }
 

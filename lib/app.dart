@@ -101,7 +101,6 @@ class _AppState extends State<App> {
     // whether to push Home or Start
     try {
       await initializePartner();
-      print("done initializing fucking partner");
     } catch (e) {
       throw FirebaseAuthException(code: "partner-initialization-error");
     }
