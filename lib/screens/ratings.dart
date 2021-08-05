@@ -321,7 +321,7 @@ class RatingsState extends State<Ratings> {
                                 feedback:
                                     feedbackRatingMap.entries.elementAt(0).key,
                                 rating: feedbackRatingMap.entries
-                                    .elementAt(0)
+                                    .elementAt(index)
                                     .value,
                               );
                             },
