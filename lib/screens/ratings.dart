@@ -318,8 +318,9 @@ class RatingsState extends State<Ratings> {
                             itemBuilder: (context, index) {
                               return buildComment(
                                 context: context,
-                                feedback:
-                                    feedbackRatingMap.entries.elementAt(0).key,
+                                feedback: feedbackRatingMap.entries
+                                    .elementAt(index)
+                                    .key,
                                 rating: feedbackRatingMap.entries
                                     .elementAt(index)
                                     .value,
