@@ -142,7 +142,7 @@ class DocumentsState extends State<Documents> {
                   GestureDetector(
                     onTap: lockScreen == true
                         ? () {}
-                        : () => _showHelpDialog(context, "18575446592"),
+                        : () => _showHelpDialog(context, "5538998601275"),
                     child: Container(
                       width: screenWidth / 4.5,
                       decoration: BoxDecoration(
