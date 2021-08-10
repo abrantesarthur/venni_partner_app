@@ -215,9 +215,6 @@ class PartnerModel extends ChangeNotifier {
       resetLocationService();
       // subscribe to changes in position, updating position and geocoding on changes
       BackgroundLocation.getLocationUpdates((p) async {
-        print(toFixed(p.latitude, 6).toString() +
-            " " +
-            toFixed(p.longitude, 6).toString());
         _position = Position(
           longitude: p.longitude,
           latitude: p.latitude,

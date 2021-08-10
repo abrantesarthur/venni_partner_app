@@ -102,6 +102,8 @@ class PartnerAvailableState extends State<PartnerAvailable> {
   }
 
   Future<void> disconnect(BuildContext context) async {
+    PartnerModel partner = Provider.of<PartnerModel>(context, listen: false);
+
     // show dialog asking user if the want to disconnect
     await showYesNoDialog(
       context,
@@ -144,10 +146,7 @@ class PartnerAvailableState extends State<PartnerAvailable> {
         }
 
         // manually update status locally, since the listener can be flaky
-        PartnerModel partner = Provider.of<PartnerModel>(
-          context,
-          listen: false,
-        );
+
         // stop report their position to firebase
         partner.sendPositionToFirebase(false);
         // stop location service so we no longer listen to location updates
