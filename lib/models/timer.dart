@@ -15,6 +15,8 @@ class TimerModel extends ChangeNotifier {
     @required durationSeconds,
     void Function() callback,
   }) {
+    // cancel any previous timers
+    cancel();
     _remainingSeconds = durationSeconds;
     _timer = Timer.periodic(
       const Duration(seconds: 1),
