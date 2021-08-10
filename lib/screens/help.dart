@@ -18,7 +18,7 @@ class HelpState extends State<Help> {
       Text("\nExemplos de coisas com que podemos ajudar: "),
       Text("\nComo usar o aplicativo"),
       Text("\nDúvidas sobre ganhos"),
-      Text("\Motivo porque fui bloquado(a)"),
+      Text("\nMotivo porque fui bloquado(a)"),
     ]);
   }
 }
