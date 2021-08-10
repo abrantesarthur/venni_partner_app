@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:partner_app/models/firebase.dart';
+import 'package:partner_app/models/googleMaps.dart';
 import 'package:partner_app/models/partner.dart';
+import 'package:partner_app/models/trip.dart';
 import 'package:partner_app/utils/utils.dart';
 import 'package:partner_app/vendors/firebaseDatabase/interfaces.dart';
 import 'package:partner_app/vendors/firebaseFunctions/methods.dart';
@@ -34,6 +36,9 @@ class PartnerUnavailableStatus extends State<PartnerUnavailable> {
   Future<void> connect(BuildContext context) async {
     FirebaseModel firebase = Provider.of<FirebaseModel>(context, listen: false);
     PartnerModel partner = Provider.of<PartnerModel>(context, listen: false);
+    GoogleMapsModel googleMaps =
+        Provider.of<GoogleMapsModel>(context, listen: false);
+    TripModel trip = Provider.of<TripModel>(context, listen: false);
 
     // make sure notifications are on
     bool notificationsOn = await firebase.requestNotifications(context);
@@ -90,6 +95,9 @@ class PartnerUnavailableStatus extends State<PartnerUnavailable> {
     // clear gains so we can start counting them again. These gains are increased
     // whenever the partner compeltes a new trip
     partner.updateGains(0, notify: false);
+
+    // start listening for location updates
+    partner.handlePositionUpdates(firebase, googleMaps, trip);
 
     // periodically report their position to firebase
     partner.sendPositionToFirebase(true);

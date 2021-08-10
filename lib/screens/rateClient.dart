@@ -3,6 +3,7 @@ import 'package:partner_app/models/connectivity.dart';
 import 'package:partner_app/models/firebase.dart';
 import 'package:partner_app/models/partner.dart';
 import 'package:partner_app/models/trip.dart';
+import 'package:partner_app/screens/home.dart';
 import 'package:partner_app/styles.dart';
 import 'package:partner_app/utils/utils.dart';
 import 'package:partner_app/vendors/firebaseDatabase/interfaces.dart';
@@ -258,6 +259,13 @@ class RateClientState extends State<RateClient> {
     //call completeTrip
     try {
       firebase.functions.completeTrip(context: context, clientRating: rate);
+      // cancel subscription here to make sure we no longer receive updates about
+      // the client's trips.
+      if (HomeState.tripStatusSubscription != null) {
+        try {
+          await HomeState.tripStatusSubscription.cancel();
+        } catch (_) {}
+      }
     } catch (e) {
       showOkDialog(
         context: context,

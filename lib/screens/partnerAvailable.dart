@@ -1,3 +1,4 @@
+import 'package:background_location/background_location.dart';
 import 'package:flutter/material.dart';
 import 'package:partner_app/models/firebase.dart';
 import 'package:partner_app/models/partner.dart';
@@ -149,6 +150,8 @@ class PartnerAvailableState extends State<PartnerAvailable> {
         );
         // stop report their position to firebase
         partner.sendPositionToFirebase(false);
+        // stop location service so we no longer listen to location updates
+        BackgroundLocation.stopLocationService();
         partner.updatePartnerStatus(PartnerStatus.unavailable);
       },
     );
