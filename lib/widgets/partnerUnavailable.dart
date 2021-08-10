@@ -60,7 +60,7 @@ class PartnerUnavailableStatus extends State<PartnerUnavailable> {
         context: context,
         title: "Compartilhe sua localização",
         content:
-            "Você precisa compartilhar sua localização para aceitar corridas.",
+            "Abra as configurações do seu celular e compartilhe a sua localização para se conectar.",
       );
       // unlock screen and hide circularProgressIndicator
       setState(() {
