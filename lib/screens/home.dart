@@ -359,12 +359,15 @@ class HomeState extends State<Home> with WidgetsBindingObserver {
       partnerPos = await determineUserPosition();
       // if user has not stopped sharing location, call handlePositionUpdates so
       // we are sure we're listening to location updates, just in case the OS
-      // decided to kill the process while the app was in the background
-      widget.partner.handlePositionUpdates(
-        widget.firebase,
-        widget.googleMaps,
-        widget.trip,
-      );
+      // decided to kill the process while the app was in the background. However,
+      // we only listen to these updates if the partner is connected.
+      if (widget.partner.partnerStatus != PartnerStatus.unavailable) {
+        widget.partner.handlePositionUpdates(
+          widget.firebase,
+          widget.googleMaps,
+          widget.trip,
+        );
+      }
     } catch (_) {
       partnerPos = await _getPartnerPosition();
     }
@@ -395,12 +398,14 @@ class HomeState extends State<Home> with WidgetsBindingObserver {
     }
     // if we could get position, make sure to resubscribe to position changes
     // again, as the subscription may have been cancelled if user stopped
-    // sharing location.
-    widget.partner.handlePositionUpdates(
-      widget.firebase,
-      widget.googleMaps,
-      widget.trip,
-    );
+    // sharing location. However, only do that if partner is connected
+    if (widget.partner.partnerStatus != PartnerStatus.unavailable) {
+      widget.partner.handlePositionUpdates(
+        widget.firebase,
+        widget.googleMaps,
+        widget.trip,
+      );
+    }
     return pos;
   }
 

@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:flutter/material.dart';
 import 'package:partner_app/models/firebase.dart';
 import 'package:partner_app/models/googleMaps.dart';
@@ -46,14 +48,6 @@ class PartnerUnavailableStatus extends State<PartnerUnavailable> {
       return;
     }
 
-    // lock screen and display circularProgressIndicator
-    setState(() {
-      buttonChild = CircularProgressIndicator(
-        valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
-      );
-      lock = true;
-    });
-
     // make sure partner has shared his location
     if (partner.position == null) {
       await showOkDialog(
@@ -69,6 +63,24 @@ class PartnerUnavailableStatus extends State<PartnerUnavailable> {
       });
       return;
     }
+
+    // if on Android, warn user about location tracking on background
+    if (Platform.isAndroid) {
+      await showOkDialog(
+        context: context,
+        title: "Atenção",
+        content:
+            "Quando você está conectado, nós acessamos a sua localização mesmo com o app no segundo plano a fim de recomendar corridas próximas a você e compartilhar sua localização com o cliente.",
+      );
+    }
+
+    // lock screen and display circularProgressIndicator
+    setState(() {
+      buttonChild = CircularProgressIndicator(
+        valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
+      );
+      lock = true;
+    });
 
     // send request to connect, thus updating partner's status to 'available'
     // and setting his position
