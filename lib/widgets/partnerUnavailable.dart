@@ -58,8 +58,9 @@ class PartnerUnavailableStatus extends State<PartnerUnavailable> {
     if (partner.position == null) {
       await showOkDialog(
         context: context,
-        title: "Algo deu errado",
-        content: "Feche e abra o aplicativo e tente novamente",
+        title: "Compartilhe sua localização",
+        content:
+            "Você precisa compartilhar sua localização para aceitar corridas.",
       );
       // unlock screen and hide circularProgressIndicator
       setState(() {
