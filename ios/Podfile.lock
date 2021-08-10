@@ -1,6 +1,8 @@
 PODS:
   - audioplayers (0.0.1):
     - Flutter
+  - background_location (0.0.1):
+    - Flutter
   - cloud_functions (1.1.2):
     - Firebase/Functions (= 8.3.0)
     - firebase_core
@@ -163,6 +165,7 @@ PODS:
 
 DEPENDENCIES:
   - audioplayers (from `.symlinks/plugins/audioplayers/ios`)
+  - background_location (from `.symlinks/plugins/background_location/ios`)
   - cloud_functions (from `.symlinks/plugins/cloud_functions/ios`)
   - connectivity (from `.symlinks/plugins/connectivity/ios`)
   - firebase_analytics (from `.symlinks/plugins/firebase_analytics/ios`)
@@ -208,6 +211,8 @@ SPEC REPOS:
 EXTERNAL SOURCES:
   audioplayers:
     :path: ".symlinks/plugins/audioplayers/ios"
+  background_location:
+    :path: ".symlinks/plugins/background_location/ios"
   cloud_functions:
     :path: ".symlinks/plugins/cloud_functions/ios"
   connectivity:
@@ -249,6 +254,7 @@ EXTERNAL SOURCES:
 
 SPEC CHECKSUMS:
   audioplayers: 455322b54050b30ea4b1af7cd9e9d105f74efa8c
+  background_location: 1b80c1fe3abd9912bca298618f6e365abf6f588f
   cloud_functions: cd6630d9a3fce737f31b784b34d5fdb77e2b55f6
   connectivity: c4130b2985d4ef6fd26f9702e886bd5260681467
   Firebase: 817b9171d0d51dccc458b94a5e8edff6b1dd323d

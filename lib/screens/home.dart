@@ -1,5 +1,6 @@
 import 'dart:async';
 
+import 'package:background_location/background_location.dart';
 import 'package:firebase_database/firebase_database.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
@@ -78,7 +79,7 @@ class HomeState extends State<Home> with WidgetsBindingObserver {
   Future<Position> partnerPositionFuture;
   bool _hasConnection;
   StreamSubscription partnerStatusSubscription;
-  StreamSubscription tripStatusSubscription;
+  static StreamSubscription tripStatusSubscription;
   StreamSubscription accountStatusSubscription;
   bool lockScreen = false;
   Widget buttonChild;
@@ -164,7 +165,7 @@ class HomeState extends State<Home> with WidgetsBindingObserver {
   void dispose() {
     WidgetsBinding.instance.removeObserver(this);
     widget.firebase.removeListener(_firebaseListener);
-    widget.partner.cancelPositionChangeSubscription();
+    BackgroundLocation.stopLocationService();
     if (partnerStatusSubscription != null) {
       partnerStatusSubscription.cancel();
     }
@@ -253,7 +254,7 @@ class HomeState extends State<Home> with WidgetsBindingObserver {
         // so if user stops sharing location, we will know.
         if (didChangeAppLifecycleCallback == null) {
           didChangeAppLifecycleCallback = () async {
-            // make sure user didn't disable location sharing or otifications
+            // make sure user didn't disable location sharing or notifications
             await ensureLocationSharingIsOn();
             await ensureNotificationsAreOn();
           };
@@ -350,12 +351,20 @@ class HomeState extends State<Home> with WidgetsBindingObserver {
     }
   }
 
-  // ensureLocationSharing is on disconnects partner if they are available and
-  // stops sharing location
+  // ensureLocationSharing is on disconnects partner if they are available but
+  // stop sharing location
   Future<void> ensureLocationSharingIsOn() async {
     Position partnerPos;
     try {
       partnerPos = await determineUserPosition();
+      // if user has not stopped sharing location, call handlePositionUpdates so
+      // we are sure we're listening to location updates, just in case the OS
+      // decided to kill the process while the app was in the background
+      widget.partner.handlePositionUpdates(
+        widget.firebase,
+        widget.googleMaps,
+        widget.trip,
+      );
     } catch (_) {
       partnerPos = await _getPartnerPosition();
     }
@@ -451,7 +460,7 @@ class HomeState extends State<Home> with WidgetsBindingObserver {
         await widget.trip.downloadData(widget.firebase, notify: false);
         // cancel any previous trip status subscriptions
         if (tripStatusSubscription != null) {
-          tripStatusSubscription.cancel();
+          await tripStatusSubscription.cancel();
         }
         // listen for trip status updates calling a function that redraws markers
         // whenever a new partner is heard
@@ -531,18 +540,18 @@ class HomeState extends State<Home> with WidgetsBindingObserver {
       // knows where to drop off the client
       await widget.googleMaps.drawDestinationMarker(context);
     } else if (newTripStatus == TripStatus.cancelledByClient) {
+      // cancel trip status subscriptions
+      if (tripStatusSubscription != null) {
+        await tripStatusSubscription.cancel();
+      }
       await showOkDialog(
         context: context,
         title: "O cliente cancelou o pedido",
       );
-      // cancel trip status subscriptions
-      if (tripStatusSubscription != null) {
-        tripStatusSubscription.cancel();
-      }
     } else if (newTripStatus == TripStatus.cancelledByPartner) {
       // cancel trip status subscriptions
       if (tripStatusSubscription != null) {
-        tripStatusSubscription.cancel();
+        await tripStatusSubscription.cancel();
       }
     }
   }

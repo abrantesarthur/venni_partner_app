@@ -59,6 +59,8 @@
 	</dict>
 	<key>NSCameraUsageDescription</key>
 	<string>O aplicativo precisa de acesso à camera para tirar fotos de documentos.</string>
+	<key>NSLocationAlwaysAndWhenInUseUsageDescription</key>
+	<string>A Venni usa a sua localização para encontrar pedidos de corridas próximos a você, te permitir navegar até os pontos de partida e chegada, e melhorar a sua experiência.</string>
 	<key>NSLocationAlwaysUsageDescription</key>
 	<string>A Venni usa a sua localização para encontrar pedidos de corridas próximos a você, te permitir navegar até os pontos de partida e chegada, e melhorar a sua experiência.</string>
 	<key>NSLocationWhenInUseUsageDescription</key>
@@ -68,6 +70,7 @@
 	<key>UIBackgroundModes</key>
 	<array>
 		<string>fetch</string>
+		<string>location</string>
 		<string>remote-notification</string>
 	</array>
 	<key>UILaunchStoryboardName</key>

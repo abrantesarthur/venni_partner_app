@@ -1,11 +1,13 @@
 import 'dart:async';
 
+import 'package:background_location/background_location.dart';
 import 'package:flutter/material.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:partner_app/models/firebase.dart';
 import 'package:partner_app/models/googleMaps.dart';
 import 'package:partner_app/models/trip.dart';
+import 'package:partner_app/utils/utils.dart';
 import 'package:partner_app/vendors/firebaseDatabase/interfaces.dart';
 import 'package:partner_app/vendors/firebaseDatabase/methods.dart';
 import 'package:partner_app/vendors/firebaseFunctions/interfaces.dart';
@@ -191,11 +193,9 @@ class PartnerModel extends ChangeNotifier {
     return _position;
   }
 
-  // cancel position subscription if it exists
-  void cancelPositionChangeSubscription() {
-    if (_positionSubscription != null) {
-      _positionSubscription.cancel();
-    }
+  void resetLocationService() {
+    BackgroundLocation.stopLocationService();
+    BackgroundLocation.startLocationService(distanceFilter: 20);
   }
 
   // handlePositionUpdates starts listener that gets triggered whenever partner
@@ -211,15 +211,23 @@ class PartnerModel extends ChangeNotifier {
     TripModel trip,
   ) {
     try {
-      Stream<Position> userPositionStream = Geolocator.getPositionStream(
-        desiredAccuracy: LocationAccuracy.best,
-        distanceFilter: 50,
-      );
-      // cancel previous subscription if it exists
-      cancelPositionChangeSubscription();
-      // subscribe to changes in position, updating position and gocoding on changes
-      _positionSubscription = userPositionStream.listen((position) async {
-        _position = position;
+      // reset location service to flush out any previous listeners set by "getLocationUpdates"
+      resetLocationService();
+      // subscribe to changes in position, updating position and geocoding on changes
+      BackgroundLocation.getLocationUpdates((p) async {
+        print(toFixed(p.latitude, 6).toString() +
+            " " +
+            toFixed(p.longitude, 6).toString());
+        _position = Position(
+          longitude: p.longitude,
+          latitude: p.latitude,
+          timestamp: DateTime.now(),
+          accuracy: p.accuracy,
+          altitude: p.altitude,
+          heading: 0.0,
+          speed: p.speed,
+          speedAccuracy: p.accuracy,
+        );
         // if sendPosition flag is set, report partner position to firebase. This
         // flag is set when partner becomes 'available' so that we always know where
         // they are located and matching algorithm can function properly
