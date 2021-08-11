@@ -64,16 +64,6 @@ class PartnerUnavailableStatus extends State<PartnerUnavailable> {
       return;
     }
 
-    // if on Android, warn user about location tracking on background
-    if (Platform.isAndroid) {
-      await showOkDialog(
-        context: context,
-        title: "Atenção",
-        content:
-            "Quando você está conectado, nós acessamos a sua localização mesmo com o app no segundo plano a fim de recomendar corridas próximas a você e compartilhar sua localização com o cliente.",
-      );
-    }
-
     // lock screen and display circularProgressIndicator
     setState(() {
       buttonChild = CircularProgressIndicator(

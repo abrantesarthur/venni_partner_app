@@ -100,7 +100,7 @@ class HomeState extends State<Home> with WidgetsBindingObserver {
     WidgetsBinding.instance.addObserver(this);
 
     // trigger _getPartnerPosition
-    partnerPositionFuture = _getPartnerPosition();
+    partnerPositionFuture = _getPartnerPosition(context);
 
     // subscribe to changes in partner_status so UI is updated appropriately
     partnerStatusSubscription = widget.firebase.database.onPartnerStatusUpdate(
@@ -255,7 +255,7 @@ class HomeState extends State<Home> with WidgetsBindingObserver {
         if (didChangeAppLifecycleCallback == null) {
           didChangeAppLifecycleCallback = () async {
             // make sure user didn't disable location sharing or notifications
-            await ensureLocationSharingIsOn();
+            await ensureLocationSharingIsOn(context);
             await ensureNotificationsAreOn();
           };
         }
@@ -353,10 +353,10 @@ class HomeState extends State<Home> with WidgetsBindingObserver {
 
   // ensureLocationSharing is on disconnects partner if they are available but
   // stop sharing location
-  Future<void> ensureLocationSharingIsOn() async {
+  Future<void> ensureLocationSharingIsOn(BuildContext context) async {
     Position partnerPos;
     try {
-      partnerPos = await determineUserPosition();
+      partnerPos = await determineUserPosition(context);
       // if user has not stopped sharing location, call handlePositionUpdates so
       // we are sure we're listening to location updates, just in case the OS
       // decided to kill the process while the app was in the background. However,
@@ -369,7 +369,7 @@ class HomeState extends State<Home> with WidgetsBindingObserver {
         );
       }
     } catch (_) {
-      partnerPos = await _getPartnerPosition();
+      partnerPos = await _getPartnerPosition(context);
     }
     if (partnerPos == null &&
         widget.partner.partnerStatus == PartnerStatus.available) {
@@ -387,12 +387,12 @@ class HomeState extends State<Home> with WidgetsBindingObserver {
     );
   }
 
-  Future<Position> _getPartnerPosition() async {
+  Future<Position> _getPartnerPosition(BuildContext context) async {
     // Try getting user position. If it returns null, it's because user stopped
     // sharing location. getPosition() will automatically handle that case, asking
     // the user to share again and preventing them from using the app if they
     // don't.
-    Position pos = await widget.partner.getPosition(notify: false);
+    Position pos = await widget.partner.getPosition(context, notify: false);
     if (pos == null) {
       return null;
     }
