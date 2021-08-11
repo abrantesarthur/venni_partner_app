@@ -178,10 +178,13 @@ class PartnerModel extends ChangeNotifier {
     this.fromPartnerInterface(partnerInterface, notify: notify);
   }
 
-  Future<Position> getPosition({bool notify = true}) async {
+  Future<Position> getPosition(
+    BuildContext context, {
+    bool notify = true,
+  }) async {
     Position partnerPos;
     try {
-      partnerPos = await determineUserPosition();
+      partnerPos = await determineUserPosition(context);
     } catch (_) {
       _position = null;
     }
