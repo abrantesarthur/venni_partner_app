@@ -413,3 +413,80 @@ class Trip {
     );
   }
 }
+
+enum Demand {
+  LOW,
+  MEDIUM,
+  HIGH,
+  VERYHIGH,
+}
+
+extension DemandExtension on Demand {
+  static Demand fromString(String s) {
+    switch (s) {
+      case "low":
+        return Demand.LOW;
+      case "medium":
+        return Demand.MEDIUM;
+      case "high":
+        return Demand.HIGH;
+      case "very_high":
+        return Demand.VERYHIGH;
+      default:
+        return null;
+    }
+  }
+}
+
+// TODO: test
+class ZoneDemand {
+  String zoneName;
+  Demand demand;
+  double maxLat;
+  double minLat;
+  double maxLng;
+  double minLng;
+
+  ZoneDemand({
+    @required this.zoneName,
+    @required this.demand,
+    @required this.maxLat,
+    @required this.minLat,
+    @required this.maxLng,
+    @required this.minLng,
+  });
+
+  factory ZoneDemand.fromJson(Map json) {
+    if (json == null) {
+      return null;
+    }
+    return ZoneDemand(
+      zoneName: json["zone_name"],
+      demand: DemandExtension.fromString(json["demand"]),
+      maxLat: json["max_lat"] + .0,
+      minLat: json["min_lat"] + .0,
+      maxLng: json["max_lng"] + .0,
+      minLng: json["min_lng"] + .0,
+    );
+  }
+}
+
+class DemandByZone {
+  Map<String, ZoneDemand> values;
+
+  DemandByZone({@required this.values});
+
+  factory DemandByZone.fromJson(Map<String, dynamic> json) {
+    if (json == null) {
+      return null;
+    }
+
+    Map<String, ZoneDemand> values = {};
+
+    json.keys.forEach((key) {
+      values[key] = ZoneDemand.fromJson(json[key]);
+    });
+
+    return DemandByZone(values: values);
+  }
+}

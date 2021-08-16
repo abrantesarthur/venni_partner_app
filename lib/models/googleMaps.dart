@@ -1,17 +1,22 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:flutter/services.dart' show rootBundle;
+import 'package:partner_app/models/firebase.dart';
 import 'package:partner_app/models/partner.dart';
 import 'package:partner_app/models/trip.dart';
+import 'package:partner_app/styles.dart';
 import 'package:partner_app/utils/utils.dart';
 import 'package:partner_app/vendors/firebaseFunctions/interfaces.dart';
+import 'package:partner_app/vendors/firebaseFunctions/methods.dart';
 import 'package:provider/provider.dart';
 
-// TODO: write tests
 class GoogleMapsModel extends ChangeNotifier {
   Map<PolylineId, Polyline> _polylines;
   Set<Marker> _markers;
+  Set<Polygon> _polygons;
   GoogleMapController _googleMapController;
   bool _myLocationEnabled;
   bool _myLocationButtonEnabled;
@@ -20,13 +25,15 @@ class GoogleMapsModel extends ChangeNotifier {
   LatLng _initialCameraLatLng;
   double _initialZoom;
   String _mapStyle;
+  Timer _drawPolygonTimer;
 
   GoogleMapsModel() {
     _polylines = {};
     _markers = {};
+    _polygons = {};
     _myLocationEnabled = true;
     _myLocationButtonEnabled = true;
-    _initialZoom = 16.5;
+    _initialZoom = 15;
     rootBundle
         .loadString("assets/map_style.txt")
         .then((value) => {_mapStyle = value});
@@ -39,6 +46,7 @@ class GoogleMapsModel extends ChangeNotifier {
   // getters
   Map<PolylineId, Polyline> get polylines => _polylines;
   Set<Marker> get markers => _markers;
+  Set<Polygon> get polygons => _polygons;
   GoogleMapController get googleMapController => _googleMapController;
   bool get myLocationEnabled => _myLocationEnabled;
   bool get myLocationButtonEnabled => _myLocationButtonEnabled;
@@ -56,9 +64,78 @@ class GoogleMapsModel extends ChangeNotifier {
     super.dispose();
   }
 
-  void onMapCreatedCallback(GoogleMapController c) async {
+  Future<void> onMapCreatedCallback(GoogleMapController c) async {
     await c.setMapStyle(_mapStyle);
     _googleMapController = c;
+  }
+
+  // kickoffDrawPolygon calls _drawPolygon periodically once per minute
+  Future<void> kickoffDrawPolygon(FirebaseModel firebase) async {
+    stopDrawingPolygons();
+    // draw polygon once right away then schedule it to run periodically
+    await _drawPolygons(firebase);
+    _drawPolygonTimer = Timer.periodic(Duration(seconds: 60), (timer) async {
+      await _drawPolygons(firebase);
+    });
+  }
+
+  // stopDrawPolygon stops the periodic calling of _drawPolygon
+  void stopDrawingPolygons() {
+    if (_drawPolygonTimer != null) {
+      _drawPolygonTimer.cancel();
+    }
+  }
+
+  // _undrawPolygons clears the polygons from the view
+  void undrawPolygons() {
+    _polygons.clear();
+    notifyListeners();
+  }
+
+  // _drawPolygons draws polygons on the map whose opacity indicates trip demand
+  Future<void> _drawPolygons(FirebaseModel firebase) async {
+    DemandByZone demandByZone;
+    try {
+      demandByZone = await firebase.functions.getDemandByZone();
+    } catch (e) {
+      // on error, clear polygons so partner doesn't see outdated polygon view
+      undrawPolygons();
+      return;
+    }
+
+    // iterate over zones drawing a polygon for each representing the demand there
+    demandByZone.values.entries.forEach((entry) {
+      String key = entry.key; // zone name
+      ZoneDemand value = entry.value; // nome demand
+      // todo: on tap show warning of last trip count in last 5 minutes!
+      _polygons.add(
+        Polygon(
+          polygonId: PolygonId(key),
+          // zones with more demand have color with higher opacity
+          fillColor: AppColor.primaryPink.withOpacity(
+            value.demand == Demand.LOW
+                ? 0
+                : value.demand == Demand.MEDIUM
+                    ? 0.1
+                    : value.demand == Demand.HIGH
+                        ? 0.27
+                        : value.demand == Demand.VERYHIGH
+                            ? 0.55
+                            : 0,
+          ),
+          points: [
+            LatLng(value.maxLat, value.maxLng),
+            LatLng(value.maxLat, value.minLng),
+            LatLng(value.minLat, value.minLng),
+            LatLng(value.minLat, value.maxLng),
+          ],
+          strokeColor: AppColor.primaryPink.withOpacity(0.05),
+          strokeWidth: 2,
+        ),
+      );
+    });
+
+    notifyListeners();
   }
 
   Future<void> drawDestinationMarker(
@@ -153,7 +230,7 @@ class GoogleMapsModel extends ChangeNotifier {
     }
 
     // add bounds to map view
-    animateCamera(secondMarkerPosition, firstMarkerPosition);
+    animateCameraToBounds(secondMarkerPosition, firstMarkerPosition);
 
     // get first marker icon
     BitmapDescriptor firstMarkerIcon = await AppBitmapDescriptor.fromSvg(
@@ -187,7 +264,7 @@ class GoogleMapsModel extends ChangeNotifier {
     }
   }
 
-  Future<void> animateCamera(
+  Future<void> animateCameraToBounds(
     LatLng firstCoordinates,
     LatLng secondCoordinates,
   ) {
@@ -199,11 +276,20 @@ class GoogleMapsModel extends ChangeNotifier {
     });
   }
 
+  Future<void> animateCameraToPosition(LatLng position) {
+    return Future.delayed(Duration(milliseconds: 300), () async {
+      await _googleMapController.animateCamera(CameraUpdate.newLatLngZoom(
+        position,
+        _initialZoom,
+      ));
+    });
+  }
+
   void setGoogleMapsCameraView({
     bool locationEnabled = true,
     bool locationButtonEnabled = true,
-    double topPadding,
-    double bottomPadding,
+    @required double topPadding,
+    @required double bottomPadding,
     bool notify = true,
   }) {
     // set user's location details (true by default)
@@ -243,6 +329,18 @@ class GoogleMapsModel extends ChangeNotifier {
   void undrawMarkers({bool notify = true}) {
     _markers.clear();
     if (notify) {
+      notifyListeners();
+    }
+  }
+
+  // rebuild triggers a map rebuild by notifying listeners. This is used as a
+  // workaround on an android issue that hides the map from view if the app
+  // stays on background for a long time
+  void rebuild() {
+    if (_googleMapController != null) {
+      _googleMapController.setMapStyle('[]');
+      notifyListeners();
+      _googleMapController.setMapStyle(_mapStyle);
       notifyListeners();
     }
   }

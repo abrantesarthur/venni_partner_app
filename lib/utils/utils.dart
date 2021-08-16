@@ -311,7 +311,7 @@ Future<T> showYesNoDialog<T>(
   BuildContext context, {
   @required String title,
   String content,
-    Widget child,
+  Widget child,
   VoidCallback onPressedNo,
   @required VoidCallback onPressedYes,
 }) async {
@@ -354,4 +354,10 @@ double toFixed(double num, num decimals) {
   }
   int factor = pow(10, decimals);
   return (num * factor).round() / factor;
+}
+
+extension CapExtension on String {
+  String get capitalize => this.length > 0
+      ? '${this[0].toUpperCase()}${this.substring(1).toLowerCase()}'
+      : '';
 }

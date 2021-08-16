@@ -282,7 +282,7 @@ class RateClientState extends State<RateClient> {
     partner.updatePartnerStatus(PartnerStatus.available);
 
     // wait 3 seconds then pop back
-    await Future.delayed(Duration(seconds: 3));
+    await Future.delayed(Duration(milliseconds: 1500));
     Navigator.pop(context);
   }
 

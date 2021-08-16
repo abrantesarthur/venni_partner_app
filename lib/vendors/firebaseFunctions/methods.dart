@@ -175,4 +175,13 @@ extension AppFirebaseFunctions on FirebaseFunctions {
 
     return null;
   }
+
+  Future<DemandByZone> getDemandByZone() async {
+    HttpsCallableResult result =
+        await this.httpsCallable("demand_by_zone-get").call();
+    if (result != null && result.data != null) {
+      return DemandByZone.fromJson(result.data);
+    }
+    return null;
+  }
 }
