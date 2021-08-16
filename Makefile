@@ -54,6 +54,7 @@ rundev: check-dev-env
 # -t lib/main defines the build entrypoint.
 	$(FLUTTERRUN) \
 	-v \
+	--release \
 	--flavor dev \
 	--dart-define=DEV_ANDROID_GOOGLE_MAPS_API_KEY=$(DEV_ANDROID_GOOGLE_MAPS_API_KEY) \
 	--dart-define=DEV_IOS_GOOGLE_MAPS_API_KEY=$(DEV_IOS_GOOGLE_MAPS_API_KEY) \

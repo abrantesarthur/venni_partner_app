@@ -7,12 +7,11 @@ import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:partner_app/models/firebase.dart';
 import 'package:partner_app/models/googleMaps.dart';
 import 'package:partner_app/models/trip.dart';
-import 'package:partner_app/utils/utils.dart';
 import 'package:partner_app/vendors/firebaseDatabase/interfaces.dart';
 import 'package:partner_app/vendors/firebaseDatabase/methods.dart';
 import 'package:partner_app/vendors/firebaseFunctions/interfaces.dart';
 import 'package:partner_app/vendors/firebaseStorage.dart';
-import 'package:partner_app/vendors/geolocator.dart';
+import 'package:partner_app/vendors/permissionHandler.dart';
 
 class ProfileImage {
   final ImageProvider<Object> file;
@@ -183,11 +182,9 @@ class PartnerModel extends ChangeNotifier {
     bool notify = true,
   }) async {
     Position partnerPos;
-    try {
-      partnerPos = await determineUserPosition(context);
-    } catch (_) {
-      _position = null;
-    }
+    // determineUserPosition may throw an error which should be handled by the caller
+    partnerPos = await determineUserPosition(context);
+
     _position = partnerPos;
     if (notify) {
       notifyListeners();
@@ -202,7 +199,7 @@ class PartnerModel extends ChangeNotifier {
   }
 
   // handlePositionUpdates starts listener that gets triggered whenever partner
-  // moves at least 50 meters. This lisener, in turn, updates PartnerModel position,
+  // moves at least 20 meters. This lisener, in turn, updates PartnerModel position,
   // reports it to firebase if _sendPositionToFireabase flag is set, and animates
   // google maps camera if _animateMapsCamera flag is set. THis is to better
   // display partner position in relation to either trip's origin or destination
@@ -215,6 +212,8 @@ class PartnerModel extends ChangeNotifier {
   ) {
     try {
       // reset location service to flush out any previous listeners set by "getLocationUpdates"
+      // if partner is near client, we update location at higher rights so client
+      // can view partner arriving better
       resetLocationService();
       // subscribe to changes in position, updating position and geocoding on changes
       BackgroundLocation.getLocationUpdates((p) async {
@@ -256,7 +255,7 @@ class PartnerModel extends ChangeNotifier {
             secondCoordinate = LatLng(trip.destinationLat, trip.destinationLng);
           }
           if (secondCoordinate != null) {
-            googleMaps.animateCamera(firstCoordinate, secondCoordinate);
+            googleMaps.animateCameraToBounds(firstCoordinate, secondCoordinate);
           }
         }
         // notifyListeners triggers a rebuild in PartnerBusy, which uses the

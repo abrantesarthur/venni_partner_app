@@ -2,13 +2,13 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:partner_app/screens/insertAditionalInfo.dart';
-import 'package:partner_app/screens/insertPassword.dart';
 import 'package:partner_app/styles.dart';
 import 'package:partner_app/widgets/appInputText.dart';
 import 'package:partner_app/widgets/arrowBackButton.dart';
 import 'package:partner_app/widgets/circularButton.dart';
 import 'package:partner_app/widgets/overallPadding.dart';
 import 'package:partner_app/widgets/warning.dart';
+import 'package:partner_app/utils/utils.dart';
 
 class InsertNameArguments {
   final UserCredential userCredential;
@@ -82,17 +82,15 @@ class InsertNameState extends State<InsertName> {
     }
   }
 
-  // buttonCallback checks whether email is valid and not already used.
-  // it displays warning in case the email is invalid and redirects user
-  // to next registration screen in case the email is valid.
+  // buttonCallback formats the inserted name and redirects user to next registration screen
   void buttonCallback(BuildContext context) async {
     Navigator.pushNamed(
       context,
       InsertAditionalInfo.routeName,
       arguments: InsertAditionalInfoArguments(
         userCredential: widget.userCredential,
-        name: nameTextEditingController.text.trim(),
-        surname: surnameTextEditingController.text.trim(),
+        name: nameTextEditingController.text.trim().capitalize,
+        surname: surnameTextEditingController.text.trim().capitalize,
         userEmail: widget.userEmail,
       ),
     );

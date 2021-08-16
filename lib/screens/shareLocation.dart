@@ -19,10 +19,12 @@ class ShareLocation extends StatefulWidget {
   static String routeName = "ShareLocation";
   final String routeToPush;
   final Object routeArguments;
+  final String message;
 
   ShareLocation({
     @required this.routeToPush,
     this.routeArguments,
+    this.message,
   });
 
   @override
@@ -34,9 +36,8 @@ class ShareLocationState extends State<ShareLocation> {
 
   @override
   Widget build(BuildContext context) {
-    PartnerModel partner = Provider.of<PartnerModel>(context, listen: false);
     return Splash(
-      text: "Compartilhe sua localização",
+      text: widget.message ?? "Compartilhe sua localização",
       button: reload
           ? AppButton(
               buttonColor: Colors.white,

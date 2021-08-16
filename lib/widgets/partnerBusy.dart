@@ -11,14 +11,11 @@ import 'package:partner_app/vendors/firebaseDatabase/methods.dart';
 import 'package:partner_app/styles.dart';
 import 'package:partner_app/utils/utils.dart';
 import 'package:partner_app/vendors/urlLauncher.dart';
-import 'package:partner_app/widgets/appButton.dart';
-import 'package:partner_app/widgets/cancelButton.dart';
+import 'package:partner_app/widgets/borderlessButton.dart';
 import 'package:partner_app/widgets/circularImage.dart';
 import 'package:partner_app/widgets/floatingCard.dart';
-import 'package:partner_app/widgets/overallPadding.dart';
 import 'package:provider/provider.dart';
 import 'package:slider_button/slider_button.dart';
-import 'package:sliding_up_panel/sliding_up_panel.dart';
 
 class PartnerBusy extends StatefulWidget {
   final TripModel trip;
@@ -33,11 +30,11 @@ class PartnerBusyState extends State<PartnerBusy> {
   bool lockScreen = false;
   Widget buttonChild;
   bool isDraggable = true;
-  bool partnerIsFar;
+  bool partnerIsNear;
 
   @override
   void initState() {
-    partnerIsFar = getDistanceBetweenCoordinates(
+    partnerIsNear = getDistanceBetweenCoordinates(
           LatLng(
             widget.partner.position.latitude,
             widget.partner.position.longitude,
@@ -46,7 +43,7 @@ class PartnerBusyState extends State<PartnerBusy> {
             widget.trip.originLat,
             widget.trip.originLng,
           ),
-        ) >
+        ) <
         150;
     super.initState();
   }
@@ -64,24 +61,22 @@ class PartnerBusyState extends State<PartnerBusy> {
     // whenever we rebuild, it may be because PartnerModel notified listeners about
     // the partner's udpated position. if partner is going to pick up the client,
     // use that position to recalculate how far he is from the pick up point.
-    // This distance will be used to decide whether to display  a "Cancel Trip"
-    // (when far) or "Start Trip" button (when near).
+    // This distance will be used to decide when to display a "Start Trip" button
     if (trip.tripStatus == TripStatus.waitingPartner) {
-      bool _partnerIsFar = getDistanceBetweenCoordinates(
+      bool _partnerIsNear = getDistanceBetweenCoordinates(
             LatLng(toFixed(partner.position.latitude, 6),
                 toFixed(partner.position.longitude, 6)),
             LatLng(trip.originLat, trip.originLng),
-          ) >
+          ) <
           150;
-
-      if (!_partnerIsFar && partnerIsFar) {
+      if (!partnerIsNear && _partnerIsNear) {
         // if partner just got close, set him as nearby in database so client is notified
         firebase.database.setPartnerIsNear(trip.clientID, true);
-      } else if (_partnerIsFar && !partnerIsFar) {
+      } else if (partnerIsNear && !_partnerIsNear) {
         // if partner just got far, set him as not nearby in database so client is notified
         firebase.database.setPartnerIsNear(trip.clientID, false);
       }
-      partnerIsFar = _partnerIsFar;
+      partnerIsNear = _partnerIsNear;
     }
 
     return Column(
@@ -99,9 +94,10 @@ class PartnerBusyState extends State<PartnerBusy> {
                 Container(
                   width: 0.8 * screenWidth,
                   child: Text(
-                    trip.tripStatus == TripStatus.waitingPartner
-                        ? trip.originAddress
-                        : trip.destinationAddress,
+                    (trip.tripStatus == TripStatus.waitingPartner
+                            ? trip.originAddress
+                            : trip.destinationAddress) ??
+                        "",
                     style: TextStyle(
                       color: AppColor.primaryPink,
                       fontSize: 24,
@@ -132,31 +128,13 @@ class PartnerBusyState extends State<PartnerBusy> {
           ),
         ),
         SizedBox(height: screenHeight / 25),
-        (!partnerIsFar && trip.tripStatus != TripStatus.inProgress)
-            ? AppButton(
-                textData: "cancelar",
-                width: screenWidth / 1.5,
-                height: 60,
-                onTapCallBack: () async {
-                  await showYesNoDialog(
-                    context,
-                    title: "Cancelar corrida?",
-                    onPressedYes: () async {
-                      Navigator.pop(context);
-                      setState(() {
-                        lockScreen = true;
-                      });
-                      await firebase.functions.cancelTrip();
-                    },
-                  );
-                },
-                iconRight: Icons.clear,
-              )
-            : Container(),
         Spacer(),
         trip.tripStatus == TripStatus.inProgress
             ? buildTripInProgressPanel(context)
-            : buildTripWaitingPartnerPanel(context)
+            : trip.tripStatus == TripStatus.waitingPartner
+                ? buildTripWaitingPartnerPanel(context)
+                : Container(),
+        SizedBox(height: screenHeight / 25),
       ],
     );
   }
@@ -165,7 +143,7 @@ class PartnerBusyState extends State<PartnerBusy> {
     final screenHeight = MediaQuery.of(context).size.height;
     final screenWidth = MediaQuery.of(context).size.width;
     return Padding(
-      padding: EdgeInsets.only(bottom: screenHeight / 20),
+      padding: EdgeInsets.only(bottom: screenHeight / 50),
       child: SliderButton(
         action: () async {
           try {
@@ -183,6 +161,7 @@ class PartnerBusyState extends State<PartnerBusy> {
           style: TextStyle(
             fontWeight: FontWeight.bold,
             fontSize: 24,
+            color: Colors.white,
           ),
         ),
         child: Padding(
@@ -209,128 +188,173 @@ class PartnerBusyState extends State<PartnerBusy> {
     FirebaseModel firebase = Provider.of<FirebaseModel>(context, listen: false);
     TripModel trip = Provider.of<TripModel>(context, listen: false);
 
-    return SlidingUpPanel(
-      color: AppColor.primaryPink,
-      maxHeight: screenHeight / 2,
-      borderRadius: BorderRadius.only(
-        topLeft: Radius.circular(10.0),
-        topRight: Radius.circular(10.0),
-      ),
-      panel: Column(
-        crossAxisAlignment: CrossAxisAlignment.center,
+    return FloatingCard(
+      leftMargin: 0,
+      rightMargin: 0,
+      child: Column(
         children: [
-          SizedBox(height: screenHeight / 100),
-          Icon(
-            Icons.maximize,
-            color: Colors.white.withOpacity(0.55),
-            size: 30,
-          ),
-          Spacer(),
           Column(
-            crossAxisAlignment: CrossAxisAlignment.center,
             children: [
-              SliderButton(
-                action: lockScreen
-                    ? () {}
-                    : () async {
-                        try {
-                          if (partnerIsFar) {
-                            await firebase.functions.cancelTrip();
-                          } else {
-                            await firebase.functions.startTrip(context);
-                          }
-                        } catch (e) {
-                          showOkDialog(
-                            context: context,
-                            title: "Falha ao " +
-                                (partnerIsFar ? "cancelar" : "iniciar") +
-                                " a corrida",
-                            content: partnerIsFar
-                                ? "Busque o cliente ou entre em contato com ele para que cancele a corrida"
-                                : "Tente novamente",
-                          );
-                        }
-                      },
-                label: Text(
-                  partnerIsFar ? "CANCELAR CORRIDA" : "INICIAR CORRIDA",
-                  style: TextStyle(
-                    fontWeight: FontWeight.bold,
-                    fontSize: 24,
-                  ),
-                ),
-                child: Padding(
-                  padding: const EdgeInsets.only(left: 10),
-                  child: Icon(
-                    Icons.double_arrow_rounded,
-                    color: AppColor.primaryPink,
-                    size: 50,
-                  ),
-                ),
-                width: screenWidth,
-                radius: 0,
-                baseColor: AppColor.primaryPink,
-                dismissThresholds: 0.8,
-              ),
-              OverallPadding(
-                top: screenHeight / 20,
-                bottom: screenHeight / 20,
-                child: Column(
-                  children: [
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: [
-                        GestureDetector(
-                          child: Icon(
-                            Icons.message,
-                            size: 50,
-                            color: Colors.white,
-                          ),
-                          onTap: () async => await messageClient(
-                            context,
-                            trip.clientPhone,
-                          ),
+              partnerIsNear
+                  ? SliderButton(
+                      action: lockScreen
+                          ? () {}
+                          : () async {
+                              try {
+                                await firebase.functions.startTrip(context);
+                              } catch (e) {
+                                showOkDialog(
+                                  context: context,
+                                  title: "Falha ao iniciar a corrida",
+                                  content: "Tente novamente",
+                                );
+                              }
+                            },
+                      label: Text(
+                        "INICIAR CORRIDA",
+                        style: TextStyle(
+                          fontWeight: FontWeight.bold,
+                          fontSize: 24,
+                          color: Colors.white,
                         ),
-                        CircularImage(
-                          imageFile: trip.profileImage == null
-                              ? AssetImage("images/user_icon.png")
-                              : trip.profileImage.file,
+                      ),
+                      child: Padding(
+                        padding: const EdgeInsets.only(left: 10),
+                        child: Icon(
+                          Icons.double_arrow_rounded,
+                          color: Colors.white,
+                          size: 50,
                         ),
-                        GestureDetector(
-                          child: Icon(
-                            Icons.phone_in_talk,
-                            size: 50,
-                            color: Colors.white,
-                          ),
-                          onTap: () async => await UrlLauncher.openPhone(
-                            context,
-                            trip.clientPhone,
-                          ),
-                        ),
-                      ],
+                      ),
+                      width: screenWidth,
+                      radius: 0,
+                      baseColor: Colors.white,
+                      highlightedColor: AppColor.primaryPink,
+                      backgroundColor: AppColor.primaryPink,
+                      dismissThresholds: 0.8,
+                    )
+                  : Container(),
+              SizedBox(height: screenHeight / 50),
+            ],
+          ),
+          // TODO: display user score
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceAround,
+            children: [
+              trip.profileImage == null
+                  ? Icon(
+                      Icons.person,
+                      size: 50,
+                      color: Colors.black,
+                    )
+                  : CircularImage(
+                      imageFile: trip.profileImage.file,
                     ),
-                    SizedBox(height: screenHeight / 50),
-                  ],
+              Text(
+                (partnerIsNear ? "Aguarde " : "Busque ") + trip?.clientName,
+                style: TextStyle(
+                  fontWeight: FontWeight.w600,
+                  fontSize: 24,
+                  color: AppColor.primaryPink,
                 ),
               ),
+              trip.tripStatus != TripStatus.inProgress
+                  ? GestureDetector(
+                      child: Icon(
+                        Icons.list,
+                        size: 50,
+                        color: Colors.black,
+                      ),
+                      onTap: () => showMoreOptions(context),
+                    )
+                  : Container(),
             ],
           ),
         ],
       ),
-      collapsed: Column(
-        children: [
-          SizedBox(height: screenHeight / 25),
-          buttonChild == null
-              ? Text(
-                  (partnerIsFar ? "Busque " : "Aguarde ") + trip?.clientName,
-                  style: TextStyle(
-                    fontWeight: FontWeight.bold,
-                    fontSize: 24,
-                    color: Colors.white,
+    );
+  }
+
+  Future<dynamic> showMoreOptions(BuildContext context) async {
+    final screenHeight = MediaQuery.of(context).size.height;
+
+    return await showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          content: Container(
+            height: screenHeight / 3,
+            child: Column(
+              children: [
+                Divider(thickness: 0.1, color: Colors.black),
+                SizedBox(height: screenHeight / 100),
+                BorderlessButton(
+                  primaryText: "MENSAGEM",
+                  primaryTextSize: 20,
+                  primaryTextWeight: FontWeight.w600,
+                  iconRight: Icons.message,
+                  iconRightColor: Colors.black,
+                  iconRightSize: 25,
+                  onTap: () async => await messageClient(
+                    context,
+                    widget.trip.clientPhone,
                   ),
-                )
-              : buttonChild,
-        ],
-      ),
+                ),
+                SizedBox(height: screenHeight / 100),
+                Divider(thickness: 0.1, color: Colors.black),
+                SizedBox(height: screenHeight / 100),
+                BorderlessButton(
+                  primaryText: "LIGAÇÃO",
+                  primaryTextSize: 20,
+                  primaryTextWeight: FontWeight.w600,
+                  iconRight: Icons.phone_in_talk,
+                  iconRightColor: Colors.black,
+                  iconRightSize: 25,
+                  onTap: () async => await UrlLauncher.openPhone(
+                    context,
+                    widget.trip.clientPhone,
+                  ),
+                ),
+                SizedBox(height: screenHeight / 100),
+                Divider(thickness: 0.1, color: Colors.black),
+                Spacer(),
+                Divider(thickness: 0.1, color: Colors.black),
+                SizedBox(height: screenHeight / 100),
+                BorderlessButton(
+                  primaryText: "CANCELAR CORRIDA",
+                  primaryTextColor: AppColor.primaryPink,
+                  primaryTextSize: 20,
+                  primaryTextWeight: FontWeight.w600,
+                  onTap: () async {
+                    await cancelTrip(context);
+                    Navigator.pop(context);
+                  },
+                ),
+                SizedBox(height: screenHeight / 100),
+                Divider(thickness: 0.1, color: Colors.black),
+              ],
+            ),
+          ),
+        );
+      },
+    );
+  }
+
+  Future<void> cancelTrip(BuildContext context) async {
+    FirebaseModel firebase = Provider.of<FirebaseModel>(context, listen: false);
+
+    await showYesNoDialog(
+      context,
+      title: "Cancelar corrida?",
+      onPressedYes: () async {
+        Navigator.pop(context);
+        setState(() {
+          lockScreen = true;
+        });
+        try {
+          await firebase.functions.cancelTrip();
+        } catch (_) {}
+      },
     );
   }
 

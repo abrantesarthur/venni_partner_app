@@ -445,7 +445,7 @@ class InsertPasswordState extends State<InsertPassword> {
                               ? Column(
                                   children: [
                                     Text(
-                                      "Já existe uma conta de cliente na Venni com telefone " +
+                                      "Já existe uma conta na Venni com telefone " +
                                           firebase.auth.currentUser.phoneNumber
                                               .withoutCountryCode() +
                                           ". Insira sua senha para completar o cadastro",

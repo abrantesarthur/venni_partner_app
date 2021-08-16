@@ -97,6 +97,12 @@ class _AppState extends State<App> {
     initializeModels();
     await logEvents();
 
+    // throw error if there is no connection, so Start screen can be pushed
+    bool hasConnection = await connectivity.checkConnection();
+    if (!hasConnection) {
+      throw FirebaseAuthException(code: "network-error");
+    }
+
     // download partner data so we can know their 'account_status' and decide
     // whether to push Home or Start
     try {
@@ -270,7 +276,8 @@ class _AppState extends State<App> {
               initialRoute: !firebase.isRegistered ||
                       partner.accountStatus != AccountStatus.approved ||
                       (snapshot.hasError &&
-                          error.code == "partner-initialization-error")
+                          (error.code == "partner-initialization-error" ||
+                              error.code == "network-error"))
                   ? Start.routeName
                   : Home.routeName,
               // pass appropriate arguments to routes

@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:io';
 
 import 'package:background_location/background_location.dart';
 import 'package:firebase_database/firebase_database.dart';
@@ -24,7 +25,7 @@ import 'package:partner_app/screens/menu.dart';
 import 'package:partner_app/screens/shareLocation.dart';
 import 'package:partner_app/screens/splash.dart';
 import 'package:partner_app/screens/start.dart';
-import 'package:partner_app/vendors/geolocator.dart';
+import 'package:partner_app/vendors/permissionHandler.dart';
 import 'package:partner_app/widgets/menuButton.dart';
 import 'package:partner_app/widgets/overallPadding.dart';
 import 'package:partner_app/widgets/partnerBusy.dart';
@@ -156,7 +157,8 @@ class HomeState extends State<Home> with WidgetsBindingObserver {
     // ask them to reshare. The function is only defined once the tree has been
     // built though, to avoid exceptions of trying to ask for location permission
     // simultaneously. After all, we already ask for them in initState.
-    if (didChangeAppLifecycleCallback != null) {
+    if (didChangeAppLifecycleCallback != null &&
+        state == AppLifecycleState.resumed) {
       didChangeAppLifecycleCallback();
     }
   }
@@ -184,7 +186,6 @@ class HomeState extends State<Home> with WidgetsBindingObserver {
     final screenWidth = MediaQuery.of(context).size.width;
     ConnectivityModel connectivity = Provider.of<ConnectivityModel>(context);
     FirebaseModel firebase = Provider.of<FirebaseModel>(context);
-    GoogleMapsModel googleMaps = Provider.of<GoogleMapsModel>(context);
     // very important not listen for PartnerModel! We already have a Consumer
     // for that and so that GoogleMaps doesn't get rebuilt every tiem there is a
     // change to partners. This would delete markers, and reset the view, and just
@@ -236,7 +237,7 @@ class HomeState extends State<Home> with WidgetsBindingObserver {
         }
 
         // make sure we successfully got user position
-        if (snapshot.data == null) {
+        if (snapshot.hasError || snapshot.data == null) {
           return ShareLocation(
             routeToPush: Home.routeName,
             routeArguments: HomeArguments(
@@ -247,6 +248,9 @@ class HomeState extends State<Home> with WidgetsBindingObserver {
               trip: widget.trip,
               connectivity: connectivity,
             ),
+            message: snapshot.error == "location-service-disabled"
+                ? "Ative o acesso à localização"
+                : "Compartilhe sua localização",
           );
         }
 
@@ -254,9 +258,16 @@ class HomeState extends State<Home> with WidgetsBindingObserver {
         // so if user stops sharing location, we will know.
         if (didChangeAppLifecycleCallback == null) {
           didChangeAppLifecycleCallback = () async {
-            // make sure user didn't disable location sharing or notifications
+            // make sure user didn't disable location sharing
             await ensureLocationSharingIsOn(context);
+            // make sure notifications are on
             await ensureNotificationsAreOn();
+            // on android, workaround the google maps issue of not displaying the
+            // maps after phone being in background for a while by. See here:
+            // https://stackoverflow.com/questions/59374010/flutter-googlemap-is-blank-after-resuming-from-background/59435683#59435683
+            if (Platform.isAndroid) {
+              widget.googleMaps.rebuild();
+            }
           };
         }
 
@@ -266,28 +277,32 @@ class HomeState extends State<Home> with WidgetsBindingObserver {
           body: Stack(
             children: [
               // TODO: replace myLocationButton for another icon
-              GoogleMap(
-                myLocationButtonEnabled: googleMaps.myLocationButtonEnabled,
-                myLocationEnabled: googleMaps.myLocationEnabled,
-                trafficEnabled: false,
-                zoomControlsEnabled: false,
-                mapType: MapType.normal,
-                initialCameraPosition: CameraPosition(
-                  target: googleMaps.initialCameraLatLng ??
-                      LatLng(-17.217600, -46.874621),
-                  zoom: googleMaps.initialZoom ?? 16.5,
-                ),
-                padding: EdgeInsets.only(
-                  top: googleMaps.googleMapsTopPadding ?? screenHeight / 12,
-                  bottom:
-                      googleMaps.googleMapsBottomPadding ?? screenHeight / 10,
-                  left: screenWidth / 20,
-                  right: screenWidth / 20,
-                ),
-                onMapCreated: googleMaps.onMapCreatedCallback,
-                polylines: Set<Polyline>.of(googleMaps.polylines.values),
-                markers: googleMaps.markers,
-              ),
+              Consumer<GoogleMapsModel>(builder: (context, g, _) {
+                return GoogleMap(
+                  myLocationButtonEnabled: g.myLocationButtonEnabled,
+                  myLocationEnabled: g.myLocationEnabled,
+                  trafficEnabled: false,
+                  zoomControlsEnabled: false,
+                  mapType: MapType.normal,
+                  initialCameraPosition: CameraPosition(
+                    target:
+                        g.initialCameraLatLng ?? LatLng(-17.217600, -46.874621),
+                    zoom: g.initialZoom ?? 16.5,
+                  ),
+                  padding: EdgeInsets.only(
+                    top: g.googleMapsTopPadding ?? screenHeight / 12,
+                    bottom: g.googleMapsBottomPadding ?? screenHeight / 10,
+                    left: screenWidth / 20,
+                    right: screenWidth / 20,
+                  ),
+                  onMapCreated: (c) async {
+                    await g.onMapCreatedCallback(c);
+                  },
+                  polylines: Set<Polyline>.of(g.polylines.values),
+                  polygons: g.polygons,
+                  markers: g.markers,
+                );
+              }),
               Positioned(
                 child: OverallPadding(
                   child: MenuButton(
@@ -360,8 +375,10 @@ class HomeState extends State<Home> with WidgetsBindingObserver {
       // if user has not stopped sharing location, call handlePositionUpdates so
       // we are sure we're listening to location updates, just in case the OS
       // decided to kill the process while the app was in the background. However,
-      // we only listen to these updates if the partner is connected.
-      if (widget.partner.partnerStatus != PartnerStatus.unavailable) {
+      // we only listen to these updates if the partner is connected and we could
+      // get partnerPos.
+      if (widget.partner.partnerStatus != PartnerStatus.unavailable &&
+          partnerPos != null) {
         widget.partner.handlePositionUpdates(
           widget.firebase,
           widget.googleMaps,
@@ -476,6 +493,10 @@ class HomeState extends State<Home> with WidgetsBindingObserver {
 
         // constantly update maps camera view as partner moves close to origin or destination
         widget.partner.animateMapsCameraView(true);
+
+        // remove demand polygons and stop redrawing them
+        widget.googleMaps.stopDrawingPolygons();
+        widget.googleMaps.undrawPolygons();
       } else {
         // if partner is not busy, stop animating maps camera view
         widget.partner.animateMapsCameraView(false);
@@ -499,6 +520,10 @@ class HomeState extends State<Home> with WidgetsBindingObserver {
         // 'disconnect', but it's important to do here too in case the partner
         // relaunches the app.
         widget.partner.sendPositionToFirebase(false);
+
+        // remove demand polygons and stop redrawing them
+        widget.googleMaps.stopDrawingPolygons();
+        widget.googleMaps.undrawPolygons();
       }
 
       // if partner's status was 'requested' but was updated to 'available' it means
@@ -512,6 +537,20 @@ class HomeState extends State<Home> with WidgetsBindingObserver {
           title: "Corrida indisponível",
           content: "Outro(a) parceiro(a) aceitou a corrida antes de você.",
         );
+      }
+
+      // if partner becomes 'available',
+      if (newPartnerStatus == PartnerStatus.available) {
+        // animate maps camera to center on the partner
+        if (widget.partner.position != null) {
+          widget.googleMaps.animateCameraToPosition(LatLng(
+            widget.partner.position.latitude,
+            widget.partner.position.longitude,
+          ));
+        }
+
+        // periodically draw demand polygons
+        await widget.googleMaps.kickoffDrawPolygon(widget.firebase);
       }
 
       // log events

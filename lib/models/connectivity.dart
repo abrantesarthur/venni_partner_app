@@ -16,8 +16,8 @@ class ConnectivityModel extends ChangeNotifier {
     // start listening for connectivity changes
     _connectivity = Connectivity();
     _connectivitySubscription = _connectivity.onConnectivityChanged
-        .listen((e) async => await _checkConnection());
-    _checkConnection();
+        .listen((e) async => await checkConnection());
+    checkConnection();
   }
 
   @override
@@ -29,7 +29,7 @@ class ConnectivityModel extends ChangeNotifier {
   }
 
   // checkConnection tests whether there is a connection
-  Future<void> _checkConnection() async {
+  Future<bool> checkConnection() async {
     bool previousHasConnection = _hasConnection;
 
     try {
@@ -47,6 +47,8 @@ class ConnectivityModel extends ChangeNotifier {
     if (previousHasConnection != _hasConnection) {
       notifyListeners();
     }
+
+    return _hasConnection;
   }
 
   Future<void> alertWhenOffline(BuildContext context, {String message}) async {

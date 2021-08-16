@@ -8,6 +8,7 @@ class AppButton extends StatelessWidget {
   final double width;
   final double borderRadius;
   final IconData iconRight;
+  final Color iconRightColor;
   final IconData iconLeft;
   final Color buttonColor;
   final VoidCallback onTapCallBack;
@@ -22,6 +23,7 @@ class AppButton extends StatelessWidget {
     this.height,
     @required this.textData,
     this.iconRight,
+    this.iconRightColor,
     this.iconLeft,
     this.borderRadius,
     this.buttonColor,
@@ -90,8 +92,8 @@ class AppButton extends StatelessWidget {
                       alignment: Alignment.centerRight,
                       child: Padding(
                           padding: EdgeInsets.only(right: screenWidth / 50),
-                          child:
-                              Icon(iconRight, color: Colors.white, size: 24)))
+                          child: Icon(iconRight,
+                              color: iconRightColor ?? Colors.white, size: 24)))
                   : widgetRight != null
                       ? Align(
                           alignment: Alignment.centerRight,
