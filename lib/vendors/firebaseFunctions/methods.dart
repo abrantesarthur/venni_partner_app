@@ -93,6 +93,7 @@ extension AppFirebaseFunctions on FirebaseFunctions {
   }
 
   Future<Trips> getPastTrips({GetPastTripsArguments args}) async {
+    print("getPastTrips");
     Map<String, int> data = {};
     if (args != null) {
       if (args.pageSize != null) {

@@ -51,7 +51,7 @@
         <!--@arthur added googleMapsApiKey so google maps SDK works-->
         <meta-data
             android:name="com.google.android.geo.API_KEY"
-            android:value="AIzaSyDtewMXcgzwFyulh6SkPH7_aMRXRVQDLiA" />
+            android:value=" AIzaSyDtewMXcgzwFyulh6SkPH7_aMRXRVQDLiA" />
     </application>
     <queries>
         <!-- Our app opens other URLs, for instance to open whatsapp -->

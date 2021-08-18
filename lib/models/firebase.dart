@@ -95,9 +95,9 @@ class FirebaseModel extends ChangeNotifier {
       _notificationDialogOn = true;
       await showYesNoDialog(
         context,
-        title: "Notificações desativadas",
+        title: "Ative as Notificações",
         content:
-            "Ative as notificações para poder se conectar. Abrir configurações?",
+            "Assim você é avisado quando receber pedidos. Abrir configurações?",
         onPressedYes: () async {
           Navigator.pop(context);
           await SystemSettings.appNotifications();

@@ -43,10 +43,7 @@ class PartnerUnavailableStatus extends State<PartnerUnavailable> {
     TripModel trip = Provider.of<TripModel>(context, listen: false);
 
     // make sure notifications are on
-    bool notificationsOn = await firebase.requestNotifications(context);
-    if (!notificationsOn) {
-      return;
-    }
+    await firebase.requestNotifications(context);
 
     // make sure partner has shared his location
     if (partner.position == null) {
