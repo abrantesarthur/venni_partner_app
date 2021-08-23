@@ -108,7 +108,7 @@ class PartnerRequestedState extends State<PartnerRequested> {
     PartnerModel partner = Provider.of<PartnerModel>(context, listen: false);
     FirebaseModel firebase = Provider.of<FirebaseModel>(context, listen: false);
 
-    // mark the pilot as having accepted trip, so if 10s timeout
+    // mark the pilot as having accepted trip, so if 15s timeout
     // finishes, we don't send a declineTrip request and don't update
     // the UI disposing this PartnerRequested widget
     partner.setAcceptedTrip(true, notify: false);

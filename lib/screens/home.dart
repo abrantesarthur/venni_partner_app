@@ -1,6 +1,7 @@
 import 'dart:async';
 import 'dart:io';
 
+import 'package:awesome_notifications/awesome_notifications.dart';
 import 'package:background_location/background_location.dart';
 import 'package:firebase_database/firebase_database.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
@@ -13,7 +14,9 @@ import 'package:partner_app/models/timer.dart';
 import 'package:partner_app/models/trip.dart';
 import 'package:partner_app/screens/accountLocked.dart';
 import 'package:partner_app/screens/partnerAvailable.dart';
+import 'package:partner_app/styles.dart';
 import 'package:partner_app/utils/utils.dart';
+import 'package:partner_app/vendors/awesomeNotifications.dart';
 import 'package:partner_app/vendors/firebaseDatabase/interfaces.dart';
 import 'package:partner_app/vendors/firebaseDatabase/methods.dart';
 import 'package:partner_app/vendors/firebaseFunctions/interfaces.dart';
@@ -32,6 +35,7 @@ import 'package:partner_app/widgets/partnerBusy.dart';
 import 'package:partner_app/widgets/partnerRequested.dart';
 import 'package:partner_app/widgets/partnerUnavailable.dart';
 import 'package:provider/provider.dart';
+import 'package:vibration/vibration.dart';
 import 'package:wakelock/wakelock.dart';
 
 class HomeArguments {
@@ -291,7 +295,7 @@ class HomeState extends State<Home> with WidgetsBindingObserver {
                   ),
                   padding: EdgeInsets.only(
                     top: g.googleMapsTopPadding ?? screenHeight / 12,
-                    bottom: g.googleMapsBottomPadding ?? screenHeight / 10,
+                    bottom: g.googleMapsBottomPadding ?? screenHeight / 9,
                     left: screenWidth / 20,
                     right: screenWidth / 20,
                   ),
@@ -447,18 +451,21 @@ class HomeState extends State<Home> with WidgetsBindingObserver {
       e.snapshot.value,
     );
     if (newPartnerStatus != null) {
-      // if partner has been requested, kick off 10s timer. The TimerModel
+      // if partner has been requested, kick off 15s timer. The TimerModel
       // is passed to the PartnerRequested widget which uses its 'remainingSeconds'
       // property to display how much time the partner has to accept the trip.
       // Once the timer stops, if the partner hasn't accepted
       // the trip request we call 'declineTrip' and udpate their status locally
       if (newPartnerStatus == PartnerStatus.requested) {
+        // trigger notifications so user is periodically warned if app is in background
+        Notifications().trigger(repeatingPeriod: Duration(seconds: 2));
+
         // before kicking off timer, set acceptedTrip to false. If partner accepts
         // the trip before the timer goes out, acceptedTrip is set true and the
         // callback won't set the partner available.
         widget.partner.setAcceptedTrip(false, notify: false);
         widget.timer.kickOff(
-          durationSeconds: 10,
+          durationSeconds: 15,
           callback: () {
             // if partner did not accept trip after 10s
             if (!widget.partner.acceptedTrip) {
@@ -478,6 +485,9 @@ class HomeState extends State<Home> with WidgetsBindingObserver {
         );
       }
       if (newPartnerStatus == PartnerStatus.busy) {
+        // stop triggering trip request notifications if user is busy
+        Notifications().stopTriggering(NotificationType.tripRequest);
+
         // download trip data before updating PartnerModel status and thus UI
         await widget.trip.downloadData(widget.firebase, notify: false);
         // cancel any previous trip status subscriptions
@@ -491,15 +501,10 @@ class HomeState extends State<Home> with WidgetsBindingObserver {
           onTripStatusUpdate,
         );
 
-        // constantly update maps camera view as partner moves close to origin or destination
-        widget.partner.animateMapsCameraView(true);
-
         // remove demand polygons and stop redrawing them
         widget.googleMaps.stopDrawingPolygons();
         widget.googleMaps.undrawPolygons();
       } else {
-        // if partner is not busy, stop animating maps camera view
-        widget.partner.animateMapsCameraView(false);
         // undraw markers
         widget.googleMaps.undrawMarkers();
 
@@ -541,6 +546,8 @@ class HomeState extends State<Home> with WidgetsBindingObserver {
 
       // if partner becomes 'available',
       if (newPartnerStatus == PartnerStatus.available) {
+        // stop triggering trip request notifications if user becomes available
+        Notifications().stopTriggering(NotificationType.tripRequest);
         // animate maps camera to center on the partner
         if (widget.partner.position != null) {
           widget.googleMaps.animateCameraToPosition(LatLng(

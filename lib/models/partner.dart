@@ -49,7 +49,6 @@ class PartnerModel extends ChangeNotifier {
   int _gains;
   bool _acceptedTrip = false;
   bool _sendPositionToFirebase = false;
-  bool _animateMapsCamera = false;
 
   // getters
   String get id => _id;
@@ -84,10 +83,6 @@ class PartnerModel extends ChangeNotifier {
 
   void sendPositionToFirebase(bool v) {
     _sendPositionToFirebase = v;
-  }
-
-  void animateMapsCameraView(bool v) {
-    _animateMapsCamera = v;
   }
 
   void setAcceptedTrip(bool v, {bool notify = true}) {
@@ -195,7 +190,7 @@ class PartnerModel extends ChangeNotifier {
 
   void resetLocationService() {
     BackgroundLocation.stopLocationService();
-    BackgroundLocation.startLocationService(distanceFilter: 20);
+    BackgroundLocation.startLocationService(distanceFilter: 10);
   }
 
   // handlePositionUpdates starts listener that gets triggered whenever partner
@@ -237,27 +232,30 @@ class PartnerModel extends ChangeNotifier {
             longitude: _position.longitude,
           );
         }
-        // if animateMapsCamera flag is set, we  update the maps camera view
-        // from the partner to origin or destination, depending on whether trip
-        // is 'waitingParner' or 'inProgress'. This flag is set when partner
-        // becomes 'busy' so he knows where he is supposed to go pick client.
-        if (_animateMapsCamera) {
-          LatLng firstCoordinate = LatLng(
-            _position.latitude,
-            _position.longitude,
-          );
-          LatLng secondCoordinate;
-          // if waitingPartner, bounds are between partner and origin
-          if (trip.tripStatus == TripStatus.waitingPartner) {
-            secondCoordinate = LatLng(trip.originLat, trip.originLng);
-            // if inProgress, bounds are between partner and destination
-          } else if (trip.tripStatus == TripStatus.inProgress) {
-            secondCoordinate = LatLng(trip.destinationLat, trip.destinationLng);
-          }
-          if (secondCoordinate != null) {
-            googleMaps.animateCameraToBounds(firstCoordinate, secondCoordinate);
-          }
+        // update the maps camera view to center on the parnter, from the partner
+        // to origin, or from partner to destination, depending on partner's
+        // status and on whether trip is 'waitingParner' or 'inProgress'.
+        // first, we get the partner position
+        LatLng partnerPosition = LatLng(
+          _position.latitude,
+          _position.longitude,
+        );
+        LatLng secondCoordinates;
+        // if partner is going to pick the client, redraw bounds between partner and origin
+        if (trip.tripStatus == TripStatus.waitingPartner) {
+          secondCoordinates = LatLng(trip.originLat, trip.originLng);
+          // if partner is driving the client, redraw bonds between partner and destination
+        } else if (trip.tripStatus == TripStatus.inProgress) {
+          secondCoordinates = LatLng(trip.destinationLat, trip.destinationLng);
         }
+
+        if (secondCoordinates != null) {
+          googleMaps.animateCameraToBounds(partnerPosition, secondCoordinates);
+        } else {
+          // if partner is not handling a trip, redraw view centered on his position
+          googleMaps.animateCameraToPosition(partnerPosition);
+        }
+
         // notifyListeners triggers a rebuild in PartnerBusy, which uses the
         // new partner position to decide whether to display a "cancel trip" or
         // a "start trip" button.
@@ -303,7 +301,7 @@ class PartnerModel extends ChangeNotifier {
           : pi.submittedDocuments.bankAccount;
       _amountOwed = pi.amountOwed;
       _bankAccount = pi.bankAccount;
-      _gains = 0;
+      _gains = (_gains != null && _gains > 0) ? _gains : 0;
     }
     if (notify) {
       notifyListeners();

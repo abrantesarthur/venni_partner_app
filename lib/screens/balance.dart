@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:partner_app/styles.dart';
-import 'package:partner_app/widgets/appButton.dart';
 import 'package:partner_app/widgets/arrowBackButton.dart';
 import 'package:partner_app/widgets/overallPadding.dart';
 
@@ -85,7 +84,7 @@ class BalanceRouteState extends State<BalanceRoute> {
                     ),
                     SizedBox(height: screenHeight / 100),
                     Text(
-                      "Quando você faz corridas pagas em dinheiro, o seu 'Saldo Devedor' aumenta em um valor correspondente à comissão da Venni (20%). De maneira oposta, quando você faz corridas pagas em cartão de crédito, caso haja 'Saldo Devedor', ele é descontado da sua parte do pagamento e, portanto, o 'Saldo Devedor' diminui.",
+                      "Quando você faz corridas pagas em dinheiro, o seu 'Saldo Devedor' aumenta em um valor correspondente à comissão da Venni. De maneira oposta, quando você faz corridas pagas em cartão de crédito, caso haja 'Saldo Devedor', ele é descontado da sua parte do pagamento e, portanto, o 'Saldo Devedor' diminui.",
                       style: TextStyle(
                         color: AppColor.disabled,
                         fontSize: 15,

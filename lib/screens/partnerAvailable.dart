@@ -79,7 +79,7 @@ class PartnerAvailableState extends State<PartnerAvailable> {
       ),
       collapsed: Column(
         children: [
-          SizedBox(height: screenHeight / 25),
+          SizedBox(height: screenHeight / 20),
           buttonChild == null
               ? Text(
                   "VOCÊ ESTÁ ONLINE",
@@ -93,7 +93,7 @@ class PartnerAvailableState extends State<PartnerAvailable> {
         ],
       ),
       color: Colors.white,
-      maxHeight: screenHeight / 2.7,
+      maxHeight: screenHeight / 2.5,
       borderRadius: BorderRadius.only(
         topLeft: Radius.circular(10.0),
         topRight: Radius.circular(10.0),

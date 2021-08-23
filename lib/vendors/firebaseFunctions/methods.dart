@@ -184,4 +184,14 @@ extension AppFirebaseFunctions on FirebaseFunctions {
     }
     return null;
   }
+
+  Future<ApprovedPartners> getApprovedPartners() async {
+    HttpsCallableResult result =
+        await this.httpsCallable("partner-get_approved").call();
+    if (result != null && result.data != null) {
+      return ApprovedPartners.fromJson(result.data);
+    }
+
+    return null;
+  }
 }
