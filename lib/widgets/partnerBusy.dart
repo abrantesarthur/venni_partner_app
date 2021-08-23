@@ -248,6 +248,7 @@ class PartnerBusyState extends State<PartnerBusy> {
                       color: Colors.black,
                     )
                   : CircularImage(
+                      size: 60,
                       imageFile: trip.profileImage.file,
                     ),
               Text(

@@ -7,6 +7,8 @@ class HorizontalBar extends StatelessWidget {
   final String rightText;
   final double fill;
   final double centerWidth;
+  final int leftFlex;
+  final int rightFlex;
 
   HorizontalBar({
     this.leftText,
@@ -14,6 +16,8 @@ class HorizontalBar extends StatelessWidget {
     @required this.fill,
     this.leftWidget,
     this.centerWidth,
+    this.leftFlex,
+    this.rightFlex,
   });
 
   @override
@@ -23,6 +27,7 @@ class HorizontalBar extends StatelessWidget {
     return Row(
       children: [
         Expanded(
+          flex: leftFlex ?? 1,
           child: leftWidget ??
               Text(
                 leftText,
@@ -52,6 +57,7 @@ class HorizontalBar extends StatelessWidget {
           color: Colors.black.withOpacity(0.15),
         ),
         Expanded(
+          flex: rightFlex ?? 1,
           child: Text(
             rightText,
             textAlign: TextAlign.right,

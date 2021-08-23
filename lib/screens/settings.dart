@@ -132,6 +132,14 @@ class SettingsState extends State<Settings> {
             ),
           ),
         ),
+        Spacer(),
+        Center(
+          child: Text("versão 1.2.0+10",
+              style: TextStyle(
+                fontSize: 12,
+                color: AppColor.disabled,
+              )),
+        )
       ],
     );
   }

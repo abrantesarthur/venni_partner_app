@@ -490,3 +490,43 @@ class DemandByZone {
     return DemandByZone(values: values);
   }
 }
+
+class ApprovedPartners {
+  List<ApprovedPartner> items;
+
+  ApprovedPartners({@required this.items});
+
+  factory ApprovedPartners.fromJson(List<dynamic> list) {
+    List<ApprovedPartner> partners =
+        list.map((p) => ApprovedPartner.fromJson(p)).toList();
+    return ApprovedPartners(items: partners);
+  }
+}
+
+class ApprovedPartner {
+  PartnerStatus status;
+  double currentLatitude;
+  double currentLongitude;
+
+  ApprovedPartner({
+    @required this.status,
+    @required this.currentLatitude,
+    @required this.currentLongitude,
+  });
+
+  factory ApprovedPartner.fromJson(Map json) {
+    if (json == null) {
+      return null;
+    }
+
+    return ApprovedPartner(
+      status: PartnerStatusExtension.fromString(json["partner_status"]),
+      currentLatitude: json["partner_latitude"] == null
+          ? null
+          : double.parse(json["partner_latitude"]),
+      currentLongitude: json["partner_longitude"] == null
+          ? null
+          : double.parse(json["partner_longitude"]),
+    );
+  }
+}

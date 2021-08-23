@@ -250,7 +250,7 @@ Widget _buildFloatingCard({
                               Spacer(),
                               Text(
                                 "R\$ " +
-                                    (pastTrip.farePrice * 0.2 / 100)
+                                    (pastTrip.farePrice * 0.15 / 100)
                                         .toStringAsFixed(2),
                                 style: TextStyle(fontSize: 14),
                               ),

@@ -1,3 +1,4 @@
+import 'package:awesome_notifications/awesome_notifications.dart';
 import 'package:cloud_functions/cloud_functions.dart';
 import 'package:firebase_analytics/firebase_analytics.dart';
 import 'package:firebase_auth/firebase_auth.dart';
@@ -78,6 +79,15 @@ class FirebaseModel extends ChangeNotifier {
   Future<bool> areNotificationsOn() async {
     NotificationSettings settings =
         await _firebaseMessaging.requestPermission();
+
+    AwesomeNotifications().isNotificationAllowed().then((isAllowed) {
+      if (!isAllowed) {
+        // Insert here your friendly dialog box before call the request method
+        // This is very important to not harm the user experience
+        AwesomeNotifications().requestPermissionToSendNotifications();
+      }
+    });
+
     return settings.authorizationStatus == AuthorizationStatus.authorized;
   }
 

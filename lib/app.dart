@@ -17,6 +17,7 @@ import 'package:partner_app/screens/anticipate.dart';
 import 'package:partner_app/screens/balance.dart';
 import 'package:partner_app/screens/bankAccountDetail.dart';
 import 'package:partner_app/screens/deleteAccount.dart';
+import 'package:partner_app/screens/demand.dart';
 import 'package:partner_app/screens/editEmail.dart';
 import 'package:partner_app/screens/editPhone.dart';
 import 'package:partner_app/screens/help.dart';
@@ -481,6 +482,14 @@ class _AppState extends State<App> {
                   final TransferDetailArguments args = settings.arguments;
                   return MaterialPageRoute(builder: (context) {
                     return TransferDetail(transfer: args.transfer);
+                  });
+                }
+
+                // if Demand is pushed
+                if (settings.name == Demand.routeName) {
+                  final DemandArguments args = settings.arguments;
+                  return MaterialPageRoute(builder: (context) {
+                    return Demand(firebase: args.firebase);
                   });
                 }
 

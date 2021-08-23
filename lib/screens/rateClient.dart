@@ -274,9 +274,13 @@ class RateClientState extends State<RateClient> {
       );
     }
 
-    // on success, increase partner's gains by 80% of fare price to account for
-    // venni's 20% stake.
-    partner.increaseGainsBy((trip.farePrice * 0.8).round());
+    if (trip.paymentMethod == PaymentMethod.cash) {
+      // venni's fee for cash payments is 15%
+      partner.increaseGainsBy((trip.farePrice * 0.85).round());
+    } else {
+      // venni's fee for credit_crd payments is 20%
+      partner.increaseGainsBy((trip.farePrice * 0.80).round());
+    }
 
     // set partner available locally. completeTrip will have done the same in backend
     partner.updatePartnerStatus(PartnerStatus.available);
