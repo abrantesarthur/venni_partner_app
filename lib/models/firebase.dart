@@ -76,46 +76,28 @@ class FirebaseModel extends ChangeNotifier {
   }
 
   // checks whether notifications are turned on.
-  Future<bool> areNotificationsOn() async {
-    NotificationSettings settings =
-        await _firebaseMessaging.requestPermission();
+  Future<void> requestNotifications(BuildContext context) async {
+    // request push notifications
+    await _firebaseMessaging.requestPermission();
 
-    AwesomeNotifications().isNotificationAllowed().then((isAllowed) {
-      if (!isAllowed) {
-        // Insert here your friendly dialog box before call the request method
-        // This is very important to not harm the user experience
-        AwesomeNotifications().requestPermissionToSendNotifications();
+    // request local notifications
+    bool isAllowed = await AwesomeNotifications().isNotificationAllowed();
+    if (!isAllowed) {
+      if (!_notificationDialogOn) {
+        _notificationDialogOn = true;
+        // show dialog asking user to share notifications
+        await showYesNoDialog(
+          context,
+          title: "Ative as Notificações",
+          content:
+              "Assim você é avisado quando receber pedidos. Abrir configurações?",
+          onPressedYes: () async {
+            Navigator.pop(context);
+            await AwesomeNotifications().requestPermissionToSendNotifications();
+          },
+        );
+        _notificationDialogOn = false;
       }
-    });
-
-    return settings.authorizationStatus == AuthorizationStatus.authorized;
-  }
-
-  // request permission to send notifications. If denied, shows dialog prompting
-  // user to open settings and set notifications
-  Future<bool> requestNotifications(BuildContext context) async {
-    if (await areNotificationsOn()) {
-      return true;
     }
-
-    // ask user to activate notifications. We check notificationDialogOn so we
-    // don't display stacks of Dialogs in case this function is called multiple
-    // successive times
-    if (!_notificationDialogOn) {
-      _notificationDialogOn = true;
-      await showYesNoDialog(
-        context,
-        title: "Ative as Notificações",
-        content:
-            "Assim você é avisado quando receber pedidos. Abrir configurações?",
-        onPressedYes: () async {
-          Navigator.pop(context);
-          await SystemSettings.appNotifications();
-        },
-      );
-      _notificationDialogOn = false;
-    }
-
-    return await areNotificationsOn();
   }
 }

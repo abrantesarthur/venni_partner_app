@@ -137,8 +137,8 @@ class HomeState extends State<Home> with WidgetsBindingObserver {
       };
       widget.firebase.addListener(_firebaseListener);
 
-      await ensureNotificationsAreOn();
-
+      // request notifications
+      widget.firebase.requestNotifications(context);
       try {
         String token = await widget.firebase.messaging.getToken();
         await saveTokenToDatabase(token);
@@ -265,7 +265,7 @@ class HomeState extends State<Home> with WidgetsBindingObserver {
             // make sure user didn't disable location sharing
             await ensureLocationSharingIsOn(context);
             // make sure notifications are on
-            await ensureNotificationsAreOn();
+            // await ensureNotificationsAreOn();
             // on android, workaround the google maps issue of not displaying the
             // maps after phone being in background for a while by. See here:
             // https://stackoverflow.com/questions/59374010/flutter-googlemap-is-blank-after-resuming-from-background/59435683#59435683
@@ -353,21 +353,6 @@ class HomeState extends State<Home> with WidgetsBindingObserver {
         );
       },
     );
-  }
-
-  // ensureNotificationsAreOn enforces that the partner must have notifications.
-  // Disconnect partner if notifications are off and partner is not busy.
-  // if partner is busy, he will be disconnected as soon as his current trip is over.
-  // by onPartnerStatusUpdate
-  Future<void> ensureNotificationsAreOn() async {
-    bool notificationsOn = await widget.firebase.requestNotifications(context);
-
-    if ((notificationsOn == null || !notificationsOn) &&
-        widget.partner.partnerStatus == PartnerStatus.available) {
-      try {
-        await widget.firebase.functions.disconnect();
-      } catch (_) {}
-    }
   }
 
   // ensureLocationSharing is on disconnects partner if they are available but
