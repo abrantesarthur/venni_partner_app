@@ -264,8 +264,6 @@ class HomeState extends State<Home> with WidgetsBindingObserver {
           didChangeAppLifecycleCallback = () async {
             // make sure user didn't disable location sharing
             await ensureLocationSharingIsOn(context);
-            // make sure notifications are on
-            // await ensureNotificationsAreOn();
             // on android, workaround the google maps issue of not displaying the
             // maps after phone being in background for a while by. See here:
             // https://stackoverflow.com/questions/59374010/flutter-googlemap-is-blank-after-resuming-from-background/59435683#59435683
