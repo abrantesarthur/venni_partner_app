@@ -172,7 +172,7 @@ class RatingsState extends State<Ratings> {
                 SizedBox(height: screenHeight / 100),
                 Center(
                   child: Text(
-                    partner.rating > 4.5
+                    (partner.rating ?? 5) > 4.5
                         ? "Excelente"
                         : partner.rating > 4.0
                             ? "Bom"
