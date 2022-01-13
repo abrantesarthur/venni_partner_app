@@ -182,7 +182,7 @@ class RatingsState extends State<Ratings> {
                     style: TextStyle(
                       fontSize: 16,
                       fontWeight: FontWeight.w600,
-                      color: partner.rating > 4.5
+                      color: (partner.rating ?? 5) > 4.5
                           ? Colors.green
                           : partner.rating > 4
                               ? AppColor.secondaryYellow

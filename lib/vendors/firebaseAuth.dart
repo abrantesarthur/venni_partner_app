@@ -215,6 +215,7 @@ extension AppFirebaseAuth on FirebaseAuth {
           "gender": gender.toString().substring(7),
           "phone_number": partner.phoneNumber,
           "account_status": "pending_documents",
+          "rating": 5.0,
         }));
       } catch (e) {
         throw FirebaseAuthException(code: "database-failure");
