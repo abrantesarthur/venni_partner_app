@@ -181,6 +181,8 @@ class InsertPasswordState extends State<InsertPassword> {
         firstWarningMessage =
             "Infelizmente a sua sessão expirou devido à demora.";
       } else {
+        print(e.code);
+        print(e);
         firstWarningMessage = "Algo deu errado.";
       }
 
@@ -228,11 +230,14 @@ class InsertPasswordState extends State<InsertPassword> {
     FirebaseModel firebase,
     PartnerModel partner,
   ) async {
+    print("registerUser");
     // dismiss keyboard
     FocusScope.of(context).requestFocus(FocusNode());
 
     // if the user already has a client account
     if (firebase.isRegistered) {
+      print("firebase.isRegistered");
+
       // make sure they've entered a valid password
       CheckPasswordResponse cpr = await firebase.auth.checkPassword(
         passwordTextEditingController.text.trim(),
@@ -274,6 +279,8 @@ class InsertPasswordState extends State<InsertPassword> {
         return false;
       }
     } else {
+      print("firebase.isNotRegistered");
+
       // if the user does not already have a client account
       try {
         // finish registration by updating user's credentials and inserting

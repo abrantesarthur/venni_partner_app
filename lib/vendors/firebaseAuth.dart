@@ -201,7 +201,7 @@ extension AppFirebaseAuth on FirebaseAuth {
       if (password != null) {
         await credential.user.updatePassword(password);
       }
-      await credential.user.updateProfile(displayName: displayName);
+      await credential.user.updateDisplayName(displayName);
 
       // create partner entry in database with some of the fields set
       final partner = this.currentUser;
@@ -215,7 +215,6 @@ extension AppFirebaseAuth on FirebaseAuth {
           "gender": gender.toString().substring(7),
           "phone_number": partner.phoneNumber,
           "account_status": "pending_documents",
-          "rating": 5.0,
         }));
       } catch (e) {
         throw FirebaseAuthException(code: "database-failure");

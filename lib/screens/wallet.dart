@@ -3,7 +3,6 @@ import 'package:partner_app/models/connectivity.dart';
 import 'package:partner_app/models/firebase.dart';
 import 'package:partner_app/models/partner.dart';
 import 'package:partner_app/screens/balance.dart';
-import 'package:partner_app/screens/pastTrips.dart';
 import 'package:partner_app/screens/transfers.dart';
 import 'package:partner_app/utils/utils.dart';
 import 'package:partner_app/vendors/firebaseFunctions/interfaces.dart';
@@ -124,6 +123,9 @@ class WalletState extends State<Wallet> {
         BuildContext context,
         AsyncSnapshot<void> snapshot,
       ) {
+        if (snapshot.hasError) {
+          print(snapshot.error.toString());
+        }
         return Scaffold(
           body: OverallPadding(
             child: Column(
