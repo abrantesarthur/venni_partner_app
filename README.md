@@ -1,16 +1,16 @@
-# partner_app
+# Venni Partner Ridesharing App
 
-A new Flutter project.
-
-## Getting Started
-
-This project is a starting point for a Flutter application.
-
-A few resources to get you started if this is your first Flutter project:
-
-- [Lab: Write your first Flutter app](https://flutter.dev/docs/get-started/codelab)
-- [Cookbook: Useful Flutter samples](https://flutter.dev/docs/cookbook)
-
-For help getting started with Flutter, view our
-[online documentation](https://flutter.dev/docs), which offers tutorials,
-samples, guidance on mobile development, and a full API reference.
+<p float="center">
+  <img src="https://github.com/abrantesarthur/venni_partner_app/blob/master/assets/screenshot_eight.jpg" width="250" />
+  <img src="https://github.com/abrantesarthur/venni_partner_app/blob/master/assets/screenshot_seven.jpg" width="250" /> 
+  <img src="https://github.com/abrantesarthur/venni_partner_app/blob/master/assets/screenshot_five.jpg"  width="250" />
+</p>
+<p float="center">
+  <img src="https://github.com/abrantesarthur/venni_partner_app/blob/master/assets/screenshot_four.jpg" width="250" />
+  <img src="https://github.com/abrantesarthur/venni_partner_app/blob/master/assets/screenshot_tree.jpg" width="250" /> 
+  <img src="https://github.com/abrantesarthur/venni_partner_app/blob/master/assets/screenshot_six.jpg"  width="250" />
+</p>
+<p float="center">
+  <img src="https://github.com/abrantesarthur/venni_partner_app/blob/master/assets/screenshot_one.jpg" width="250" />
+  <img src="https://github.com/abrantesarthur/venni_partner_app/blob/master/assets/screenshot_two.jpg" width="250" /> 
+</p>
