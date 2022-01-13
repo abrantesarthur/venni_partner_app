@@ -158,7 +158,7 @@ class RatingsState extends State<Ratings> {
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
                     Text(
-                      partner.rating.toString(),
+                      (partner.rating ?? 5.00).toString(),
                       style: TextStyle(
                         fontSize: 34,
                         fontWeight: FontWeight.w600,
