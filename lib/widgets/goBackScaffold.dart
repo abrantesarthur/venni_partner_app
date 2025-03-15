@@ -14,7 +14,7 @@ class GoBackScaffold extends StatelessWidget {
   final VoidCallback onPressed;
 
   GoBackScaffold({
-    @required this.children,
+    required this.children,
     this.crossAxisAlignment,
     this.resizeToAvoidBottomInset,
     this.title,

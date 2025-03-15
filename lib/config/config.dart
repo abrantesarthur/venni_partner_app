@@ -11,16 +11,18 @@ class ConfigValues {
   final String googleMapsApiKey;
   final bool emulateCloudFunctions;
   final String cloudFunctionsBaseURL;
+  final int cloudFunctionsPort;
   final String realtimeDatabaseURL;
   final String directionsBaseURL;
 
   ConfigValues({
-    @required this.autocompleteBaseURL,
-    @required this.googleMapsApiKey,
-    @required this.emulateCloudFunctions,
-    @required this.cloudFunctionsBaseURL,
-    @required this.realtimeDatabaseURL,
-    @required this.directionsBaseURL,
+    required this.autocompleteBaseURL,
+    required this.googleMapsApiKey,
+    required this.emulateCloudFunctions,
+    required this.cloudFunctionsBaseURL,
+    required this.realtimeDatabaseURL,
+    required this.directionsBaseURL,
+    required this.cloudFunctionsPort
   });
 }
 
@@ -32,16 +34,17 @@ class AppConfig {
   static AppConfig get env => _instance;
 
   AppConfig._internal({
-    @required this.flavor,
-    @required this.values,
+    required this.flavor,
+    required this.values,
   });
 
-  factory AppConfig({@required Flavor flavor}) {
+  factory AppConfig({required Flavor flavor}) {
     ConfigValues values = ConfigValues(
       autocompleteBaseURL: DotEnv.env["AUTOCOMPLETE_BASE_URL"],
       googleMapsApiKey: AppConfig._buildGoogleMapsApiKey(flavor),
       emulateCloudFunctions: DotEnv.env["EMULATE_CLOUD_FUNCTIONS"] == "true",
       cloudFunctionsBaseURL: AppConfig._buildCloudFunctionsBaseURL(),
+      cloudFunctionsPort: AppConfig._buildCountFunctionsPort(),
       realtimeDatabaseURL: _buildRealtimeDatabaseURL(flavor),
       directionsBaseURL: DotEnv.env["DIRECTIONS_BASE_URL"],
     );
@@ -82,6 +85,10 @@ class AppConfig {
         DotEnv.env["HOST_IP_ADDRESS"] +
         ":" +
         DotEnv.env["CLOUD_FUNCTIONS_PORT"];
+  }
+
+  static int _buildCountFunctionsPort() {
+    return int.parse(DotEnv.env["CLOUD_FUNCTIONS_PORT"]);
   }
 
   static isProduction() => _instance.flavor == Flavor.PROD;

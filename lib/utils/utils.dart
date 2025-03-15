@@ -258,7 +258,7 @@ class MaskedInputFormatter extends TextInputFormatter {
   final String mask;
   List<int> separatorIndexes;
 
-  MaskedInputFormatter({@required this.mask}) {
+  MaskedInputFormatter({required this.mask}) {
     separatorIndexes = [];
     for (var i = 0; i < mask.length; i++) {
       if (mask[i] != "x") {
@@ -293,8 +293,8 @@ class MaskedInputFormatter extends TextInputFormatter {
 }
 
 Future<void> showOkDialog({
-  @required BuildContext context,
-  @required String title,
+  required BuildContext context,
+  required String title,
   String content,
 }) async {
   return await showDialog(
@@ -309,11 +309,11 @@ Future<void> showOkDialog({
 
 Future<T> showYesNoDialog<T>(
   BuildContext context, {
-  @required String title,
+  required String title,
   String content,
   Widget child,
   VoidCallback onPressedNo,
-  @required VoidCallback onPressedYes,
+  required VoidCallback onPressedYes,
 }) async {
   return await showDialog(
     context: context,

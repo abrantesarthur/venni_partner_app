@@ -8,7 +8,7 @@ import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
 import 'package:partner_app/config/config.dart';
 import 'package:partner_app/models/connectivity.dart';
-import 'package:partner_app/models/firebase.dart';
+import 'package:partner_app/models/user.dart';
 import 'package:partner_app/models/googleMaps.dart';
 import 'package:partner_app/models/partner.dart';
 import 'package:partner_app/models/timer.dart';
@@ -51,6 +51,7 @@ import 'package:partner_app/screens/transferDetail.dart';
 import 'package:partner_app/screens/transfers.dart';
 import 'package:partner_app/screens/wallet.dart';
 import 'package:partner_app/screens/withdraw.dart';
+import 'package:partner_app/services/firebase.dart';
 import 'package:partner_app/vendors/firebaseDatabase/interfaces.dart';
 import 'package:partner_app/vendors/firebaseAnalytics.dart';
 import 'package:provider/provider.dart';
@@ -60,19 +61,16 @@ class App extends StatefulWidget {
 }
 
 class _AppState extends State<App> {
-  FirebaseModel firebaseModel;
-  PartnerModel partnerModel;
-  ConnectivityModel connectivity;
-  GoogleMapsModel googleMaps;
-  TimerModel timer;
-  TripModel trip;
-  FirebaseAuth firebaseAuth;
-  FirebaseDatabase firebaseDatabase;
-  FirebaseStorage firebaseStorage;
-  FirebaseFunctions firebaseFunctions;
-  FirebaseMessaging firebaseMessaging;
-  FirebaseAnalytics firebaseAnalytics;
-  Future<void> initializationFinished;
+  // Using late for non-nullable variables that will be initialized in initState
+  late PartnerModel partnerModel;
+  late ConnectivityModel connectivity;
+  late GoogleMapsModel googleMaps;
+  late TimerModel timer;
+  late TripModel trip;
+  // use Future<void>, since we only care about completion, not a result value.
+  late Future<void> initializationFinished;
+  late UserModel userModel;
+
 
   @override
   void initState() {
@@ -82,18 +80,18 @@ class _AppState extends State<App> {
 
   @override
   void dispose() {
-    if (googleMaps != null) {
-      googleMaps.dispose();
-    }
+    // No need to check for null with null safety
+    googleMaps.dispose();
     super.dispose();
   }
 
   Future<void> initializeApp() async {
     try {
-      await initializeFlutterFire();
+      final firebase = FirebaseService();
+      await firebase.initialize();
     } catch (e) {
       print(e);
-      throw FirebaseAuthException(code: "firebase-initialization-error");
+      throw FirebaseAuthException(code: "firebase-initialization-error", message: e.toString());
     }
     initializeModels();
     await logEvents();
@@ -101,7 +99,7 @@ class _AppState extends State<App> {
     // throw error if there is no connection, so Start screen can be pushed
     bool hasConnection = await connectivity.checkConnection();
     if (!hasConnection) {
-      throw FirebaseAuthException(code: "network-error");
+      throw FirebaseAuthException(code: "network-error", message: "No internet connection");
     }
 
     // download partner data so we can know their 'account_status' and decide
@@ -109,61 +107,11 @@ class _AppState extends State<App> {
     try {
       await initializePartner();
     } catch (e) {
-      throw FirebaseAuthException(code: "partner-initialization-error");
+      throw FirebaseAuthException(code: "partner-initialization-error", message: e.toString());
     }
   }
 
-  // Define an async function to initialize FlutterFire
-  Future<void> initializeFlutterFire() async {
-    // TODO: decide whether to set firebase.database.setPersistenceEnabled(true)
 
-    /*
-        By default, initializeApp references the FirebaseOptions object that
-        read the configuration from GoogleService-Info.plist on iOS and
-        google-services.json on Android. Which such files we end up picking
-        depends on which value we pass to the --flavor flag of futter run 
-        reference: https://firebase.google.com/docs/projects/multiprojects */
-    if (Firebase.apps.length == 0) {
-      await Firebase.initializeApp();
-    }
-
-    // insantiate authentication, database, and storage
-    firebaseAuth = FirebaseAuth.instance;
-    firebaseDatabase = FirebaseDatabase.instance;
-    firebaseStorage = FirebaseStorage.instance;
-    firebaseFunctions = FirebaseFunctions.instance;
-    firebaseMessaging = FirebaseMessaging.instance;
-    firebaseAnalytics = FirebaseAnalytics();
-
-    // check if cloud functions are being emulated locally
-    if (AppConfig.env.values.emulateCloudFunctions) {
-      firebaseFunctions.useFunctionsEmulator(
-        origin: AppConfig.env.values.cloudFunctionsBaseURL,
-      );
-    }
-
-    // set default authentication language as brazilian portuguese
-    await firebaseAuth.setLanguageCode("pt_br");
-  }
-
-  void initializeModels() {
-    // initialize firebaseModel. This will add a listener for user changes.
-    firebaseModel = FirebaseModel(
-      firebaseAuth: firebaseAuth,
-      firebaseDatabase: firebaseDatabase,
-      firebaseStorage: firebaseStorage,
-      firebaseFunctions: firebaseFunctions,
-      firebaseMessaging: firebaseMessaging,
-      firebaseAnalytics: firebaseAnalytics,
-    );
-
-    // initialize models
-    partnerModel = PartnerModel();
-    googleMaps = GoogleMapsModel();
-    connectivity = ConnectivityModel();
-    timer = TimerModel();
-    trip = TripModel();
-  }
 
   Future<void> logEvents() async {
     try {
@@ -171,15 +119,17 @@ class _AppState extends State<App> {
         firebaseAnalytics.logAppOpen(),
         firebaseAnalytics.setPartnerUserProperty(),
       ]);
-    } catch (_) {}
+    } catch (_) {
+      // Silently handle analytics errors
+    }
   }
 
   Future<void> initializePartner() async {
     // download partner data
-    await partnerModel.downloadData(firebaseModel, notify: false);
+    await partnerModel.downloadData(userModel, notify: false);
     // if partner has active trip request, download it as well
     if (partnerModel.partnerStatus == PartnerStatus.busy) {
-      await trip.downloadData(firebaseModel, notify: false);
+      await trip.downloadData(userModel, notify: false);
     }
   }
 
@@ -209,24 +159,39 @@ class _AppState extends State<App> {
           return Splash();
         }
 
-        FirebaseAuthException error = snapshot.error;
-        if (snapshot.hasError &&
-            error.code == "firebase-initialization-error") {
-          print(error);
-          return MaterialApp(
-            home: Scaffold(
-              body: Container(
-                color: Colors.white,
-                child: Center(
-                  child: Text(
-                    "Algo deu errado\n\nVerifique a sua conexão com a internet e reinicie o app",
-                    textAlign: TextAlign.center,
-                    style: TextStyle(
-                      color: Colors.black,
-                      fontFamily: "OpenSans",
-                      fontSize: 18,
+        // Handle error safely with null safety
+        if (snapshot.hasError) {
+          final error = snapshot.error;
+          if (error is FirebaseAuthException && 
+              error.code == "firebase-initialization-error") {
+            print(error);
+            return MaterialApp(
+              home: Scaffold(
+                body: Container(
+                  color: Colors.white,
+                  child: Center(
+                    child: Text(
+                      "Algo deu errado\n\nVerifique a sua conexão com a internet e reinicie o app",
+                      textAlign: TextAlign.center,
+                      style: TextStyle(
+                        color: Colors.black,
+                        fontFamily: "OpenSans",
+                        fontSize: 18,
+                      ),
                     ),
                   ),
+                ),
+              ),
+            );
+          }
+          
+          // Default error handling for other error types
+          return MaterialApp(
+            home: Scaffold(
+              body: Center(
+                child: Text(
+                  "Unknown error: ${snapshot.error}",
+                  textAlign: TextAlign.center,
                 ),
               ),
             ),
@@ -237,8 +202,8 @@ class _AppState extends State<App> {
         // on whether user is signed in
         return MultiProvider(
           providers: [
-            ChangeNotifierProvider<FirebaseModel>(
-              create: (context) => firebaseModel,
+            ChangeNotifierProvider<UserModel>(
+              create: (context) => userModel,
             ),
             ChangeNotifierProvider<PartnerModel>(
               create: (context) => partnerModel,
@@ -257,7 +222,7 @@ class _AppState extends State<App> {
             ),
           ], // pass user model down
           builder: (context, child) {
-            FirebaseModel firebase = Provider.of<FirebaseModel>(
+            UserModel firebase = Provider.of<UserModel>(
               context,
               listen: false,
             );
@@ -274,11 +239,12 @@ class _AppState extends State<App> {
               // it will come a step in which he will be warned to connect to the
               // internet if that's the reason why the download failed. Moreover,
               // Home won't be pushed without downloading the data either way later on.
-              initialRoute: !firebase.isRegistered ||
+              initialRoute: !firebase.isUserSignedIn ||
                       partner.accountStatus != AccountStatus.approved ||
                       (snapshot.hasError &&
-                          (error.code == "partner-initialization-error" ||
-                              error.code == "network-error"))
+                          snapshot.error is FirebaseAuthException &&
+                          ((snapshot.error as FirebaseAuthException).code == "partner-initialization-error" ||
+                           (snapshot.error as FirebaseAuthException).code == "network-error"))
                   ? Start.routeName
                   : Home.routeName,
               // pass appropriate arguments to routes
@@ -287,14 +253,7 @@ class _AppState extends State<App> {
                 if (settings.name == Home.routeName) {
                   final HomeArguments args = settings.arguments;
                   return MaterialPageRoute(builder: (context) {
-                    return Home(
-                      firebase: args.firebase,
-                      partner: args.partner,
-                      googleMaps: args.googleMaps,
-                      timer: args.timer,
-                      trip: args.trip,
-                      connectivity: args.connectivity,
-                    );
+                    return Home();
                   });
                 }
 
@@ -494,16 +453,11 @@ class _AppState extends State<App> {
                 }
 
                 assert(false, 'Need to implement ${settings.name}');
-                return null;
+                // Return a valid route instead of null for null safety
+                return MaterialPageRoute(builder: (_) => const Scaffold(body: Center(child: Text('Route not found'))));
               },
               routes: {
-                Home.routeName: (context) => Home(
-                    firebase: firebaseModel,
-                    partner: partnerModel,
-                    googleMaps: googleMaps,
-                    timer: timer,
-                    trip: trip,
-                    connectivity: connectivity),
+                Home.routeName: (context) => Home(),
                 Start.routeName: (context) => Start(),
                 InsertPhone.routeName: (context) => InsertPhone(),
                 SendCrlv.routeName: (context) => SendCrlv(),

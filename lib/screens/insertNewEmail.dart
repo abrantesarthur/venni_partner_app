@@ -11,7 +11,7 @@ import 'package:partner_app/widgets/overallPadding.dart';
 import 'package:provider/provider.dart';
 import 'package:partner_app/utils/utils.dart';
 
-import '../models/firebase.dart';
+import '../models/user.dart';
 import '../widgets/warning.dart';
 
 class InsertNewEmail extends StatefulWidget {
@@ -85,8 +85,8 @@ class InsertNewEmailState extends State<InsertNewEmail> {
       );
       return;
     }
-    final FirebaseModel firebase =
-        Provider.of<FirebaseModel>(context, listen: false);
+    final UserModel firebase =
+        Provider.of<UserModel>(context, listen: false);
 
     // remove email and password focus and lock screen
     setState(() {

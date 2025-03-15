@@ -16,7 +16,7 @@ class FloatingCard extends StatelessWidget {
 
   FloatingCard({
     this.width,
-    @required this.child,
+    required this.child,
     this.leftMargin,
     this.rightMargin,
     this.topMargin,

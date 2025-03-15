@@ -14,7 +14,7 @@ import 'package:partner_app/widgets/warning.dart';
 import 'package:partner_app/widgets/yesNoDialog.dart';
 import 'package:provider/provider.dart';
 
-import '../models/firebase.dart';
+import '../models/user.dart';
 
 class DeleteAccount extends StatefulWidget {
   static const String routeName = "DeleteAccount";
@@ -94,7 +94,7 @@ class DeleteAccountState extends State<DeleteAccount> {
       return;
     }
 
-    final FirebaseModel firebase = Provider.of<FirebaseModel>(
+    final UserModel firebase = Provider.of<UserModel>(
       context,
       listen: false,
     );

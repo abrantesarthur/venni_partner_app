@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 class ArrowBackButton extends StatelessWidget {
   final VoidCallback onTapCallback;
 
-  ArrowBackButton({@required this.onTapCallback});
+  ArrowBackButton({required this.onTapCallback});
 
   @override
   Widget build(BuildContext context) {

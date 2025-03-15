@@ -1,6 +1,6 @@
 import 'package:cloud_functions/cloud_functions.dart';
 import 'package:flutter/material.dart';
-import 'package:partner_app/models/firebase.dart';
+import 'package:partner_app/models/user.dart';
 import 'package:partner_app/models/partner.dart';
 import 'package:partner_app/models/trip.dart';
 import 'package:partner_app/utils/utils.dart';
@@ -45,8 +45,8 @@ extension AppFirebaseFunctions on FirebaseFunctions {
   }
 
   Future<Transfer> createTransfer({
-    @required String amount,
-    @required String pagarmeRecipientID,
+    required String amount,
+    required String pagarmeRecipientID,
   }) async {
     Map<String, String> data = {
       "pagarme_recipient_id": pagarmeRecipientID,
@@ -65,8 +65,8 @@ extension AppFirebaseFunctions on FirebaseFunctions {
   }
 
   Future<void> connect({
-    @required double currentLatitude,
-    @required double currentLongitude,
+    required double currentLatitude,
+    required double currentLongitude,
   }) async {
     Map<String, double> data = {
       "current_latitude": toFixed(currentLatitude, 6),
@@ -120,7 +120,7 @@ extension AppFirebaseFunctions on FirebaseFunctions {
 
   Future<void> startTrip(BuildContext context) async {
     TripModel trip = Provider.of<TripModel>(context, listen: false);
-    FirebaseModel firebase = Provider.of<FirebaseModel>(context, listen: false);
+    UserModel firebase = Provider.of<UserModel>(context, listen: false);
 
     try {
       await this.httpsCallable("trip-start").call();
@@ -138,10 +138,10 @@ extension AppFirebaseFunctions on FirebaseFunctions {
   }
 
   Future<void> completeTrip({
-    @required BuildContext context,
-    @required int clientRating,
+    required BuildContext context,
+    required int clientRating,
   }) async {
-    FirebaseModel firebase = Provider.of<FirebaseModel>(context, listen: false);
+    UserModel firebase = Provider.of<UserModel>(context, listen: false);
     PartnerModel partner = Provider.of<PartnerModel>(context, listen: false);
 
     Map<String, int> data = {"client_rating": clientRating};

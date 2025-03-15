@@ -19,9 +19,9 @@ class Notifications {
   Timer _tripRequestTimer;
 
   void init({
-    @required String channelKey,
-    @required String channelName,
-    @required String channelDescription,
+    required String channelKey,
+    required String channelName,
+    required String channelDescription,
   }) {
     AwesomeNotifications().initialize('resource://drawable/notification_icon', [
       NotificationChannel(

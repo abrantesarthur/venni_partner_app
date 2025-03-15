@@ -2,7 +2,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter/material.dart';
 import 'package:partner_app/models/connectivity.dart';
-import 'package:partner_app/models/firebase.dart';
+import 'package:partner_app/models/user.dart';
 import 'package:partner_app/models/googleMaps.dart';
 import 'package:partner_app/models/partner.dart';
 import 'package:partner_app/models/timer.dart';
@@ -18,11 +18,11 @@ import 'package:uuid/uuid.dart';
 
 extension AppFirebaseAuth on FirebaseAuth {
   Future<void> verificationCompletedCallback({
-    @required BuildContext context,
-    @required PhoneAuthCredential credential,
-    @required FirebaseDatabase firebaseDatabase,
-    @required FirebaseAuth firebaseAuth,
-    @required Function onExceptionCallback,
+    required BuildContext context,
+    required PhoneAuthCredential credential,
+    required FirebaseDatabase firebaseDatabase,
+    required FirebaseAuth firebaseAuth,
+    required Function onExceptionCallback,
   }) async {
     try {
       // important: if the user doesn't have an account, one will be created
@@ -31,10 +31,10 @@ extension AppFirebaseAuth on FirebaseAuth {
 
       // however, we only consider the user to be registered as a pilot, if they
       // have an entry in partners database. It may also be the case that the user
-      // already has an account throught the client app (e.g., firebase.isRegistered
+      // already has an account throught the client app (e.g., firebase.isUserSignedIn
       // is true and they have a displayName). In those cases, we use some of
       // their already provided information (phone number, email and password).
-      FirebaseModel firebase = Provider.of<FirebaseModel>(
+      UserModel firebase = Provider.of<UserModel>(
         context,
         listen: false,
       );
@@ -61,7 +61,7 @@ extension AppFirebaseAuth on FirebaseAuth {
       }
 
       // if user already has a partner account
-      if (partner.id != null && firebase.isRegistered) {
+      if (partner.id != null && firebase.isUserSignedIn) {
         // log sign in event
         try {
           await firebase.analytics.logLogin();
@@ -103,7 +103,7 @@ extension AppFirebaseAuth on FirebaseAuth {
             arguments: DocumentsArguments(firebase: firebase, partner: partner),
           );
         }
-      } else if (firebase.isRegistered) {
+      } else if (firebase.isUserSignedIn) {
         // if user already has a client account, skip insertEmail and push
         // inserName screen. After all, they are to keep their login credentials
         // but have the chance of inserting their actual name and other info.
@@ -185,13 +185,13 @@ extension AppFirebaseAuth on FirebaseAuth {
   }
 
   Future<void> createPartner(
-    FirebaseModel firebase,
+    UserModel firebase,
     UserCredential credential, {
     String email,
     String password,
-    @required String displayName,
-    @required String cpf,
-    @required Gender gender,
+    required String displayName,
+    required String cpf,
+    required Gender gender,
   }) async {
     try {
       //update other userCredential information
@@ -276,8 +276,8 @@ extension AppFirebaseAuth on FirebaseAuth {
   }
 
   Future<UpdatePasswordResponse> reauthenticateAndUpdatePassword({
-    @required String oldPassword,
-    @required String newPassword,
+    required String oldPassword,
+    required String newPassword,
   }) async {
     // check if user entered correct old password and avoid 'requires-recent-login' error
     CheckPasswordResponse cpr = await checkPassword(oldPassword);
@@ -314,8 +314,8 @@ extension AppFirebaseAuth on FirebaseAuth {
   }
 
   Future<UpdateEmailResponse> reauthenticateAndUpdateEmail({
-    @required String email,
-    @required String password,
+    required String email,
+    required String password,
   }) async {
     try {
       // reauthenticate user to avoid 'requires-recent-login' error
@@ -367,9 +367,9 @@ extension AppFirebaseAuth on FirebaseAuth {
   }
 
   // Future<DeleteAccountResponse> deleteAccount({
-  //   @required FirebaseModel firebase,
-  //   @required String password,
-  //   @required Map<DeleteReason, bool> reasons,
+  //   required UserModel firebase,
+  //   required String password,
+  //   required Map<DeleteReason, bool> reasons,
   // }) async {
   //   UserCredential userCredential;
   //   try {
@@ -410,7 +410,7 @@ class CreateEmailResponse {
   final String code;
 
   CreateEmailResponse({
-    @required this.successful,
+    required this.successful,
     this.code,
     this.message,
   });
@@ -418,7 +418,7 @@ class CreateEmailResponse {
 
 class UpdateEmailResponse extends CreateEmailResponse {
   UpdateEmailResponse({
-    @required bool successful,
+    required bool successful,
     String code,
     String message,
   }) : super(
@@ -430,7 +430,7 @@ class UpdateEmailResponse extends CreateEmailResponse {
 
 class UpdatePasswordResponse extends CreateEmailResponse {
   UpdatePasswordResponse({
-    @required bool successful,
+    required bool successful,
     String code,
     String message,
   }) : super(
@@ -442,7 +442,7 @@ class UpdatePasswordResponse extends CreateEmailResponse {
 
 class CheckPasswordResponse extends CreateEmailResponse {
   CheckPasswordResponse({
-    @required bool successful,
+    required bool successful,
     String code,
     String message,
   }) : super(
@@ -454,7 +454,7 @@ class CheckPasswordResponse extends CreateEmailResponse {
 
 class DeleteAccountResponse extends CreateEmailResponse {
   DeleteAccountResponse({
-    @required bool successful,
+    required bool successful,
     String code,
     String message,
   }) : super(

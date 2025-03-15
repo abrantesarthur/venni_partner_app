@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:partner_app/models/connectivity.dart';
-import 'package:partner_app/models/firebase.dart';
+import 'package:partner_app/models/user.dart';
 import 'package:partner_app/screens/pastTripDetail.dart';
 import 'package:partner_app/styles.dart';
 import 'package:partner_app/vendors/firebaseFunctions/interfaces.dart';
@@ -12,7 +12,7 @@ import 'package:partner_app/widgets/overallPadding.dart';
 import 'package:provider/provider.dart';
 
 class PastTripsArguments {
-  final FirebaseModel firebase;
+  final UserModel firebase;
   final ConnectivityModel connectivity;
 
   PastTripsArguments(this.firebase, this.connectivity);
@@ -20,10 +20,10 @@ class PastTripsArguments {
 
 class PastTrips extends StatefulWidget {
   static String routeName = "PastTrips";
-  final FirebaseModel firebase;
+  final UserModel firebase;
   final ConnectivityModel connectivity;
 
-  PastTrips({@required this.firebase, @required this.connectivity});
+  PastTrips({required this.firebase, required this.connectivity});
 
   @override
   PastTripsState createState() => PastTripsState();

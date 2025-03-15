@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mockito/mockito.dart';
 import 'package:partner_app/models/connectivity.dart';
-import 'package:partner_app/models/firebase.dart';
+import 'package:partner_app/models/user.dart';
 import 'package:partner_app/models/googleMaps.dart';
 import 'package:partner_app/models/partner.dart';
 import 'package:partner_app/screens/insertNewPassword.dart';
@@ -30,7 +30,7 @@ void main() {
     await tester.pumpWidget(
       MultiProvider(
         providers: [
-          ChangeNotifierProvider<FirebaseModel>(
+          ChangeNotifierProvider<UserModel>(
               create: (context) => mockFirebaseModel),
           ChangeNotifierProvider<PartnerModel>(
             create: (context) => mockPartnerModel,
@@ -53,7 +53,7 @@ void main() {
     await tester.pumpWidget(
       MultiProvider(
         providers: [
-          ChangeNotifierProvider<FirebaseModel>(
+          ChangeNotifierProvider<UserModel>(
               create: (context) => mockFirebaseModel),
           ChangeNotifierProvider<PartnerModel>(
             create: (context) => mockPartnerModel,
@@ -239,11 +239,11 @@ void main() {
     });
 
     void testUpdatingPassword({
-      @required WidgetTester tester,
+      required WidgetTester tester,
       String errorCode,
-      @required String expectedMessage,
-      @required bool failWhenReauthenticating,
-      @required bool failWhenUpdatingPassword,
+      required String expectedMessage,
+      required bool failWhenReauthenticating,
+      required bool failWhenUpdatingPassword,
     }) async {
       // define old and new passwords
       String oldPassword = "oldpass123";
@@ -379,7 +379,7 @@ void main() {
 }
 
 void expectEnabledState({
-  @required WidgetTester tester,
+  required WidgetTester tester,
   bool nullButtonChild,
   bool nullRegistrationWarnings,
   bool displayPasswordChecks,
@@ -403,7 +403,7 @@ void expectEnabledState({
 }
 
 void expectDisabledState({
-  @required WidgetTester tester,
+  required WidgetTester tester,
   bool screenIsLocked,
   bool displayPasswordChecks,
   bool passwordHasEightCharacters,
@@ -429,18 +429,18 @@ void expectDisabledState({
 }
 
 void expectState({
-  @required WidgetTester tester,
-  @required bool nullCallback,
-  @required bool nullButtonChild,
-  @required bool nullRegistrationWarnings,
-  @required bool disabledColor,
-  @required bool screenIsLocked,
-  @required bool displayPasswordChecks,
-  @required bool passwordHasEightCharacters,
-  @required bool passwordHasLetter,
-  @required bool passwordHasNumber,
-  @required bool oldPasswordHasFocus,
-  @required bool newPasswordHasFocus,
+  required WidgetTester tester,
+  required bool nullCallback,
+  required bool nullButtonChild,
+  required bool nullRegistrationWarnings,
+  required bool disabledColor,
+  required bool screenIsLocked,
+  required bool displayPasswordChecks,
+  required bool passwordHasEightCharacters,
+  required bool passwordHasLetter,
+  required bool passwordHasNumber,
+  required bool oldPasswordHasFocus,
+  required bool newPasswordHasFocus,
 }) {
   // get InsertNewPasswordState
   InsertNewPasswordState state = tester.state(find.byType(InsertNewPassword));

@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:map_launcher/map_launcher.dart';
-import 'package:partner_app/models/firebase.dart';
+import 'package:partner_app/models/user.dart';
 import 'package:partner_app/models/partner.dart';
 import 'package:partner_app/models/trip.dart';
 import 'package:partner_app/screens/rateClient.dart';
@@ -20,7 +20,7 @@ import 'package:slider_button/slider_button.dart';
 class PartnerBusy extends StatefulWidget {
   final TripModel trip;
   final PartnerModel partner;
-  PartnerBusy({@required this.trip, @required this.partner});
+  PartnerBusy({required this.trip, required this.partner});
 
   @override
   PartnerBusyState createState() => PartnerBusyState();
@@ -56,7 +56,7 @@ class PartnerBusyState extends State<PartnerBusy> {
     PartnerModel partner = Provider.of<PartnerModel>(context);
     // listen for TripModel changes in case the status changes
     TripModel trip = Provider.of<TripModel>(context);
-    FirebaseModel firebase = Provider.of<FirebaseModel>(context, listen: false);
+    UserModel firebase = Provider.of<UserModel>(context, listen: false);
 
     // whenever we rebuild, it may be because PartnerModel notified listeners about
     // the partner's udpated position. if partner is going to pick up the client,
@@ -185,7 +185,7 @@ class PartnerBusyState extends State<PartnerBusy> {
   Widget buildTripWaitingPartnerPanel(BuildContext context) {
     final screenHeight = MediaQuery.of(context).size.height;
     final screenWidth = MediaQuery.of(context).size.width;
-    FirebaseModel firebase = Provider.of<FirebaseModel>(context, listen: false);
+    UserModel firebase = Provider.of<UserModel>(context, listen: false);
     TripModel trip = Provider.of<TripModel>(context, listen: false);
 
     return FloatingCard(
@@ -342,7 +342,7 @@ class PartnerBusyState extends State<PartnerBusy> {
   }
 
   Future<void> cancelTrip(BuildContext context) async {
-    FirebaseModel firebase = Provider.of<FirebaseModel>(context, listen: false);
+    UserModel firebase = Provider.of<UserModel>(context, listen: false);
 
     await showYesNoDialog(
       context,

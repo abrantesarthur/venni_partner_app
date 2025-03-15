@@ -10,7 +10,7 @@ class ShareLocationArguments {
   String routeToPush;
   Object routeArguments;
   ShareLocationArguments({
-    @required this.routeToPush,
+    required this.routeToPush,
     this.routeArguments,
   });
 }
@@ -22,7 +22,7 @@ class ShareLocation extends StatefulWidget {
   final String message;
 
   ShareLocation({
-    @required this.routeToPush,
+    required this.routeToPush,
     this.routeArguments,
     this.message,
   });

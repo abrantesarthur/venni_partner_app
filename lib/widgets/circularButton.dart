@@ -6,9 +6,9 @@ class CircularButton extends StatelessWidget {
   final Widget child;
 
   CircularButton({
-    @required this.buttonColor,
+    required this.buttonColor,
     this.onPressedCallback,
-    @required this.child,
+    required this.child,
   });
 
   @override

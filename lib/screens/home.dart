@@ -9,11 +9,12 @@ import 'package:flutter/material.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:partner_app/models/connectivity.dart';
-import 'package:partner_app/models/firebase.dart';
+import 'package:partner_app/models/user.dart';
 import 'package:partner_app/models/timer.dart';
 import 'package:partner_app/models/trip.dart';
 import 'package:partner_app/screens/accountLocked.dart';
 import 'package:partner_app/screens/partnerAvailable.dart';
+import 'package:partner_app/services/firebase.dart';
 import 'package:partner_app/styles.dart';
 import 'package:partner_app/utils/utils.dart';
 import 'package:partner_app/vendors/awesomeNotifications.dart';
@@ -39,39 +40,27 @@ import 'package:vibration/vibration.dart';
 import 'package:wakelock/wakelock.dart';
 
 class HomeArguments {
-  FirebaseModel firebase;
+  UserModel firebase;
   PartnerModel partner;
   GoogleMapsModel googleMaps;
   TimerModel timer;
   TripModel trip;
   ConnectivityModel connectivity;
   HomeArguments({
-    @required this.firebase,
-    @required this.partner,
-    @required this.googleMaps,
-    @required this.timer,
-    @required this.trip,
-    @required this.connectivity,
+    required this.firebase,
+    required this.partner,
+    required this.googleMaps,
+    required this.timer,
+    required this.trip,
+    required this.connectivity,
   });
 }
 
+// FIXME: only need firebaseService
 class Home extends StatefulWidget {
   static const routeName = "home";
-  final FirebaseModel firebase;
-  final PartnerModel partner;
-  final GoogleMapsModel googleMaps;
-  final TimerModel timer;
-  final TripModel trip;
-  final ConnectivityModel connectivity;
+  final firebase = FirebaseService();
 
-  Home({
-    @required this.firebase,
-    @required this.partner,
-    @required this.googleMaps,
-    @required this.timer,
-    @required this.trip,
-    @required this.connectivity,
-  });
 
   @override
   HomeState createState() => HomeState();
@@ -131,7 +120,7 @@ class HomeState extends State<Home> with WidgetsBindingObserver {
         }
       });
 
-      // add listener to FirebaseModel so user is redirected to Start when logs out
+      // add listener to UserModel so user is redirected to Start when logs out
       _firebaseListener = () {
         _signOut(context);
       };
@@ -189,7 +178,7 @@ class HomeState extends State<Home> with WidgetsBindingObserver {
     final screenHeight = MediaQuery.of(context).size.height;
     final screenWidth = MediaQuery.of(context).size.width;
     ConnectivityModel connectivity = Provider.of<ConnectivityModel>(context);
-    FirebaseModel firebase = Provider.of<FirebaseModel>(context);
+    UserModel firebase = Provider.of<UserModel>(context);
     // very important not listen for PartnerModel! We already have a Consumer
     // for that and so that GoogleMaps doesn't get rebuilt every tiem there is a
     // change to partners. This would delete markers, and reset the view, and just
@@ -415,9 +404,9 @@ class HomeState extends State<Home> with WidgetsBindingObserver {
 
   // push start screen when user logs out
   void _signOut(BuildContext context) {
-    FirebaseModel firebase = Provider.of<FirebaseModel>(context, listen: false);
+    UserModel firebase = Provider.of<UserModel>(context, listen: false);
     PartnerModel partner = Provider.of<PartnerModel>(context, listen: false);
-    if (!firebase.isRegistered) {
+    if (!firebase.isUserSignedIn) {
       // clear relevant models
       partner.clear();
       widget.trip.clear();

@@ -13,7 +13,7 @@ import 'package:partner_app/utils/utils.dart';
 import 'package:partner_app/vendors/firebaseAuth.dart';
 import 'package:partner_app/vendors/firebaseDatabase/methods.dart';
 
-import '../models/firebase.dart';
+import '../models/user.dart';
 import '../widgets/warning.dart';
 
 class InsertNewPhone extends StatefulWidget {
@@ -76,7 +76,7 @@ class InsertNewPhoneState extends State<InsertNewPhone> {
     });
   }
 
-  void setActiveState({String message, @required String phone}) {
+  void setActiveState({String message, required String phone}) {
     setState(() {
       buttonColor = AppColor.primaryPink;
       appButtonCallback = buttonCallback;
@@ -85,7 +85,7 @@ class InsertNewPhoneState extends State<InsertNewPhone> {
     });
   }
 
-  void setSuccessState({@required String newPhoneNumber}) {
+  void setSuccessState({required String newPhoneNumber}) {
     setState(
       () {
         lockScreen = false;
@@ -104,7 +104,7 @@ class InsertNewPhoneState extends State<InsertNewPhone> {
     String verificationId,
     int token,
   ) async {
-    final FirebaseModel firebase = Provider.of<FirebaseModel>(
+    final UserModel firebase = Provider.of<UserModel>(
       context,
       listen: false,
     );
@@ -139,10 +139,10 @@ class InsertNewPhoneState extends State<InsertNewPhone> {
   }
 
   void verificationCompletedCallback({
-    @required BuildContext context,
-    @required PhoneAuthCredential credential,
+    required BuildContext context,
+    required PhoneAuthCredential credential,
   }) async {
-    FirebaseModel firebase = Provider.of<FirebaseModel>(context, listen: false);
+    UserModel firebase = Provider.of<UserModel>(context, listen: false);
 
     try {
       await firebase.auth.currentUser.updatePhoneNumber(credential);
@@ -243,7 +243,7 @@ class InsertNewPhoneState extends State<InsertNewPhone> {
   @override
   Widget build(BuildContext context) {
     final double screenHeight = MediaQuery.of(context).size.height;
-    final FirebaseModel firebase = Provider.of<FirebaseModel>(
+    final UserModel firebase = Provider.of<UserModel>(
       context,
       listen: false,
     );

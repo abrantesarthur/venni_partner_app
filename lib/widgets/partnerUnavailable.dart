@@ -1,7 +1,7 @@
 import 'dart:io';
 
 import 'package:flutter/material.dart';
-import 'package:partner_app/models/firebase.dart';
+import 'package:partner_app/models/user.dart';
 import 'package:partner_app/models/googleMaps.dart';
 import 'package:partner_app/models/partner.dart';
 import 'package:partner_app/models/trip.dart';
@@ -36,7 +36,7 @@ class PartnerUnavailableStatus extends State<PartnerUnavailable> {
   }
 
   Future<void> connect(BuildContext context) async {
-    FirebaseModel firebase = Provider.of<FirebaseModel>(context, listen: false);
+    UserModel firebase = Provider.of<UserModel>(context, listen: false);
     PartnerModel partner = Provider.of<PartnerModel>(context, listen: false);
     GoogleMapsModel googleMaps =
         Provider.of<GoogleMapsModel>(context, listen: false);

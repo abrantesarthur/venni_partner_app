@@ -9,10 +9,10 @@ class YesNoDialog extends StatelessWidget {
   final Widget child;
 
   YesNoDialog({
-    @required this.title,
+    required this.title,
     this.content,
     this.child,
-    @required this.onPressedYes,
+    required this.onPressedYes,
     this.onPressedNo,
   });
 

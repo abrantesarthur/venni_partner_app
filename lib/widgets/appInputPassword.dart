@@ -12,7 +12,7 @@ class AppInputPassword extends StatefulWidget {
   final Function onSubmittedCallback;
 
   AppInputPassword({
-    @required this.controller,
+    required this.controller,
     this.enabled,
     this.obscurePassword,
     this.autoFocus,

@@ -10,7 +10,7 @@ import 'package:partner_app/widgets/warning.dart';
 import 'package:provider/provider.dart';
 import 'package:partner_app/utils/utils.dart';
 
-import '../models/firebase.dart';
+import '../models/user.dart';
 import '../widgets/appButton.dart';
 
 // TODO: add lockScreen (and wherever else there is a CircularProgressIndicator)
@@ -147,7 +147,7 @@ class InsertNewPasswordState extends State<InsertNewPassword> {
       return;
     }
     final screenHeight = MediaQuery.of(context).size.height;
-    final FirebaseModel firebase = Provider.of<FirebaseModel>(
+    final UserModel firebase = Provider.of<UserModel>(
       context,
       listen: false,
     );

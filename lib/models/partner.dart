@@ -1,12 +1,12 @@
 import 'dart:async';
 
-import 'package:background_location/background_location.dart';
 import 'package:flutter/material.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
-import 'package:partner_app/models/firebase.dart';
+import 'package:partner_app/models/user.dart';
 import 'package:partner_app/models/googleMaps.dart';
 import 'package:partner_app/models/trip.dart';
+import 'package:partner_app/services/firebase.dart';
 import 'package:partner_app/vendors/firebaseDatabase/interfaces.dart';
 import 'package:partner_app/vendors/firebaseDatabase/methods.dart';
 import 'package:partner_app/vendors/firebaseFunctions/interfaces.dart';
@@ -14,72 +14,74 @@ import 'package:partner_app/vendors/firebaseStorage.dart';
 import 'package:partner_app/vendors/permissionHandler.dart';
 
 class ProfileImage {
-  final ImageProvider<Object> file;
-  final String name;
+  late ImageProvider<Object> file;
+  late String name;
 
-  ProfileImage({@required this.file, @required this.name});
+  ProfileImage({ required this.file,required this.name});
 }
 
 class PartnerModel extends ChangeNotifier {
-  String _id;
-  String _name;
-  String _lastName;
-  String _cpf;
-  Gender _gender;
-  int _memberSince;
-  String _phoneNumber;
-  double _rating;
-  int _totalTrips;
-  String _pagarmeRecipientID;
-  PartnerStatus _partnerStatus;
-  AccountStatus _accountStatus;
-  String _denialReason;
-  String _lockReason;
-  Vehicle _vehicle;
-  ProfileImage _profileImage;
-  bool _crlvSubmitted = false;
-  bool _cnhSubmitted = false;
-  bool _photoWithCnhSubmitted = false;
-  bool _profilePhotoSubmitted = false;
-  bool _bankAccountSubmitted = false;
-  int _amountOwed;
-  BankAccount _bankAccount;
-  Position _position;
-  StreamSubscription _positionSubscription;
-  int _gains;
+  late FirebaseService firebase;
+  String? _id;
+  String? _name;
+  String? _lastName;
+  String? _cpf;
+  Gender? _gender;
+  int? _memberSince;
+  String? _phoneNumber;
+  double? _rating;
+  int? _totalTrips;
+  String? _pagarmeRecipientID;
+  PartnerStatus? _partnerStatus;
+  AccountStatus? _accountStatus;
+  String? _denialReason;
+  String? _lockReason;
+  Vehicle? _vehicle;
+  ProfileImage? _profileImage;
+  bool? _crlvSubmitted = false;
+  bool? _cnhSubmitted = false;
+  bool? _photoWithCnhSubmitted = false;
+  bool? _profilePhotoSubmitted = false;
+  bool? _bankAccountSubmitted = false;
+  int? _amountOwed;
+  BankAccount? _bankAccount;
+  Position? _position;
+  int? _gains;
   bool _acceptedTrip = false;
   bool _sendPositionToFirebase = false;
 
+
   // getters
-  String get id => _id;
-  String get name => _name;
-  String get lastName => _lastName;
-  String get cpf => _cpf;
-  Gender get gender => _gender;
-  int get memberSince => _memberSince;
-  String get phoneNumber => _phoneNumber;
-  double get rating => _rating;
-  int get totalTrips => _totalTrips;
-  String get pagarmeRecipientID => _pagarmeRecipientID;
-  PartnerStatus get partnerStatus => _partnerStatus;
-  AccountStatus get accountStatus => _accountStatus;
-  String get denialReason => _denialReason;
-  String get lockReason => _lockReason;
-  Vehicle get vehicle => _vehicle;
-  ProfileImage get profileImage => _profileImage;
-  bool get crlvSubmitted => _crlvSubmitted;
-  bool get cnhSubmitted => _cnhSubmitted;
-  bool get photoWithCnhSubmitted => _photoWithCnhSubmitted;
-  bool get profilePhotoSubmitted => _profilePhotoSubmitted;
-  bool get bankAccountSubmitted => _bankAccountSubmitted;
-  int get amountOwed => _amountOwed;
-  BankAccount get bankAccount => _bankAccount;
-  Position get position => _position;
-  StreamSubscription get positionSubscription => _positionSubscription;
-  int get gains => _gains;
+  String? get id => _id;
+  String? get name => _name;
+  String? get lastName => _lastName;
+  String? get cpf => _cpf;
+  Gender? get gender => _gender;
+  int? get memberSince => _memberSince;
+  String? get phoneNumber => _phoneNumber;
+  double? get rating => _rating;
+  int? get totalTrips => _totalTrips;
+  String? get pagarmeRecipientID => _pagarmeRecipientID;
+  PartnerStatus? get partnerStatus => _partnerStatus;
+  AccountStatus? get accountStatus => _accountStatus;
+  String? get denialReason => _denialReason;
+  String? get lockReason => _lockReason;
+  Vehicle? get vehicle => _vehicle;
+  ProfileImage? get profileImage => _profileImage;
+  bool? get crlvSubmitted => _crlvSubmitted;
+  bool? get cnhSubmitted => _cnhSubmitted;
+  bool? get photoWithCnhSubmitted => _photoWithCnhSubmitted;
+  bool? get profilePhotoSubmitted => _profilePhotoSubmitted;
+  bool? get bankAccountSubmitted => _bankAccountSubmitted;
+  int? get amountOwed => _amountOwed;
+  BankAccount? get bankAccount => _bankAccount;
+  Position? get position => _position;
+  int? get gains => _gains;
   bool get acceptedTrip => _acceptedTrip;
   int availableSince = DateTime.now().millisecondsSinceEpoch;
   int busySince = DateTime.now().millisecondsSinceEpoch;
+
+  PartnerModel(this.firebase);
 
   void sendPositionToFirebase(bool v) {
     _sendPositionToFirebase = v;
@@ -140,7 +142,7 @@ class PartnerModel extends ChangeNotifier {
   }
 
   void increaseGainsBy(int v) {
-    _gains += v;
+    _gains = (_gains ?? 0) + v;
     notifyListeners();
   }
 
@@ -154,29 +156,28 @@ class PartnerModel extends ChangeNotifier {
     }
   }
 
-  Future<void> downloadData(
-    FirebaseModel firebase, {
+  Future<void> downloadData({
     bool notify = true,
   }) async {
     // download partner profile photo
     firebase.storage
-        .getPartnerProfilePicture(firebase.auth.currentUser.uid)
+        .getPartnerProfilePicture(firebase.auth.currentUser?.uid)
         .then((value) => this.setProfileImage(value, notify: notify));
 
     // get partner data
-    PartnerInterface partnerInterface =
+    PartnerInterface? partnerInterface =
         await firebase.database.getPartnerFromID(
-      firebase.auth.currentUser.uid,
+      firebase.auth.currentUser?.uid,
     );
 
     this.fromPartnerInterface(partnerInterface, notify: notify);
   }
 
-  Future<Position> getPosition(
+  Future<Position?> getPosition(
     BuildContext context, {
     bool notify = true,
   }) async {
-    Position partnerPos;
+    Position? partnerPos;
     // determineUserPosition may throw an error which should be handled by the caller
     partnerPos = await determineUserPosition(context);
 
@@ -194,14 +195,13 @@ class PartnerModel extends ChangeNotifier {
   }
 
   // handlePositionUpdates starts listener that gets triggered whenever partner
-  // moves at least 20 meters. This lisener, in turn, updates PartnerModel position,
-  // reports it to firebase if _sendPositionToFireabase flag is set, and animates
+  // moves at least 20 meters. This listener, in turn, updates PartnerModel position,
+  // reports it to firebase if _sendPositionToFirebase flag is set, and animates
   // google maps camera if _animateMapsCamera flag is set. THis is to better
   // display partner position in relation to either trip's origin or destination
   // depending on whether there is a trip with 'waitingPartner' or 'inProgress'
   // status.
   void handlePositionUpdates(
-    FirebaseModel firebase,
     GoogleMapsModel googleMaps,
     TripModel trip,
   ) {
@@ -212,7 +212,7 @@ class PartnerModel extends ChangeNotifier {
       resetLocationService();
       // subscribe to changes in position, updating position and geocoding on changes
       BackgroundLocation.getLocationUpdates((p) async {
-        _position = Position(
+        final position = Position(
           longitude: p.longitude,
           latitude: p.latitude,
           timestamp: DateTime.now(),
@@ -220,27 +220,32 @@ class PartnerModel extends ChangeNotifier {
           altitude: p.altitude,
           heading: 0.0,
           speed: p.speed,
-          speedAccuracy: p.accuracy,
+          speedAccuracy: 0.0,
+          headingAccuracy: 0.0,
+          altitudeAccuracy: 0.0,
         );
+        _position = position;
+
         // if sendPosition flag is set, report partner position to firebase. This
         // flag is set when partner becomes 'available' so that we always know where
         // they are located and matching algorithm can function properly
-        if (_sendPositionToFirebase) {
+        // FIXME: ensure that position and user are not null!
+        if (_sendPositionToFirebase && firebase.auth.currentUser != null) {
           await firebase.database.updatePartnerPosition(
-            partnerID: firebase.auth.currentUser.uid,
-            latitude: _position.latitude,
-            longitude: _position.longitude,
+            partnerID: firebase.auth.currentUser!.uid,
+            latitude: position.latitude,
+            longitude: position.longitude,
           );
         }
-        // update the maps camera view to center on the parnter, from the partner
+        // update the maps camera view to center on the partner, from the partner
         // to origin, or from partner to destination, depending on partner's
-        // status and on whether trip is 'waitingParner' or 'inProgress'.
+        // status and on whether trip is 'waitingPartner' or 'inProgress'.
         // first, we get the partner position
         LatLng partnerPosition = LatLng(
-          _position.latitude,
-          _position.longitude,
+          position.latitude,
+          position.longitude,
         );
-        LatLng secondCoordinates;
+        LatLng? secondCoordinates;
         // if partner is going to pick the client, redraw bounds between partner and origin
         if (trip.tripStatus == TripStatus.waitingPartner) {
           secondCoordinates = LatLng(trip.originLat, trip.originLng);
@@ -265,7 +270,7 @@ class PartnerModel extends ChangeNotifier {
   }
 
   void fromPartnerInterface(
-    PartnerInterface pi, {
+    PartnerInterface? pi, {
     bool notify = true,
   }) {
     if (pi == null) {
@@ -301,7 +306,7 @@ class PartnerModel extends ChangeNotifier {
           : pi.submittedDocuments.bankAccount;
       _amountOwed = pi.amountOwed;
       _bankAccount = pi.bankAccount;
-      _gains = (_gains != null && _gains > 0) ? _gains : 0;
+      _gains = (_gains ?? 0) > 0 ? _gains : 0;
     }
     if (notify) {
       notifyListeners();

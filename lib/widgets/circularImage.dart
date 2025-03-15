@@ -4,7 +4,7 @@ class CircularImage extends StatelessWidget {
   final ImageProvider<Object> imageFile;
   final double size;
 
-  CircularImage({@required this.imageFile, this.size});
+  CircularImage({required this.imageFile, this.size});
   // TODO: use screenWidth instead of screenHeight
 
   @override

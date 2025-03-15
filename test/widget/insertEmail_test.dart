@@ -2,7 +2,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mockito/mockito.dart';
-import 'package:partner_app/models/firebase.dart';
+import 'package:partner_app/models/user.dart';
 import 'package:partner_app/screens/insertEmail.dart';
 import 'package:partner_app/screens/insertName.dart';
 import 'package:partner_app/styles.dart';
@@ -24,7 +24,7 @@ void main() {
       await tester.pumpWidget(
         MultiProvider(
           providers: [
-            ChangeNotifierProvider<FirebaseModel>(
+            ChangeNotifierProvider<UserModel>(
                 create: (context) => mockFirebaseModel)
           ],
           builder: (context, child) => MaterialApp(
@@ -93,7 +93,7 @@ void main() {
     ) async {
       await tester.pumpWidget(MultiProvider(
         providers: [
-          ChangeNotifierProvider<FirebaseModel>(
+          ChangeNotifierProvider<UserModel>(
               create: (context) => mockFirebaseModel)
         ],
         child: MaterialApp(

@@ -14,8 +14,8 @@ class InsertNameArguments {
   final UserCredential userCredential;
   final String userEmail;
   InsertNameArguments({
-    @required this.userCredential,
-    @required this.userEmail,
+    required this.userCredential,
+    required this.userEmail,
   });
 }
 
@@ -25,8 +25,8 @@ class InsertName extends StatefulWidget {
   final UserCredential userCredential;
   final String userEmail;
   InsertName({
-    @required this.userCredential,
-    @required this.userEmail,
+    required this.userCredential,
+    required this.userEmail,
   });
 
   @override

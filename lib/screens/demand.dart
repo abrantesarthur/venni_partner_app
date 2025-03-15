@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:partner_app/models/connectivity.dart';
-import 'package:partner_app/models/firebase.dart';
+import 'package:partner_app/models/user.dart';
 import 'package:partner_app/styles.dart';
 import 'package:partner_app/vendors/firebaseDatabase/interfaces.dart';
 import 'package:partner_app/widgets/arrowBackButton.dart';
@@ -13,14 +13,14 @@ import 'package:provider/provider.dart';
 class DemandArguments {
   final FirebaseModel firebase;
 
-  DemandArguments({@required this.firebase});
+  DemandArguments({required this.firebase});
 }
 
 class Demand extends StatefulWidget {
   static const routeName = "Demand";
   final FirebaseModel firebase;
 
-  Demand({@required this.firebase});
+  Demand({required this.firebase});
 
   @override
   DemandState createState() => DemandState();

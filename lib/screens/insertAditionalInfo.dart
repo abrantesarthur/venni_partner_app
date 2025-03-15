@@ -17,10 +17,10 @@ class InsertAditionalInfoArguments {
   final String surname;
   final String userEmail;
   InsertAditionalInfoArguments({
-    @required this.userCredential,
-    @required this.name,
-    @required this.surname,
-    @required this.userEmail,
+    required this.userCredential,
+    required this.name,
+    required this.surname,
+    required this.userEmail,
   });
 }
 
@@ -32,10 +32,10 @@ class InsertAditionalInfo extends StatefulWidget {
   final String surname;
   final String userEmail;
   InsertAditionalInfo({
-    @required this.userCredential,
-    @required this.userEmail,
-    @required this.name,
-    @required this.surname,
+    required this.userCredential,
+    required this.userEmail,
+    required this.name,
+    required this.surname,
   });
 
   @override
@@ -213,11 +213,11 @@ class InsertAditionalInfoState extends State<InsertAditionalInfo> {
 }
 
 Widget buildWarning({
-  @required bool fieldIsValid,
-  @required FocusNode focusNode,
-  @required TextEditingController controller,
-  @required String whenEmpty,
-  @required String whenFail,
+  required bool fieldIsValid,
+  required FocusNode focusNode,
+  required TextEditingController controller,
+  required String whenEmpty,
+  required String whenFail,
 }) {
   return (!fieldIsValid && !focusNode.hasFocus)
       ? controller.text.length == 0

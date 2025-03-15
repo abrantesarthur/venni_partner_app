@@ -4,7 +4,7 @@ import 'package:partner_app/vendors/firebaseDatabase/interfaces.dart';
 class BalanceProperty {
   int amount; // in cents
 
-  BalanceProperty({@required this.amount});
+  BalanceProperty({required this.amount});
 
   factory BalanceProperty.fromJson(Map json) {
     if (json == null) {
@@ -20,9 +20,9 @@ class Balance {
   final BalanceProperty transfered;
 
   Balance({
-    @required this.waitingFunds,
-    @required this.available,
-    @required this.transfered,
+    required this.waitingFunds,
+    required this.available,
+    required this.transfered,
   });
 
   factory Balance.fromJson(Map json) {
@@ -113,15 +113,15 @@ class Transfer {
   BankAccount bankAccount;
 
   Transfer({
-    @required this.id,
-    @required this.amount,
-    @required this.type,
-    @required this.status,
-    @required this.fee,
-    @required this.fundingDate,
-    @required this.fundingEstimatedDate,
-    @required this.dateCreated,
-    @required this.bankAccount,
+    required this.id,
+    required this.amount,
+    required this.type,
+    required this.status,
+    required this.fee,
+    required this.fundingDate,
+    required this.fundingEstimatedDate,
+    required this.dateCreated,
+    required this.bankAccount,
   });
 
   factory Transfer.fromJson(Map json) {
@@ -152,7 +152,7 @@ class Transfer {
 class Transfers {
   List<Transfer> items;
 
-  Transfers({@required this.items});
+  Transfers({required this.items});
 
   factory Transfers.fromJson(List<dynamic> json) {
     List<Transfer> transfers = json.map((t) => Transfer.fromJson(t)).toList();
@@ -236,16 +236,16 @@ class GetTransfersArguments {
   String pagarmeRecipientID;
 
   GetTransfersArguments({
-    @required this.count,
-    @required this.page,
-    @required this.pagarmeRecipientID,
+    required this.count,
+    required this.page,
+    required this.pagarmeRecipientID,
   });
 }
 
 class Trips {
   final List<Trip> items;
 
-  Trips({@required this.items});
+  Trips({required this.items});
 
   factory Trips.fromJson(List<dynamic> json) {
     List<Trip> pastTrips = json.map((pt) => Trip.fromJson(pt)).toList();
@@ -261,11 +261,11 @@ class PartnerRating {
   String feedback;
 
   PartnerRating({
-    @required this.score,
-    @required this.cleanlinessWentWell,
-    @required this.safetyWentWell,
-    @required this.waitingTimeWentWell,
-    @required this.feedback,
+    required this.score,
+    required this.cleanlinessWentWell,
+    required this.safetyWentWell,
+    required this.waitingTimeWentWell,
+    required this.feedback,
   });
 
   factory PartnerRating.fromJson(Map json) {
@@ -290,12 +290,12 @@ class Payment {
   int partnerAmountReceived;
 
   Payment({
-    @required this.success,
-    @required this.venniCommission,
-    @required this.previousOwedCommission,
-    @required this.paidOwedCommission,
-    @required this.currentOwedCommission,
-    @required this.partnerAmountReceived,
+    required this.success,
+    required this.venniCommission,
+    required this.previousOwedCommission,
+    required this.paidOwedCommission,
+    required this.currentOwedCommission,
+    required this.partnerAmountReceived,
   });
 
   factory Payment.fromJson(Map json) {
@@ -337,28 +337,28 @@ class Trip {
   Payment payment; // added when trip is paid and if with credit card
 
   Trip({
-    @required this.clientID,
-    @required this.tripStatus,
-    @required this.originPlaceID,
-    @required this.destinationPlaceID,
-    @required this.originLat,
-    @required this.originLng,
-    @required this.destinationLat,
-    @required this.destinationLng,
-    @required this.farePrice,
-    @required this.distanceMeters,
-    @required this.distanceText,
-    @required this.durationSeconds,
-    @required this.durationText,
-    @required this.clientToDestinationEncodedPoints,
-    @required this.requestTime,
-    @required this.originAddress,
-    @required this.destinationAddress,
-    @required this.paymentMethod,
-    @required this.clientName,
-    @required this.clientPhone,
-    @required this.partnerRating,
-    @required this.payment,
+    required this.clientID,
+    required this.tripStatus,
+    required this.originPlaceID,
+    required this.destinationPlaceID,
+    required this.originLat,
+    required this.originLng,
+    required this.destinationLat,
+    required this.destinationLng,
+    required this.farePrice,
+    required this.distanceMeters,
+    required this.distanceText,
+    required this.durationSeconds,
+    required this.durationText,
+    required this.clientToDestinationEncodedPoints,
+    required this.requestTime,
+    required this.originAddress,
+    required this.destinationAddress,
+    required this.paymentMethod,
+    required this.clientName,
+    required this.clientPhone,
+    required this.partnerRating,
+    required this.payment,
   });
 
   factory Trip.fromJson(Map json) {
@@ -448,12 +448,12 @@ class ZoneDemand {
   double minLng;
 
   ZoneDemand({
-    @required this.zoneName,
-    @required this.demand,
-    @required this.maxLat,
-    @required this.minLat,
-    @required this.maxLng,
-    @required this.minLng,
+    required this.zoneName,
+    required this.demand,
+    required this.maxLat,
+    required this.minLat,
+    required this.maxLng,
+    required this.minLng,
   });
 
   factory ZoneDemand.fromJson(Map json) {
@@ -474,7 +474,7 @@ class ZoneDemand {
 class DemandByZone {
   Map<String, ZoneDemand> values;
 
-  DemandByZone({@required this.values});
+  DemandByZone({required this.values});
 
   factory DemandByZone.fromJson(Map<String, dynamic> json) {
     if (json == null) {
@@ -494,7 +494,7 @@ class DemandByZone {
 class ApprovedPartners {
   List<ApprovedPartner> items;
 
-  ApprovedPartners({@required this.items});
+  ApprovedPartners({required this.items});
 
   factory ApprovedPartners.fromJson(List<dynamic> list) {
     List<ApprovedPartner> partners =
@@ -509,9 +509,9 @@ class ApprovedPartner {
   double currentLongitude;
 
   ApprovedPartner({
-    @required this.status,
-    @required this.currentLatitude,
-    @required this.currentLongitude,
+    required this.status,
+    required this.currentLatitude,
+    required this.currentLongitude,
   });
 
   factory ApprovedPartner.fromJson(Map json) {

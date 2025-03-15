@@ -5,7 +5,7 @@ import 'package:partner_app/utils/utils.dart';
 import 'package:partner_app/vendors/firebaseDatabase/interfaces.dart';
 
 extension AppFirebaseDatabase on FirebaseDatabase {
-  Future<PartnerInterface> getPartnerFromID(String pilotID) async {
+  Future<PartnerInterface?> getPartnerFromID(String? pilotID) async {
     if (pilotID == null || pilotID.isEmpty) {
       return null;
     }
@@ -27,8 +27,8 @@ extension AppFirebaseDatabase on FirebaseDatabase {
   }
 
   Future<void> setPhoneNumber({
-    @required String partnerID,
-    @required String phoneNumber,
+    required String partnerID,
+    required String phoneNumber,
   }) async {
     await this
         .reference()
@@ -39,8 +39,8 @@ extension AppFirebaseDatabase on FirebaseDatabase {
   }
 
   Future<void> setSubmittedCnh({
-    @required partnerID,
-    @required bool value,
+    required partnerID,
+    required bool value,
   }) async {
     await this
         .reference()
@@ -52,8 +52,8 @@ extension AppFirebaseDatabase on FirebaseDatabase {
   }
 
   Future<void> setSubmittedCrlv({
-    @required partnerID,
-    @required bool value,
+    required partnerID,
+    required bool value,
   }) async {
     await this
         .reference()
@@ -65,8 +65,8 @@ extension AppFirebaseDatabase on FirebaseDatabase {
   }
 
   Future<void> setSubmittedPhotoWithCnh({
-    @required partnerID,
-    @required bool value,
+    required partnerID,
+    required bool value,
   }) async {
     await this
         .reference()
@@ -78,8 +78,8 @@ extension AppFirebaseDatabase on FirebaseDatabase {
   }
 
   Future<void> setSubmittedProfilePhoto({
-    @required partnerID,
-    @required bool value,
+    required partnerID,
+    required bool value,
   }) async {
     await this
         .reference()
@@ -91,8 +91,8 @@ extension AppFirebaseDatabase on FirebaseDatabase {
   }
 
   Future<void> setSubmittedBankAccount({
-    @required partnerID,
-    @required bool value,
+    required partnerID,
+    required bool value,
   }) async {
     await this
         .reference()
@@ -104,8 +104,8 @@ extension AppFirebaseDatabase on FirebaseDatabase {
   }
 
   Future<void> setBankAccount({
-    @required partnerID,
-    @required BankAccount bankAccount,
+    required partnerID,
+    required BankAccount bankAccount,
   }) async {
     await this
         .reference()
@@ -116,8 +116,8 @@ extension AppFirebaseDatabase on FirebaseDatabase {
   }
 
   Future<void> setPartnerStatus({
-    @required partnerID,
-    @required PartnerStatus partnerStatus,
+    required partnerID,
+    required PartnerStatus partnerStatus,
   }) async {
     await this
         .reference()
@@ -128,9 +128,9 @@ extension AppFirebaseDatabase on FirebaseDatabase {
   }
 
   Future<void> updatePartnerPosition({
-    @required partnerID,
-    @required double latitude,
-    @required double longitude,
+    required partnerID,
+    required double latitude,
+    required double longitude,
   }) async {
     // round latitude and longitude to at most 6 decimal places
     latitude = toFixed(latitude, 6);
@@ -232,8 +232,8 @@ extension AppFirebaseDatabase on FirebaseDatabase {
   }
 
   Future<void> submitDeleteReasons({
-    @required Map<DeleteReason, bool> reasons,
-    @required String uid,
+    required Map<DeleteReason, bool> reasons,
+    required String uid,
   }) async {
     if (reasons == null) {
       return Future.value();

@@ -8,7 +8,7 @@ import 'package:partner_app/widgets/overallPadding.dart';
 import 'package:provider/provider.dart';
 import 'package:partner_app/utils/utils.dart';
 
-import '../models/firebase.dart';
+import '../models/user.dart';
 
 class EditPhone extends StatefulWidget {
   static const String routeName = "EditPhone";
@@ -26,7 +26,7 @@ class EditPhoneState extends State<EditPhone> {
   @override
   Widget build(BuildContext context) {
     final double screenHeight = MediaQuery.of(context).size.height;
-    final FirebaseModel firebase = Provider.of<FirebaseModel>(context);
+    final UserModel firebase = Provider.of<UserModel>(context);
     ConnectivityModel connectivity = Provider.of<ConnectivityModel>(context);
     return Scaffold(
       backgroundColor: Colors.white,

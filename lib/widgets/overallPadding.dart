@@ -8,7 +8,7 @@ class OverallPadding extends StatelessWidget {
   final double right;
 
   OverallPadding({
-    @required this.child,
+    required this.child,
     this.bottom,
     this.top,
     this.left,

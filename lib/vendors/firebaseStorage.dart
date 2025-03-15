@@ -7,8 +7,8 @@ import 'dart:io' as dartIo;
 
 extension AppFirebaseStorage on FirebaseStorage {
   Future<void> pushCrlv({
-    @required String partnerID,
-    @required PickedFile crlv,
+    required String partnerID,
+    required PickedFile crlv,
   }) async {
     try {
       await this
@@ -23,8 +23,8 @@ extension AppFirebaseStorage on FirebaseStorage {
   }
 
   Future<void> pushCnh({
-    @required String partnerID,
-    @required PickedFile cnh,
+    required String partnerID,
+    required PickedFile cnh,
   }) async {
     try {
       await this
@@ -37,8 +37,8 @@ extension AppFirebaseStorage on FirebaseStorage {
   }
 
   Future<void> pushPhotoWithCnh({
-    @required String partnerID,
-    @required PickedFile photoWithCnh,
+    required String partnerID,
+    required PickedFile photoWithCnh,
   }) async {
     try {
       await this
@@ -51,8 +51,8 @@ extension AppFirebaseStorage on FirebaseStorage {
   }
 
   Future<void> pushProfilePhoto({
-    @required String partnerID,
-    @required PickedFile profilePhoto,
+    required String partnerID,
+    required PickedFile profilePhoto,
   }) async {
     try {
       await this
@@ -65,7 +65,7 @@ extension AppFirebaseStorage on FirebaseStorage {
   }
 
   // TODO: cache downloaded images
-  Future<ProfileImage> getPartnerProfilePicture(String id) async {
+  Future<ProfileImage?> getPartnerProfilePicture(String? id) async {
     if (id == null) {
       return null;
     }

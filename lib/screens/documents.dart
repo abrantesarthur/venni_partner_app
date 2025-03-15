@@ -2,7 +2,7 @@ import 'dart:async';
 
 import 'package:flutter/material.dart';
 import 'package:partner_app/models/connectivity.dart';
-import 'package:partner_app/models/firebase.dart';
+import 'package:partner_app/models/user.dart';
 import 'package:partner_app/models/googleMaps.dart';
 import 'package:partner_app/models/partner.dart';
 import 'package:partner_app/models/timer.dart';
@@ -25,18 +25,18 @@ import 'package:provider/provider.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 class DocumentsArguments {
-  final FirebaseModel firebase;
+  final UserModel firebase;
   final PartnerModel partner;
 
-  DocumentsArguments({@required this.firebase, @required this.partner});
+  DocumentsArguments({required this.firebase, required this.partner});
 }
 
 class Documents extends StatefulWidget {
   static const routeName = "Documents";
-  final FirebaseModel firebase;
+  final UserModel firebase;
   final PartnerModel partner;
 
-  Documents({@required this.firebase, @required this.partner});
+  Documents({required this.firebase, required this.partner});
 
   @override
   DocumentsState createState() => DocumentsState();
@@ -84,7 +84,7 @@ class DocumentsState extends State<Documents> {
     );
 
     WidgetsBinding.instance.addPostFrameCallback((_) {
-      // add listener to FirebaseModel so user is redirected to Start when logs out
+      // add listener to UserModel so user is redirected to Start when logs out
       _firebaseListener = () {
         _signOut(context);
       };
@@ -106,7 +106,7 @@ class DocumentsState extends State<Documents> {
 
   // push start screen when user logs out
   void _signOut(BuildContext context) {
-    if (!widget.firebase.isRegistered) {
+    if (!widget.firebase.isUserSignedIn) {
       Navigator.pushNamedAndRemoveUntil(context, Start.routeName, (_) => false);
     }
   }
@@ -114,7 +114,7 @@ class DocumentsState extends State<Documents> {
   @override
   Widget build(BuildContext context) {
     PartnerModel partner = Provider.of<PartnerModel>(context);
-    FirebaseModel firebase = Provider.of<FirebaseModel>(context, listen: false);
+    UserModel firebase = Provider.of<UserModel>(context, listen: false);
     final screenHeight = MediaQuery.of(context).size.height;
     final screenWidth = MediaQuery.of(context).size.width;
 
@@ -603,7 +603,7 @@ class DocumentsState extends State<Documents> {
   }
 
   Future<void> start(BuildContext context) async {
-    FirebaseModel firebase = Provider.of<FirebaseModel>(
+    UserModel firebase = Provider.of<UserModel>(
       context,
       listen: false,
     );
@@ -675,7 +675,7 @@ class DocumentsState extends State<Documents> {
 }
 
 Future<dynamic> _showHelpDialog(BuildContext context, String phoneNumber) {
-  FirebaseModel firebase = Provider.of<FirebaseModel>(context, listen: false);
+  UserModel firebase = Provider.of<UserModel>(context, listen: false);
   return showDialog(
     context: context,
     builder: (BuildContext context) {

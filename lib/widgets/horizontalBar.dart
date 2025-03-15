@@ -12,8 +12,8 @@ class HorizontalBar extends StatelessWidget {
 
   HorizontalBar({
     this.leftText,
-    @required this.rightText,
-    @required this.fill,
+    required this.rightText,
+    required this.fill,
     this.leftWidget,
     this.centerWidth,
     this.leftFlex,

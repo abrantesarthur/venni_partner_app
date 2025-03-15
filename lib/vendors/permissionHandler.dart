@@ -11,14 +11,14 @@ Position userPosition;
 bool dialogShown = false;
 
 // Determine the current position of the device
-Future<Position> determineUserPosition(BuildContext context) async {
+Future<Position?> determineUserPosition(BuildContext context) async {
   if (Platform.isAndroid) {
     return await _determineUserPositionAndroid(context);
   }
   return await _determineUserPositionIOS(context);
 }
 
-Future<Position> _determineUserPositionIOS(BuildContext context) async {
+Future<Position?> _determineUserPositionIOS(BuildContext context) async {
   bool serviceEnabled = await Geolocator.isLocationServiceEnabled();
   if (!serviceEnabled) {
     return Future.error("location-service-disabled");

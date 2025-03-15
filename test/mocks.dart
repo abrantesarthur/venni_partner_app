@@ -5,7 +5,7 @@ import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter/material.dart';
 import 'package:mockito/mockito.dart';
 import 'package:partner_app/models/connectivity.dart';
-import 'package:partner_app/models/firebase.dart';
+import 'package:partner_app/models/user.dart';
 import 'package:partner_app/models/googleMaps.dart';
 import 'package:partner_app/models/partner.dart';
 import 'package:partner_app/models/timer.dart';
@@ -16,7 +16,7 @@ class MockFirebaseAuth extends Mock implements FirebaseAuth {}
 
 class MockFirebaseDatabase extends Mock implements FirebaseDatabase {}
 
-class MockFirebaseModel extends Mock implements FirebaseModel {}
+class MockFirebaseModel extends Mock implements UserModel {}
 
 class MockDatabaseReference extends Mock implements DatabaseReference {}
 

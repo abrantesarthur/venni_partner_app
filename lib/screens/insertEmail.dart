@@ -1,7 +1,7 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:partner_app/models/firebase.dart';
+import 'package:partner_app/models/user.dart';
 import 'package:partner_app/screens/insertName.dart';
 import 'package:partner_app/styles.dart';
 import 'package:partner_app/vendors/firebaseAuth.dart';
@@ -16,7 +16,7 @@ import 'package:partner_app/utils/utils.dart';
 class InsertEmailArguments {
   final UserCredential userCredential;
   InsertEmailArguments({
-    @required this.userCredential,
+    required this.userCredential,
   });
 }
 
@@ -25,7 +25,7 @@ class InsertEmail extends StatefulWidget {
   final UserCredential userCredential;
 
   InsertEmail({
-    @required this.userCredential,
+    required this.userCredential,
   });
 
   @override
@@ -121,7 +121,7 @@ class InsertEmailState extends State<InsertEmail> {
   @override
   Widget build(BuildContext context) {
     final screenHeight = MediaQuery.of(context).size.height;
-    _firebaseAuth = Provider.of<FirebaseModel>(context, listen: false).auth;
+    _firebaseAuth = Provider.of<UserModel>(context, listen: false).auth;
 
     return Scaffold(
       body: LayoutBuilder(builder: (

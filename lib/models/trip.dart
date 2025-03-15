@@ -1,11 +1,12 @@
 import 'package:flutter/material.dart';
-import 'package:partner_app/models/firebase.dart';
+import 'package:partner_app/models/user.dart';
 import 'package:partner_app/models/partner.dart';
 import 'package:partner_app/vendors/firebaseFunctions/interfaces.dart';
 import 'package:partner_app/vendors/firebaseFunctions/methods.dart';
 import 'package:partner_app/vendors/firebaseStorage.dart';
 
 class TripModel extends ChangeNotifier {
+  final FirebaseService firebase;
   String _clientID;
   TripStatus _tripStatus;
   String _originPlaceID;
@@ -51,6 +52,9 @@ class TripModel extends ChangeNotifier {
   String get clientFullName => _clientName;
   String get clientPhone => _clientPhone;
   ProfileImage get profileImage => _profileImage;
+
+  // FIXME: 
+  TripModel(this.firebase);
 
   void fromTripInterface(Trip t, {bool notify = true}) {
     if (t != null) {
@@ -98,7 +102,7 @@ class TripModel extends ChangeNotifier {
 
   // downloadData sends a request to download partner's current trip
   Future<void> downloadData(
-    FirebaseModel firebase, {
+    {
     bool notify = true,
   }) async {
     Trip t = await firebase.functions.getCurrentTrip();

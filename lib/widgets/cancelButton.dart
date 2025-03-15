@@ -7,7 +7,7 @@ class CancelButton extends StatelessWidget {
   final Color iconColor;
 
   CancelButton({
-    @required this.onPressed,
+    required this.onPressed,
     this.backgroundColor,
     this.iconColor,
   });

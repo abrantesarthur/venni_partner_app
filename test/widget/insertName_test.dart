@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mockito/mockito.dart';
 import 'package:partner_app/models/connectivity.dart';
-import 'package:partner_app/models/firebase.dart';
+import 'package:partner_app/models/user.dart';
 import 'package:partner_app/screens/insertAditionalInfo.dart';
 import 'package:partner_app/screens/insertName.dart';
 import 'package:partner_app/styles.dart';
@@ -145,7 +145,7 @@ void main() {
       String userEmail = "valid@domain.com";
       await tester.pumpWidget(MultiProvider(
         providers: [
-          ChangeNotifierProvider<FirebaseModel>(
+          ChangeNotifierProvider<UserModel>(
               create: (context) => mockFirebaseModel),
           ChangeNotifierProvider<ConnectivityModel>(
               create: (context) => mockConnectivityModel),

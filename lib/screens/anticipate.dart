@@ -11,14 +11,14 @@ import 'package:partner_app/widgets/overallPadding.dart';
 class AnticipateArguments {
   final int waitingAmount;
 
-  AnticipateArguments({@required this.waitingAmount});
+  AnticipateArguments({required this.waitingAmount});
 }
 
 class Anticipate extends StatefulWidget {
   static String routeName = "Anticipate";
   final int waitingAmount;
 
-  Anticipate({@required this.waitingAmount});
+  Anticipate({required this.waitingAmount});
 
   @override
   AnticipateState createState() => AnticipateState();

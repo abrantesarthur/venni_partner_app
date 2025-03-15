@@ -4,9 +4,10 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:flutter/services.dart' show rootBundle;
-import 'package:partner_app/models/firebase.dart';
+import 'package:partner_app/models/user.dart';
 import 'package:partner_app/models/partner.dart';
 import 'package:partner_app/models/trip.dart';
+import 'package:partner_app/services/firebase.dart';
 import 'package:partner_app/styles.dart';
 import 'package:partner_app/utils/utils.dart';
 import 'package:partner_app/vendors/firebaseFunctions/interfaces.dart';
@@ -14,6 +15,7 @@ import 'package:partner_app/vendors/firebaseFunctions/methods.dart';
 import 'package:provider/provider.dart';
 
 class GoogleMapsModel extends ChangeNotifier {
+  final FirebaseService firebase;
   Map<PolylineId, Polyline> _polylines;
   Set<Marker> _markers;
   Set<Polygon> _polygons;
@@ -27,7 +29,7 @@ class GoogleMapsModel extends ChangeNotifier {
   String _mapStyle;
   Timer _drawPolygonTimer;
 
-  GoogleMapsModel() {
+  GoogleMapsModel(this.firebase) {
     _polylines = {};
     _markers = {};
     _polygons = {};
@@ -70,7 +72,7 @@ class GoogleMapsModel extends ChangeNotifier {
   }
 
   // kickoffDrawPolygon calls _drawPolygon periodically once per minute
-  Future<void> kickoffDrawPolygon(FirebaseModel firebase) async {
+  Future<void> kickoffDrawPolygon() async {
     stopDrawingPolygons();
     // draw polygon once right away then schedule it to run periodically
     await _drawPolygons(firebase);
@@ -93,7 +95,7 @@ class GoogleMapsModel extends ChangeNotifier {
   }
 
   // _drawPolygons draws polygons on the map whose opacity indicates trip demand
-  Future<void> _drawPolygons(FirebaseModel firebase) async {
+  Future<void> _drawPolygons(UserModel firebase) async {
     DemandByZone demandByZone;
     try {
       demandByZone = await firebase.functions.getDemandByZone();
@@ -197,8 +199,8 @@ class GoogleMapsModel extends ChangeNotifier {
   }
 
   Future<void> drawMarkers({
-    @required BuildContext context,
-    @required LatLng firstMarkerPosition,
+    required BuildContext context,
+    required LatLng firstMarkerPosition,
     LatLng secondMarkerPosition,
     double topPadding,
     double bottomPadding,
@@ -288,8 +290,8 @@ class GoogleMapsModel extends ChangeNotifier {
   void setGoogleMapsCameraView({
     bool locationEnabled = true,
     bool locationButtonEnabled = true,
-    @required double topPadding,
-    @required double bottomPadding,
+    required double topPadding,
+    required double bottomPadding,
     bool notify = true,
   }) {
     // set user's location details (true by default)

@@ -6,8 +6,8 @@ class OkDialog extends StatelessWidget {
   final String content;
 
   OkDialog({
-    @required this.title,
-    @required this.content,
+    required this.title,
+    required this.content,
   });
 
   @override

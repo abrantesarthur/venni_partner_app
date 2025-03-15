@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:partner_app/models/connectivity.dart';
-import 'package:partner_app/models/firebase.dart';
+import 'package:partner_app/models/user.dart';
 import 'package:partner_app/models/partner.dart';
 import 'package:partner_app/styles.dart';
 import 'package:partner_app/vendors/imagePicker.dart';
@@ -133,7 +133,7 @@ class SendPhotoWithCnhState extends State<SendPhotoWithCnh> {
       context,
       listen: false,
     );
-    final FirebaseModel firebase = Provider.of<FirebaseModel>(
+    final UserModel firebase = Provider.of<UserModel>(
       context,
       listen: false,
     );

@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mockito/mockito.dart';
 import 'package:partner_app/models/connectivity.dart';
-import 'package:partner_app/models/firebase.dart';
+import 'package:partner_app/models/user.dart';
 import 'package:partner_app/models/partner.dart';
 import 'package:partner_app/screens/editEmail.dart';
 import 'package:partner_app/widgets/warning.dart';
@@ -24,7 +24,7 @@ void main() {
     await tester.pumpWidget(
       MultiProvider(
         providers: [
-          ChangeNotifierProvider<FirebaseModel>(
+          ChangeNotifierProvider<UserModel>(
             create: (context) => mockFirebaseModel,
           ),
           ChangeNotifierProvider<PartnerModel>(

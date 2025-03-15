@@ -2,7 +2,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter/material.dart';
 import 'package:partner_app/models/connectivity.dart';
-import 'package:partner_app/models/firebase.dart';
+import 'package:partner_app/models/user.dart';
 import 'package:partner_app/screens/insertSmsCode.dart';
 import 'package:partner_app/styles.dart';
 import 'package:partner_app/widgets/arrowBackButton.dart';
@@ -83,7 +83,7 @@ class InsertPhoneNumberState extends State<InsertPhone> {
     });
   }
 
-  void setActiveState({String message, @required String phone}) {
+  void setActiveState({String message, required String phone}) {
     setState(() {
       _circularButtonColor = AppColor.primaryPink;
       circularButtonCallback = buttonCallback;
@@ -182,7 +182,7 @@ class InsertPhoneNumberState extends State<InsertPhone> {
   @override
   Widget build(BuildContext context) {
     final screenHeight = MediaQuery.of(context).size.height;
-    final firebaseModel = Provider.of<FirebaseModel>(context);
+    final firebaseModel = Provider.of<UserModel>(context);
 
     return Scaffold(
       body: LayoutBuilder(

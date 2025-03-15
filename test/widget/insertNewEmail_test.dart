@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mockito/mockito.dart';
 import 'package:partner_app/models/connectivity.dart';
-import 'package:partner_app/models/firebase.dart';
+import 'package:partner_app/models/user.dart';
 import 'package:partner_app/models/partner.dart';
 import 'package:partner_app/screens/editEmail.dart';
 import 'package:partner_app/screens/insertNewEmail.dart';
@@ -30,7 +30,7 @@ void main() {
     await tester.pumpWidget(
       MultiProvider(
         providers: [
-          ChangeNotifierProvider<FirebaseModel>(
+          ChangeNotifierProvider<UserModel>(
               create: (context) => mockFirebaseModel),
           ChangeNotifierProvider<PartnerModel>(
             create: (context) => mockPartnerModel,
@@ -76,7 +76,7 @@ void main() {
       await tester.pumpWidget(
         MultiProvider(
           providers: [
-            ChangeNotifierProvider<FirebaseModel>(
+            ChangeNotifierProvider<UserModel>(
                 create: (context) => mockFirebaseModel),
             ChangeNotifierProvider<PartnerModel>(
                 create: (context) => mockPartnerModel),
@@ -392,7 +392,7 @@ void main() {
       await tester.pumpWidget(
         MultiProvider(
           providers: [
-            ChangeNotifierProvider<FirebaseModel>(
+            ChangeNotifierProvider<UserModel>(
                 create: (context) => mockFirebaseModel),
             ChangeNotifierProvider<PartnerModel>(
               create: (context) => mockPartnerModel,
@@ -464,9 +464,9 @@ void main() {
 
 // defaults to expecting email to be focused and passwor
 void expectDisabledState({
-  @required WidgetTester tester,
-  @required bool emailHasFocus,
-  @required bool passwordHasFocus,
+  required WidgetTester tester,
+  required bool emailHasFocus,
+  required bool passwordHasFocus,
   String message,
 }) {
   // expect button color to be disabled
@@ -525,9 +525,9 @@ void expectDisabledState({
 
 // defaults to expecting email to be focused and passwor
 void expectEnabledState({
-  @required WidgetTester tester,
-  @required bool emailHasFocus,
-  @required bool passwordHasFocus,
+  required WidgetTester tester,
+  required bool emailHasFocus,
+  required bool passwordHasFocus,
 }) {
   // expect button color to be primary pink
   final buttonFinder = find.byType(AppButton);

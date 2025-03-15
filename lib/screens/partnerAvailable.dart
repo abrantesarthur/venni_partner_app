@@ -1,6 +1,6 @@
-import 'package:background_location/background_location.dart';
+import 'package:background_location_tracker/background_location_tracker.dart';
 import 'package:flutter/material.dart';
-import 'package:partner_app/models/firebase.dart';
+import 'package:partner_app/models/user.dart';
 import 'package:partner_app/models/partner.dart';
 import 'package:partner_app/styles.dart';
 import 'package:partner_app/utils/utils.dart';
@@ -124,7 +124,7 @@ class PartnerAvailableState extends State<PartnerAvailable> {
         });
 
         // send request to disconnect partner
-        FirebaseModel firebase = Provider.of<FirebaseModel>(
+        UserModel firebase = Provider.of<UserModel>(
           context,
           listen: false,
         );

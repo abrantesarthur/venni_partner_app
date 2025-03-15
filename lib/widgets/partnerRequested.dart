@@ -1,6 +1,6 @@
 import 'package:audioplayers/audioplayers.dart';
 import 'package:flutter/material.dart';
-import 'package:partner_app/models/firebase.dart';
+import 'package:partner_app/models/user.dart';
 import 'package:partner_app/models/partner.dart';
 import 'package:partner_app/models/timer.dart';
 import 'package:partner_app/styles.dart';
@@ -106,7 +106,7 @@ class PartnerRequestedState extends State<PartnerRequested> {
 
   Future<void> accept(BuildContext context) async {
     PartnerModel partner = Provider.of<PartnerModel>(context, listen: false);
-    FirebaseModel firebase = Provider.of<FirebaseModel>(context, listen: false);
+    UserModel firebase = Provider.of<UserModel>(context, listen: false);
 
     // mark the pilot as having accepted trip, so if 15s timeout
     // finishes, we don't send a declineTrip request and don't update

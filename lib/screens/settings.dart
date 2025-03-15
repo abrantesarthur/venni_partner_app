@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:partner_app/models/firebase.dart';
+import 'package:partner_app/models/user.dart';
 import 'package:partner_app/models/partner.dart';
 import 'package:partner_app/screens/bankAccountDetail.dart';
 import 'package:partner_app/screens/privacy.dart';
@@ -26,7 +26,7 @@ class SettingsState extends State<Settings> {
   @override
   Widget build(BuildContext context) {
     final double screenHeight = MediaQuery.of(context).size.height;
-    final FirebaseModel firebase = Provider.of<FirebaseModel>(
+    final UserModel firebase = Provider.of<UserModel>(
       context,
       listen: false,
     );

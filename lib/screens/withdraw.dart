@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_masked_text/flutter_masked_text.dart';
-import 'package:partner_app/models/firebase.dart';
+import 'package:partner_app/models/user.dart';
 import 'package:partner_app/models/partner.dart';
 import 'package:partner_app/vendors/firebaseFunctions/methods.dart';
 import 'package:partner_app/vendors/firebaseFunctions/interfaces.dart';
@@ -16,14 +16,14 @@ import 'package:provider/provider.dart';
 class WithdrawArguments {
   final int availableAmount;
 
-  WithdrawArguments({@required this.availableAmount});
+  WithdrawArguments({required this.availableAmount});
 }
 
 class Withdraw extends StatefulWidget {
   static String routeName = "Withdraw";
   final int availableAmount;
 
-  Withdraw({@required this.availableAmount});
+  Withdraw({required this.availableAmount});
 
   @override
   WithdrawState createState() => WithdrawState();
@@ -169,7 +169,7 @@ class WithdrawState extends State<Withdraw> {
 
     // request withdraw
     try {
-      FirebaseModel firebase = Provider.of<FirebaseModel>(
+      UserModel firebase = Provider.of<UserModel>(
         context,
         listen: false,
       );

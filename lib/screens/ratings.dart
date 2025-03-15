@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 import 'package:partner_app/models/connectivity.dart';
-import 'package:partner_app/models/firebase.dart';
+import 'package:partner_app/models/user.dart';
 import 'package:partner_app/models/partner.dart';
 import 'package:partner_app/styles.dart';
 import 'package:partner_app/vendors/firebaseFunctions/interfaces.dart';
@@ -13,7 +13,7 @@ import 'package:partner_app/widgets/overallPadding.dart';
 import 'package:provider/provider.dart';
 
 class RatingsArguments {
-  final FirebaseModel firebase;
+  final UserModel firebase;
   final ConnectivityModel connectivity;
   final PartnerModel partner;
 
@@ -26,14 +26,14 @@ class RatingsArguments {
 
 class Ratings extends StatefulWidget {
   static String routeName = "Ratings";
-  final FirebaseModel firebase;
+  final UserModel firebase;
   final ConnectivityModel connectivity;
   final PartnerModel partner;
 
   Ratings({
-    @required this.firebase,
-    @required this.connectivity,
-    @required this.partner,
+    required this.firebase,
+    required this.connectivity,
+    required this.partner,
   });
 
   @override
@@ -342,9 +342,9 @@ class RatingsState extends State<Ratings> {
   }
 
   Widget buildComment({
-    @required BuildContext context,
-    @required String feedback,
-    @required int rating,
+    required BuildContext context,
+    required String feedback,
+    required int rating,
   }) {
     return FloatingCard(
       child: Row(

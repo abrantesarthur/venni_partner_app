@@ -3,16 +3,18 @@ import 'dart:io';
 
 import 'package:connectivity/connectivity.dart';
 import 'package:flutter/material.dart';
+import 'package:partner_app/services/firebase.dart';
 import 'package:partner_app/styles.dart';
 
 class ConnectivityModel extends ChangeNotifier {
+  final FirebaseService firebase;
   bool _hasConnection;
   Connectivity _connectivity;
   StreamSubscription _connectivitySubscription;
 
   bool get hasConnection => _hasConnection;
 
-  ConnectivityModel() {
+  ConnectivityModel(this.firebase) {
     // start listening for connectivity changes
     _connectivity = Connectivity();
     _connectivitySubscription = _connectivity.onConnectivityChanged

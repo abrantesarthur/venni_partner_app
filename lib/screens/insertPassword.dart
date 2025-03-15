@@ -3,7 +3,7 @@ import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/scheduler.dart';
 import 'package:partner_app/models/connectivity.dart';
-import 'package:partner_app/models/firebase.dart';
+import 'package:partner_app/models/user.dart';
 import 'package:partner_app/models/partner.dart';
 import 'package:partner_app/vendors/firebaseDatabase/methods.dart';
 import 'package:partner_app/screens/documents.dart';
@@ -30,12 +30,12 @@ class InsertPasswordArguments {
   final String cpf;
   final Gender gender;
   InsertPasswordArguments({
-    @required this.userCredential,
-    @required this.name,
-    @required this.surname,
-    @required this.userEmail,
-    @required this.cpf,
-    @required this.gender,
+    required this.userCredential,
+    required this.name,
+    required this.surname,
+    required this.userEmail,
+    required this.cpf,
+    required this.gender,
   });
 }
 
@@ -49,12 +49,12 @@ class InsertPassword extends StatefulWidget {
   final String cpf;
   final Gender gender;
   InsertPassword({
-    @required this.userCredential,
-    @required this.userEmail,
-    @required this.name,
-    @required this.surname,
-    @required this.cpf,
-    @required this.gender,
+    required this.userCredential,
+    required this.userEmail,
+    required this.name,
+    required this.surname,
+    required this.cpf,
+    required this.gender,
   });
 
   @override
@@ -139,7 +139,7 @@ class InsertPasswordState extends State<InsertPassword> {
   }
 
   Future<void> handleRegistrationFailure(
-    FirebaseModel firebase,
+    UserModel firebase,
     FirebaseAuthException e,
   ) async {
     // desactivate CircularButton callback
@@ -171,7 +171,7 @@ class InsertPasswordState extends State<InsertPassword> {
       await firebase.database.deletePartner(widget.userCredential.user.uid);
 
       // if user did not already have a client account
-      if (!firebase.isRegistered) {
+      if (!firebase.isUserSignedIn) {
         // rollback and delete user
         await widget.userCredential.user.delete();
       }
@@ -227,7 +227,7 @@ class InsertPasswordState extends State<InsertPassword> {
   // a correct password. If so, it updates their name and other entered information.
   // If the user is registering for the first time, it just creates their account
   Future<bool> registerUser(
-    FirebaseModel firebase,
+    UserModel firebase,
     PartnerModel partner,
   ) async {
     print("registerUser");
@@ -235,8 +235,8 @@ class InsertPasswordState extends State<InsertPassword> {
     FocusScope.of(context).requestFocus(FocusNode());
 
     // if the user already has a client account
-    if (firebase.isRegistered) {
-      print("firebase.isRegistered");
+    if (firebase.isUserSignedIn) {
+      print("firebase.isUserSignedIn");
 
       // make sure they've entered a valid password
       CheckPasswordResponse cpr = await firebase.auth.checkPassword(
@@ -326,7 +326,7 @@ class InsertPasswordState extends State<InsertPassword> {
       return;
     }
 
-    FirebaseModel firebase = Provider.of<FirebaseModel>(context, listen: false);
+    UserModel firebase = Provider.of<UserModel>(context, listen: false);
     PartnerModel partner = Provider.of<PartnerModel>(context, listen: false);
 
     // ask user to abide by privacy terms
@@ -375,7 +375,7 @@ class InsertPasswordState extends State<InsertPassword> {
   @override
   Widget build(BuildContext context) {
     screenHeight = MediaQuery.of(context).size.height;
-    FirebaseModel firebase = Provider.of<FirebaseModel>(context, listen: false);
+    UserModel firebase = Provider.of<UserModel>(context, listen: false);
     PartnerModel partner = Provider.of<PartnerModel>(context, listen: false);
 
     return FutureBuilder(
@@ -442,13 +442,13 @@ class InsertPasswordState extends State<InsertPassword> {
                           ),
                           SizedBox(height: screenHeight / 25),
                           Text(
-                            firebase.isRegistered
+                            firebase.isUserSignedIn
                                 ? "Insira sua senha"
                                 : "Insira uma senha",
                             style: TextStyle(color: Colors.black, fontSize: 18),
                           ),
                           SizedBox(height: screenHeight / 40),
-                          firebase.isRegistered
+                          firebase.isUserSignedIn
                               ? Column(
                                   children: [
                                     Text(
@@ -473,7 +473,7 @@ class InsertPasswordState extends State<InsertPassword> {
                           // has a client account. In that case, he should be
                           // inserting his actual client password, instead of
                           // trying to create a new one.
-                          displayPasswordWarnings && !firebase.isRegistered
+                          displayPasswordWarnings && !firebase.isUserSignedIn
                               ? Column(
                                   children: [
                                     SizedBox(height: screenHeight / 40),

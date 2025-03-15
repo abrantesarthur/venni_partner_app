@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:partner_app/models/connectivity.dart';
-import 'package:partner_app/models/firebase.dart';
+import 'package:partner_app/models/user.dart';
 import 'package:partner_app/models/partner.dart';
 import 'package:partner_app/models/trip.dart';
 import 'package:partner_app/screens/home.dart';
@@ -230,14 +230,14 @@ class RateClientState extends State<RateClient> {
   }
 
   Future<void> rateClient({
-    @required BuildContext context,
-    @required int rate,
+    required BuildContext context,
+    required int rate,
   }) async {
     ConnectivityModel connectivity = Provider.of<ConnectivityModel>(
       context,
       listen: false,
     );
-    FirebaseModel firebase = Provider.of<FirebaseModel>(context, listen: false);
+    UserModel firebase = Provider.of<UserModel>(context, listen: false);
     PartnerModel partner = Provider.of<PartnerModel>(context, listen: false);
     TripModel trip = Provider.of<TripModel>(context, listen: false);
 

@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mockito/mockito.dart';
 import 'package:partner_app/models/connectivity.dart';
-import 'package:partner_app/models/firebase.dart';
+import 'package:partner_app/models/user.dart';
 import 'package:partner_app/models/partner.dart';
 import 'package:partner_app/screens/deleteAccount.dart';
 import 'package:partner_app/styles.dart';
@@ -31,7 +31,7 @@ void main() {
     await tester.pumpWidget(
       MultiProvider(
         providers: [
-          ChangeNotifierProvider<FirebaseModel>(
+          ChangeNotifierProvider<UserModel>(
             create: (context) => mockFirebaseModel,
           ),
           ChangeNotifierProvider<PartnerModel>(
@@ -186,9 +186,9 @@ void main() {
     });
 
     void testDeleteAccount({
-      @required WidgetTester tester,
-      @required String errorCode,
-      @required String expectedMessage,
+      required WidgetTester tester,
+      required String errorCode,
+      required String expectedMessage,
     }) async {
       // set mocks to throw errorCode when reauthenticateWithCredential
       when(mockUser.reauthenticateWithCredential(any)).thenAnswer((_) {
@@ -267,7 +267,7 @@ void main() {
 }
 
 void expectEnabledState({
-  @required WidgetTester tester,
+  required WidgetTester tester,
   bool passwordHasFocus,
 }) {
   expectState(
@@ -285,7 +285,7 @@ void expectEnabledState({
 }
 
 void expectDisabledState({
-  @required WidgetTester tester,
+  required WidgetTester tester,
   bool passwordHasFocus,
 }) {
   expectState(
@@ -303,16 +303,16 @@ void expectDisabledState({
 }
 
 void expectState({
-  @required WidgetTester tester,
-  @required bool passwordHasFocus,
-  @required bool buttonColorIsDisabled,
-  @required bool buttonChildIsNull,
-  @required bool buttonCallbackIsNull,
-  @required bool badAppExperience,
-  @required bool badRideExperience,
-  @required bool hasAnotherAccount,
-  @required bool doesntUseService,
-  @required bool another,
+  required WidgetTester tester,
+  required bool passwordHasFocus,
+  required bool buttonColorIsDisabled,
+  required bool buttonChildIsNull,
+  required bool buttonCallbackIsNull,
+  required bool badAppExperience,
+  required bool badRideExperience,
+  required bool hasAnotherAccount,
+  required bool doesntUseService,
+  required bool another,
 }) {
   DeleteAccountState state = tester.state(find.byType(DeleteAccount));
   expect(state.passwordFocusNode.hasFocus, equals(passwordHasFocus));
@@ -334,7 +334,7 @@ void expectState({
 }
 
 void expectDeleteReasons(
-    {@required WidgetTester tester,
+    {required WidgetTester tester,
     bool badAppExperience,
     bool badRideExperience,
     bool hasAnotherAccount,

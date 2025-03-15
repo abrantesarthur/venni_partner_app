@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mockito/mockito.dart';
 import 'package:partner_app/models/connectivity.dart';
-import 'package:partner_app/models/firebase.dart';
+import 'package:partner_app/models/user.dart';
 import 'package:partner_app/models/partner.dart';
 import 'package:partner_app/screens/editPhone.dart';
 import 'package:partner_app/screens/insertNewPhone.dart';
@@ -37,7 +37,7 @@ void main() {
     await tester.pumpWidget(
       MultiProvider(
         providers: [
-          ChangeNotifierProvider<FirebaseModel>(
+          ChangeNotifierProvider<UserModel>(
               create: (context) => mockFirebaseModel),
           ChangeNotifierProvider<PartnerModel>(
               create: (context) => mockPartnerModel),
@@ -178,8 +178,8 @@ void main() {
 
     // expect phone text to be successfully updated
     EditPhoneState editPhoneState = tester.state(find.byType(EditPhone));
-    FirebaseModel firebase =
-        Provider.of<FirebaseModel>(editPhoneState.context, listen: false);
+    UserModel firebase =
+        Provider.of<UserModel>(editPhoneState.context, listen: false);
     expect(firebase.auth.currentUser.phoneNumber.withoutCountryCode(),
         equals("(38) 99999-9999"));
   });

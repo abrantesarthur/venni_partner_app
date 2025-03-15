@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:partner_app/models/connectivity.dart';
-import 'package:partner_app/models/firebase.dart';
+import 'package:partner_app/models/user.dart';
 import 'package:partner_app/models/partner.dart';
 import 'package:partner_app/vendors/firebaseDatabase/interfaces.dart';
 import 'package:partner_app/vendors/firebaseDatabase/methods.dart';
@@ -18,14 +18,14 @@ enum SendBankAccountMode { send, edit }
 class SendBankAccountArguments {
   final SendBankAccountMode mode;
 
-  SendBankAccountArguments({@required this.mode});
+  SendBankAccountArguments({required this.mode});
 }
 
 class SendBankAccount extends StatefulWidget {
   static const String routeName = "SendBankAccount";
   final SendBankAccountMode mode;
 
-  SendBankAccount({@required this.mode});
+  SendBankAccount({required this.mode});
 
   @override
   SendBankAccountState createState() => SendBankAccountState();
@@ -311,7 +311,7 @@ class SendBankAccountState extends State<SendBankAccount> with RouteAware {
   Future<void> buttonCallback(BuildContext context) async {
     final connectivity = Provider.of<ConnectivityModel>(context, listen: false);
     final partner = Provider.of<PartnerModel>(context, listen: false);
-    final firebase = Provider.of<FirebaseModel>(context, listen: false);
+    final firebase = Provider.of<UserModel>(context, listen: false);
 
     if (!connectivity.hasConnection) {
       await connectivity.alertWhenOffline(

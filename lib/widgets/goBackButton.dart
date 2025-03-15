@@ -4,7 +4,7 @@ class GoBackButton extends StatelessWidget {
   final VoidCallback onPressed;
   final IconData icon;
 
-  GoBackButton({@required this.onPressed, this.icon});
+  GoBackButton({required this.onPressed, this.icon});
 
   @override
   Widget build(BuildContext context) {

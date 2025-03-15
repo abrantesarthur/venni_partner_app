@@ -21,7 +21,7 @@ class AppButton extends StatelessWidget {
     this.textStyle,
     this.width,
     this.height,
-    @required this.textData,
+    required this.textData,
     this.iconRight,
     this.iconRightColor,
     this.iconLeft,
@@ -31,7 +31,7 @@ class AppButton extends StatelessWidget {
     this.border,
     this.hasShadow = true,
     this.widgetRight,
-    @required this.onTapCallBack,
+    required this.onTapCallBack,
   });
 
   @override

@@ -8,14 +8,14 @@ import 'package:partner_app/widgets/overallPadding.dart';
 class TransferDetailArguments {
   final Transfer transfer;
 
-  TransferDetailArguments({@required this.transfer});
+  TransferDetailArguments({required this.transfer});
 }
 
 class TransferDetail extends StatefulWidget {
   static String routeName = "TransferDetail";
   final Transfer transfer;
 
-  TransferDetail({@required this.transfer});
+  TransferDetail({required this.transfer});
 
   @override
   TransferDetailState createState() => TransferDetailState();

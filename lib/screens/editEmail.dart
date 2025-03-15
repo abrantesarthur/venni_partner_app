@@ -8,7 +8,7 @@ import 'package:partner_app/widgets/goBackScaffold.dart';
 import 'package:partner_app/widgets/warning.dart';
 import 'package:provider/provider.dart';
 
-import '../models/firebase.dart';
+import '../models/user.dart';
 
 class EditEmail extends StatefulWidget {
   static const String routeName = "EditEmail";
@@ -32,7 +32,7 @@ class EditEmailState extends State<EditEmail> {
   @override
   Widget build(BuildContext context) {
     final double screenHeight = MediaQuery.of(context).size.height;
-    final FirebaseModel firebase = Provider.of<FirebaseModel>(context);
+    final UserModel firebase = Provider.of<UserModel>(context);
     ConnectivityModel connectivity = Provider.of<ConnectivityModel>(context);
 
     return GoBackScaffold(

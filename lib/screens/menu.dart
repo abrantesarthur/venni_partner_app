@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:partner_app/models/connectivity.dart';
-import 'package:partner_app/models/firebase.dart';
+import 'package:partner_app/models/user.dart';
 import 'package:partner_app/models/partner.dart';
 import 'package:partner_app/screens/demand.dart';
 import 'package:partner_app/screens/help.dart';
@@ -20,7 +20,7 @@ class Menu extends StatelessWidget {
   Widget build(BuildContext context) {
     final double screenHeight = MediaQuery.of(context).size.height;
     final double screenWidth = MediaQuery.of(context).size.width;
-    final FirebaseModel firebase = Provider.of<FirebaseModel>(context);
+    final UserModel firebase = Provider.of<UserModel>(context);
     final PartnerModel partner = Provider.of<PartnerModel>(context);
     final ConnectivityModel connectivity = Provider.of<ConnectivityModel>(
       context,

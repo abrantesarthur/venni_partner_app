@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mockito/mockito.dart';
 import 'package:partner_app/models/connectivity.dart';
-import 'package:partner_app/models/firebase.dart';
+import 'package:partner_app/models/user.dart';
 import 'package:partner_app/models/googleMaps.dart';
 import 'package:partner_app/models/partner.dart';
 import 'package:partner_app/models/timer.dart';
@@ -36,7 +36,7 @@ void main() {
     when(mockDatabaseReference.child(any)).thenReturn(mockDatabaseReference);
     when(mockDatabaseReference.onValue).thenAnswer((_) => mockEvent);
     when(mockEvent.listen(any)).thenAnswer((_) => mockStreamSubscription);
-    when(mockFirebaseModel.isRegistered).thenReturn(true);
+    when(mockFirebaseModel.isUserSignedIn).thenReturn(true);
     when(mockConnectivityModel.hasConnection).thenReturn(true);
     when(mockPartnerModel.name).thenReturn("Fulano");
     when(mockPartnerModel.cnhSubmitted).thenReturn(true);
@@ -47,8 +47,8 @@ void main() {
   });
 
   void setupFirebaseMocks({
-    @required WidgetTester tester,
-    @required String verifyPhoneNumberCallbackName,
+    required WidgetTester tester,
+    required String verifyPhoneNumberCallbackName,
     bool userHasPartnerAccount,
     bool partnerAccountStatusIsApproved,
     bool userisRegistered,
@@ -73,9 +73,9 @@ void main() {
     }
 
     if (userisRegistered != null && userisRegistered) {
-      when(mockFirebaseModel.isRegistered).thenReturn(true);
+      when(mockFirebaseModel.isUserSignedIn).thenReturn(true);
     } else {
-      when(mockFirebaseModel.isRegistered).thenReturn(false);
+      when(mockFirebaseModel.isUserSignedIn).thenReturn(false);
     }
 
     // mock FirebaseAuth's signInWithCredential to return mockUserCredential
@@ -159,7 +159,7 @@ void main() {
     Future<void> pumpWidget(WidgetTester tester) async {
       await tester.pumpWidget(MultiProvider(
         providers: [
-          ChangeNotifierProvider<FirebaseModel>(
+          ChangeNotifierProvider<UserModel>(
               create: (context) => mockFirebaseModel),
           ChangeNotifierProvider<ConnectivityModel>(
             create: (context) => mockConnectivityModel,
@@ -286,7 +286,7 @@ void main() {
     Future<void> pumpWidget(WidgetTester tester) async {
       await tester.pumpWidget(MultiProvider(
         providers: [
-          ChangeNotifierProvider<FirebaseModel>(
+          ChangeNotifierProvider<UserModel>(
             create: (context) => mockFirebaseModel,
           ),
           ChangeNotifierProvider<ConnectivityModel>(
@@ -534,8 +534,8 @@ void main() {
 
   group("verificationFailed ", () {
     void testVerificationFailed({
-      @required String errorCode,
-      @required String warningMessage,
+      required String errorCode,
+      required String warningMessage,
     }) {
       testWidgets("called with " + errorCode, (
         WidgetTester tester,
@@ -543,7 +543,7 @@ void main() {
         // add InsertPhone to the UI
         await tester.pumpWidget(MultiProvider(
           providers: [
-            ChangeNotifierProvider<FirebaseModel>(
+            ChangeNotifierProvider<UserModel>(
                 create: (context) => mockFirebaseModel),
             ChangeNotifierProvider<ConnectivityModel>(
               create: (context) => mockConnectivityModel,
@@ -610,7 +610,7 @@ void main() {
       await tester.pumpWidget(
         MultiProvider(
           providers: [
-            ChangeNotifierProvider<FirebaseModel>(
+            ChangeNotifierProvider<UserModel>(
                 create: (context) => mockFirebaseModel),
             ChangeNotifierProvider<ConnectivityModel>(
               create: (context) => mockConnectivityModel,

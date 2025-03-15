@@ -90,10 +90,10 @@ class Vehicle {
   String plate;
 
   Vehicle({
-    @required this.brand,
-    @required this.model,
-    @required this.year,
-    @required this.plate,
+    required this.brand,
+    required this.model,
+    required this.year,
+    required this.plate,
   });
 
   factory Vehicle.fromJson(Map<dynamic, dynamic> json) {
@@ -139,11 +139,11 @@ class SubmittedDocuments {
   final bool bankAccount;
 
   SubmittedDocuments({
-    @required this.cnh,
-    @required this.crlv,
-    @required this.photoWithCnh,
-    @required this.profilePhoto,
-    @required this.bankAccount,
+    required this.cnh,
+    required this.crlv,
+    required this.photoWithCnh,
+    required this.profilePhoto,
+    required this.bankAccount,
   });
 
   factory SubmittedDocuments.fromJson(Map json) {
@@ -258,14 +258,14 @@ class BankAccount {
 
   BankAccount({
     this.id,
-    @required this.bankCode,
-    @required this.agencia,
+    required this.bankCode,
+    required this.agencia,
     this.agenciaDv,
-    @required this.conta,
-    @required this.contaDv,
-    @required this.type,
-    @required this.documentNumber,
-    @required this.legalName,
+    required this.conta,
+    required this.contaDv,
+    required this.type,
+    required this.documentNumber,
+    required this.legalName,
   });
 
   factory BankAccount.fromJson(Map json) {
@@ -340,29 +340,29 @@ class PartnerInterface {
   final int amountOwed;
 
   PartnerInterface({
-    @required this.id,
-    @required this.name,
-    @required this.lastName,
-    @required this.cpf,
-    @required this.gender,
-    @required this.memberSince,
-    @required this.phoneNumber,
-    @required this.rating,
-    @required this.totalTrips,
-    @required this.pagarmeRecipientID,
-    @required this.partnerStatus,
-    @required this.accountStatus,
-    @required this.denialReason,
-    @required this.lockReason,
-    @required this.currentClientID,
-    @required this.currentLatitude,
-    @required this.currentLongitude,
-    @required this.currentZone,
-    @required this.idleSince,
-    @required this.vehicle,
-    @required this.submittedDocuments,
-    @required this.bankAccount,
-    @required this.amountOwed,
+    required this.id,
+    required this.name,
+    required this.lastName,
+    required this.cpf,
+    required this.gender,
+    required this.memberSince,
+    required this.phoneNumber,
+    required this.rating,
+    required this.totalTrips,
+    required this.pagarmeRecipientID,
+    required this.partnerStatus,
+    required this.accountStatus,
+    required this.denialReason,
+    required this.lockReason,
+    required this.currentClientID,
+    required this.currentLatitude,
+    required this.currentLongitude,
+    required this.currentZone,
+    required this.idleSince,
+    required this.vehicle,
+    required this.submittedDocuments,
+    required this.bankAccount,
+    required this.amountOwed,
   });
 
   factory PartnerInterface.fromJson(Map json) {

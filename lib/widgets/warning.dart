@@ -8,7 +8,7 @@ class Warning extends StatelessWidget {
   final double fontSize;
 
   Warning(
-      {@required this.message, this.onTapCallback, this.color, this.fontSize});
+      {required this.message, this.onTapCallback, this.color, this.fontSize});
 
   @override
   Widget build(BuildContext context) {

@@ -11,26 +11,26 @@ import 'package:partner_app/widgets/overallPadding.dart';
 import 'package:provider/provider.dart';
 import 'package:partner_app/utils/utils.dart';
 
-import '../models/firebase.dart';
+import '../models/user.dart';
 
 class ProfileArguments {
   final PartnerModel partner;
-  final FirebaseModel firebase;
+  final UserModel firebase;
 
   ProfileArguments({
-    @required this.partner,
-    @required this.firebase,
+    required this.partner,
+    required this.firebase,
   });
 }
 
 class Profile extends StatefulWidget {
   static const String routeName = "Profile";
   final PartnerModel partner;
-  final FirebaseModel firebase;
+  final UserModel firebase;
 
   Profile({
-    @required this.partner,
-    @required this.firebase,
+    required this.partner,
+    required this.firebase,
   });
 
   ProfileState createState() => ProfileState();
@@ -46,7 +46,7 @@ class ProfileState extends State<Profile> {
 
     WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
       // reload firebase so we get update info about email confirmation
-      FirebaseModel firebase = Provider.of<FirebaseModel>(
+      UserModel firebase = Provider.of<UserModel>(
         context,
         listen: false,
       );
@@ -68,7 +68,7 @@ class ProfileState extends State<Profile> {
   @override
   Widget build(BuildContext context) {
     final double screenHeight = MediaQuery.of(context).size.height;
-    final FirebaseModel firebase = Provider.of<FirebaseModel>(context);
+    final UserModel firebase = Provider.of<UserModel>(context);
     final PartnerModel partner = Provider.of<PartnerModel>(context);
 
     return FutureBuilder(

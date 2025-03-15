@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:partner_app/models/connectivity.dart';
-import 'package:partner_app/models/firebase.dart';
+import 'package:partner_app/models/user.dart';
 import 'package:partner_app/models/partner.dart';
 import 'package:partner_app/screens/balance.dart';
 import 'package:partner_app/screens/transfers.dart';
@@ -16,23 +16,23 @@ import 'package:partner_app/widgets/overallPadding.dart';
 import 'package:provider/provider.dart';
 
 class WalletArguments {
-  final FirebaseModel firebase;
+  final UserModel firebase;
   final PartnerModel partner;
 
   WalletArguments({
-    @required this.firebase,
-    @required this.partner,
+    required this.firebase,
+    required this.partner,
   });
 }
 
 class Wallet extends StatefulWidget {
   static const routeName = "Wallet";
-  final FirebaseModel firebase;
+  final UserModel firebase;
   final PartnerModel partner;
 
   Wallet({
-    @required this.firebase,
-    @required this.partner,
+    required this.firebase,
+    required this.partner,
   });
 
   @override
@@ -108,7 +108,7 @@ class WalletState extends State<Wallet> {
     final screenWidth = MediaQuery.of(context).size.width;
 
     PartnerModel partner = Provider.of<PartnerModel>(context);
-    FirebaseModel firebase = Provider.of<FirebaseModel>(
+    UserModel firebase = Provider.of<UserModel>(
       context,
       listen: false,
     );

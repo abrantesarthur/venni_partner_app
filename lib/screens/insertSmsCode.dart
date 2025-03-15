@@ -5,7 +5,7 @@ import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:partner_app/models/connectivity.dart';
-import 'package:partner_app/models/firebase.dart';
+import 'package:partner_app/models/user.dart';
 import 'package:partner_app/styles.dart';
 import 'package:partner_app/widgets/appInputText.dart';
 import 'package:partner_app/widgets/arrowBackButton.dart';
@@ -28,10 +28,10 @@ class InsertSmsCodeArguments {
   final InsertSmsCodeMode mode;
 
   InsertSmsCodeArguments({
-    @required this.verificationId,
-    @required this.resendToken,
-    @required this.phoneNumber,
-    @required this.mode,
+    required this.verificationId,
+    required this.resendToken,
+    required this.phoneNumber,
+    required this.mode,
   });
 }
 
@@ -44,10 +44,10 @@ class InsertSmsCode extends StatefulWidget {
   final InsertSmsCodeMode mode;
 
   InsertSmsCode({
-    @required this.verificationId,
-    @required this.resendToken,
-    @required this.phoneNumber,
-    @required this.mode,
+    required this.verificationId,
+    required this.resendToken,
+    required this.phoneNumber,
+    required this.mode,
   });
 
   @override
@@ -165,7 +165,7 @@ class InsertSmsCodeState extends State<InsertSmsCode> {
     PhoneAuthCredential credential, {
     Function onExceptionCallback,
   }) async {
-    FirebaseModel firebase = Provider.of<FirebaseModel>(context, listen: false);
+    UserModel firebase = Provider.of<UserModel>(context, listen: false);
 
     if (widget.mode == InsertSmsCodeMode.editPhone &&
         firebase.auth.currentUser != null) {
@@ -358,8 +358,8 @@ class InsertSmsCodeState extends State<InsertSmsCode> {
   @override
   Widget build(BuildContext context) {
     final screenHeight = MediaQuery.of(context).size.height;
-    _firebaseAuth = Provider.of<FirebaseModel>(context).auth;
-    _firebaseDatabase = Provider.of<FirebaseModel>(context).database;
+    _firebaseAuth = Provider.of<UserModel>(context).auth;
+    _firebaseDatabase = Provider.of<UserModel>(context).database;
 
     if (remainingSeconds <= 0) {
       // if remainingSeconds reaches 0, allow user to resend sms code.

@@ -6,7 +6,7 @@ class PasswordWarning extends StatelessWidget {
   final bool isValid;
   final String message;
 
-  PasswordWarning({@required this.isValid, @required this.message});
+  PasswordWarning({required this.isValid, required this.message});
 
   @override
   Widget build(BuildContext context) {

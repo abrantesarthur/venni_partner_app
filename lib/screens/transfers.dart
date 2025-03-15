@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 import 'package:partner_app/models/connectivity.dart';
-import 'package:partner_app/models/firebase.dart';
+import 'package:partner_app/models/user.dart';
 import 'package:partner_app/screens/transferDetail.dart';
 import 'package:partner_app/styles.dart';
 import 'package:partner_app/vendors/firebaseFunctions/interfaces.dart';
@@ -11,7 +11,7 @@ import 'package:partner_app/widgets/overallPadding.dart';
 import 'package:provider/provider.dart';
 
 class TransfersRouteArguments {
-  final FirebaseModel firebase;
+  final UserModel firebase;
   final ConnectivityModel connectivity;
 
   TransfersRouteArguments(this.firebase, this.connectivity);
@@ -19,10 +19,10 @@ class TransfersRouteArguments {
 
 class TransfersRoute extends StatefulWidget {
   static String routeName = "TransfersRoute";
-  final FirebaseModel firebase;
+  final UserModel firebase;
   final ConnectivityModel connectivity;
 
-  TransfersRoute({@required this.firebase, @required this.connectivity});
+  TransfersRoute({required this.firebase, required this.connectivity});
 
   @override
   TransfersRouteState createState() => TransfersRouteState();

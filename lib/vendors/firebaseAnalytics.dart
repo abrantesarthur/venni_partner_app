@@ -51,7 +51,7 @@ extension AppFirebaseAnalytics on FirebaseAnalytics {
   }
 
   // partnerIdleInterval should be in milliseconds
-  Future<void> logPartnerBusy({@required int partnerIdleInterval}) {
+  Future<void> logPartnerBusy({required int partnerIdleInterval}) {
     return this.logEvent(name: "partner_busy", parameters: {
       _TIMESTAMP: DateTime.now().millisecondsSinceEpoch.toString(),
       _PARTNER_IDLE_INTERVAL: (partnerIdleInterval / 1000).round().toString(),
@@ -59,7 +59,7 @@ extension AppFirebaseAnalytics on FirebaseAnalytics {
   }
 
   // tripDuration should be in ms
-  Future<void> logPartnerCompleteTrip({@required int tripDuration}) {
+  Future<void> logPartnerCompleteTrip({required int tripDuration}) {
     return this.logEvent(name: "partner_complete_trip", parameters: {
       _TIMESTAMP: DateTime.now().millisecondsSinceEpoch.toString(),
       _TRIP_DURATION: (tripDuration / 1000).round().toString(),
@@ -73,7 +73,7 @@ extension AppFirebaseAnalytics on FirebaseAnalytics {
   }
 
   // clientWaitingTime should be in ms
-  Future<void> logPartnerStartTrip({@required int clientWaitingTime}) {
+  Future<void> logPartnerStartTrip({required int clientWaitingTime}) {
     return this.logEvent(name: "partner_start_trip", parameters: {
       _TIMESTAMP: DateTime.now().millisecondsSinceEpoch.toString(),
       _CLIENT_WAITING_TIME: (clientWaitingTime / 1000).round().toString(),
@@ -95,9 +95,9 @@ extension AppFirebaseAnalytics on FirebaseAnalytics {
   }
 
   Future<void> logEventOnPartnerStatus({
-    @required BuildContext context,
-    @required PartnerStatus newStatus,
-    @required oldStatus,
+    required BuildContext context,
+    required PartnerStatus newStatus,
+    required oldStatus,
   }) async {
     PartnerModel partner = Provider.of<PartnerModel>(context, listen: false);
 

@@ -12,7 +12,7 @@ class TimerModel extends ChangeNotifier {
 
   // kickOffTimer decrements remainingSeconds once per second until 0
   void kickOff({
-    @required durationSeconds,
+    required durationSeconds,
     void Function() callback,
   }) {
     // cancel any previous timers

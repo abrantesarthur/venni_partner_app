@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mockito/mockito.dart';
 import 'package:partner_app/models/connectivity.dart';
-import 'package:partner_app/models/firebase.dart';
+import 'package:partner_app/models/user.dart';
 import 'package:partner_app/models/partner.dart';
 import 'package:partner_app/screens/insertNewPhone.dart';
 import 'package:partner_app/screens/insertSmsCode.dart';
@@ -26,13 +26,13 @@ void main() {
     when(mockFirebaseModel.auth).thenReturn(mockFirebaseAuth);
     when(mockFirebaseAuth.currentUser).thenReturn(mockUser);
     when(mockFirebaseModel.database).thenReturn(mockFirebaseDatabase);
-    when(mockFirebaseModel.isRegistered).thenReturn(true);
+    when(mockFirebaseModel.isUserSignedIn).thenReturn(true);
     when(mockConnectivityModel.hasConnection).thenReturn(true);
   });
 
   void setVerifyPhoneNumberMock({
-    @required WidgetTester tester,
-    @required verifyPhoneNumberCallbackName,
+    required WidgetTester tester,
+    required verifyPhoneNumberCallbackName,
     FirebaseAuthException exception,
   }) {
     // get InsertNewPhoneState
@@ -96,7 +96,7 @@ void main() {
     await tester.pumpWidget(
       MultiProvider(
         providers: [
-          ChangeNotifierProvider<FirebaseModel>(
+          ChangeNotifierProvider<UserModel>(
               create: (context) => mockFirebaseModel),
           ChangeNotifierProvider<PartnerModel>(
               create: (context) => mockPartnerModel),
@@ -318,8 +318,8 @@ void main() {
 
   group("verificationFailed", () {
     void testVerificationFailed({
-      @required String errorCode,
-      @required String warningMessage,
+      required String errorCode,
+      required String warningMessage,
     }) {
       testWidgets("called with " + errorCode, (
         WidgetTester tester,
@@ -381,7 +381,7 @@ void main() {
       await tester.pumpWidget(
         MultiProvider(
           providers: [
-            ChangeNotifierProvider<FirebaseModel>(
+            ChangeNotifierProvider<UserModel>(
                 create: (context) => mockFirebaseModel),
             ChangeNotifierProvider<PartnerModel>(
                 create: (context) => mockPartnerModel),
@@ -495,8 +495,8 @@ void main() {
     });
 
     void testException({
-      @required String code,
-      @required String expectedWarning,
+      required String code,
+      required String expectedWarning,
     }) {
       testWidgets(
           "pushes InsertSmsCode screen which, on '" +
@@ -686,8 +686,8 @@ void main() {
 }
 
 void expectActiveState({
-  @required WidgetTester tester,
-  @required String phoneNumber,
+  required WidgetTester tester,
+  required String phoneNumber,
   String message,
 }) {
   // get InsertNewPhoneState and AppButton finder
@@ -719,7 +719,7 @@ void expectActiveState({
 }
 
 void expectInactiveState({
-  @required WidgetTester tester,
+  required WidgetTester tester,
   String message,
 }) {
   // get InsertNewPhoneState and AppButton finder

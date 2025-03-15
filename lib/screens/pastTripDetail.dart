@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
-import 'package:partner_app/models/firebase.dart';
+import 'package:partner_app/models/user.dart';
 import 'package:partner_app/models/googleMaps.dart';
 import 'package:partner_app/models/partner.dart';
 import 'package:partner_app/screens/pastTrips.dart';
@@ -14,22 +14,22 @@ import 'package:provider/provider.dart';
 
 class PastTripDetailArguments {
   final Trip pastTrip;
-  final FirebaseModel firebase;
+  final UserModel firebase;
 
   PastTripDetailArguments({
-    @required this.pastTrip,
-    @required this.firebase,
+    required this.pastTrip,
+    required this.firebase,
   });
 }
 
 class PastTripDetail extends StatefulWidget {
   static String routeName = "PastTripDetail";
   final Trip pastTrip;
-  final FirebaseModel firebase;
+  final UserModel firebase;
 
   PastTripDetail({
-    @required this.pastTrip,
-    @required this.firebase,
+    required this.pastTrip,
+    required this.firebase,
   });
 
   @override
@@ -122,8 +122,8 @@ class PastTripDetailState extends State<PastTripDetail> {
 }
 
 Widget _buildFloatingCard({
-  @required BuildContext context,
-  @required Trip pastTrip,
+  required BuildContext context,
+  required Trip pastTrip,
 }) {
   final screenWidth = MediaQuery.of(context).size.width;
   final screenHeight = MediaQuery.of(context).size.height;
