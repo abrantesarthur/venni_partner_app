@@ -1,9 +1,9 @@
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter/material.dart';
 import 'package:partner_app/models/connectivity.dart';
 import 'package:partner_app/models/user.dart';
 import 'package:partner_app/screens/insertSmsCode.dart';
+import 'package:partner_app/services/firebase/firebase.dart';
 import 'package:partner_app/styles.dart';
 import 'package:partner_app/widgets/arrowBackButton.dart';
 import 'package:partner_app/widgets/circularButton.dart';
@@ -18,20 +18,21 @@ import 'package:partner_app/services/firebase/firebaseAuth.dart';
 
 class InsertPhone extends StatefulWidget {
   static const String routeName = "insertPhone";
+  final  firebase = FirebaseService();
 
   @override
   InsertPhoneNumberState createState() => InsertPhoneNumberState();
 }
 
 class InsertPhoneNumberState extends State<InsertPhone> {
-  Color _circularButtonColor;
-  Function circularButtonCallback;
-  Widget _warningMessage;
-  String phoneNumber;
-  int _resendToken;
-  bool enabled;
-  TextEditingController phoneTextEditingController;
-  Widget _circularButtonChild;
+  late Color _circularButtonColor;
+  Function? circularButtonCallback;
+  Widget? _warningMessage;
+  String? phoneNumber;
+  int? _resendToken;
+  late bool enabled;
+  late TextEditingController phoneTextEditingController;
+  late Widget _circularButtonChild;
   var _controllerListener;
 
   @override
@@ -68,7 +69,7 @@ class InsertPhoneNumberState extends State<InsertPhone> {
     super.dispose();
   }
 
-  void setInactiveState({String message}) {
+  void setInactiveState({String? message}) {
     setState(() {
       _circularButtonColor = AppColor.disabled;
       circularButtonCallback = null;
@@ -83,7 +84,7 @@ class InsertPhoneNumberState extends State<InsertPhone> {
     });
   }
 
-  void setActiveState({String message, required String phone}) {
+  void setActiveState({String? message, required String phone}) {
     setState(() {
       _circularButtonColor = AppColor.primaryPink;
       circularButtonCallback = buttonCallback;
@@ -95,22 +96,25 @@ class InsertPhoneNumberState extends State<InsertPhone> {
   void codeSentCallback(
     BuildContext context,
     String verificationId,
-    int resendToken,
+    int? resendToken,
   ) async {
     setState(() {
       _resendToken = resendToken;
     });
-    // update the UI for the user to enter the SMS code
-    await Navigator.pushNamed(
-      context,
-      InsertSmsCode.routeName,
-      arguments: InsertSmsCodeArguments(
-        phoneNumber: phoneNumber,
-        verificationId: verificationId,
-        resendToken: resendToken,
-        mode: InsertSmsCodeMode.insertNewPhone,
-      ),
-    );
+    if(phoneNumber != null) {
+      // update the UI for the user to enter the SMS code
+      await Navigator.pushNamed(
+        context,
+        InsertSmsCode.routeName,
+        arguments: InsertSmsCodeArguments(
+          phoneNumber: phoneNumber!,
+          verificationId: verificationId,
+          resendToken: resendToken,
+          mode: InsertSmsCodeMode.insertNewPhone,
+        ),
+      );
+    }
+
 
     setState(() {
       enabled = true;
@@ -125,8 +129,6 @@ class InsertPhoneNumberState extends State<InsertPhone> {
   // circularButtonCallback sends request to firebase to verify phone number
   Future<void> buttonCallback(
     BuildContext context,
-    FirebaseAuth firebaseAuth,
-    FirebaseDatabase firebaseDatabase,
   ) async {
     // make sure user is connected to the internet
     ConnectivityModel connectivity = Provider.of<ConnectivityModel>(
@@ -150,15 +152,13 @@ class InsertPhoneNumberState extends State<InsertPhone> {
         );
       });
 
-      await firebaseAuth.verifyPhoneNumber(
+      await widget.firebase.auth.verifyPhoneNumber(
           timeout: Duration(seconds: 60),
           phoneNumber: phoneNumber,
           verificationCompleted: (PhoneAuthCredential credential) {
-            firebaseAuth.verificationCompletedCallback(
+            widget.firebase.auth.verificationCompletedCallback(
                 context: context,
                 credential: credential,
-                firebaseDatabase: firebaseDatabase,
-                firebaseAuth: firebaseAuth,
                 onExceptionCallback: (FirebaseAuthException e) {
                   setInactiveState(
                     message: "Algo deu errado. Tente novamente.",
@@ -166,11 +166,11 @@ class InsertPhoneNumberState extends State<InsertPhone> {
                 });
           },
           verificationFailed: (FirebaseAuthException e) {
-            String errorMsg = firebaseAuth.verificationFailedCallback(e);
+            String errorMsg = widget.firebase.auth.verificationFailedCallback(e);
             setInactiveState(message: errorMsg);
           },
-          codeSent: (String verificationId, int resendToken) {
-            codeSentCallback(context, verificationId, resendToken);
+          codeSent: (String verificationId, int? forceResendingToken) {
+            codeSentCallback(context, verificationId, forceResendingToken);
           },
           codeAutoRetrievalTimeout: (String verificationId) {},
           forceResendingToken: _resendToken);
@@ -221,7 +221,7 @@ class InsertPhoneNumberState extends State<InsertPhone> {
                       SizedBox(height: screenHeight / 40),
                       _warningMessage == null
                           ? Spacer(flex: 18)
-                          : Expanded(flex: 18, child: _warningMessage),
+                          : Expanded(flex: 18, child: _warningMessage!),
                       Row(
                         children: [
                           Spacer(),
@@ -230,10 +230,8 @@ class InsertPhoneNumberState extends State<InsertPhone> {
                             child: _circularButtonChild,
                             onPressedCallback: circularButtonCallback == null
                                 ? () {}
-                                : () => circularButtonCallback(
+                                : () => circularButtonCallback!(
                                       context,
-                                      firebaseModel.auth,
-                                      firebaseModel.database,
                                     ),
                           ),
                         ],

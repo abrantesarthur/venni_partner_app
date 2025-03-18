@@ -23,7 +23,7 @@ enum InsertSmsCodeMode {
 
 class InsertSmsCodeArguments {
   final String verificationId;
-  final int resendToken;
+  final int? resendToken;
   final String phoneNumber;
   final InsertSmsCodeMode mode;
 
@@ -40,7 +40,7 @@ class InsertSmsCode extends StatefulWidget {
 
   final String verificationId;
   final String phoneNumber;
-  final int resendToken;
+  final int? resendToken;
   final InsertSmsCodeMode mode;
 
   InsertSmsCode({
@@ -67,7 +67,7 @@ class InsertSmsCodeState extends State<InsertSmsCode> {
   Timer timer;
   int remainingSeconds = 15;
   String _verificationId;
-  int _resendToken;
+  int? _resendToken;
   FirebaseAuth _firebaseAuth;
   FirebaseDatabase _firebaseDatabase;
   Exception _exception;
