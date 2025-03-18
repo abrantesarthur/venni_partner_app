@@ -1,5 +1,5 @@
 import 'package:flutter_test/flutter_test.dart';
-import 'package:partner_app/vendors/firebaseDatabase/interfaces.dart';
+import 'package:partner_app/services/firebase/database/interfaces.dart';
 
 void main() {
   group("PartnerStatus", () {

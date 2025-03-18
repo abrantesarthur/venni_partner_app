@@ -3,8 +3,8 @@ import 'package:flutter/services.dart';
 import 'package:partner_app/models/connectivity.dart';
 import 'package:partner_app/models/user.dart';
 import 'package:partner_app/models/partner.dart';
-import 'package:partner_app/vendors/firebaseDatabase/interfaces.dart';
-import 'package:partner_app/vendors/firebaseDatabase/methods.dart';
+import 'package:partner_app/services/firebase/database/interfaces.dart';
+import 'package:partner_app/services/firebase/database/methods.dart';
 import 'package:partner_app/vendors/firebaseFunctions/methods.dart';
 import 'package:partner_app/styles.dart';
 import 'package:partner_app/widgets/appButton.dart';
@@ -314,7 +314,7 @@ class SendBankAccountState extends State<SendBankAccount> with RouteAware {
     final firebase = Provider.of<UserModel>(context, listen: false);
 
     if (!connectivity.hasConnection) {
-      await connectivity.alertWhenOffline(
+      await connectivity.alertOffline(
         context,
         message:
             "Conecte-se à internet para adicionar as informações bancárias.",

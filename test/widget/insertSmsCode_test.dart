@@ -14,13 +14,13 @@ import 'package:partner_app/screens/insertEmail.dart';
 import 'package:partner_app/screens/insertName.dart';
 import 'package:partner_app/screens/start.dart';
 import 'package:partner_app/styles.dart';
-import 'package:partner_app/vendors/firebaseDatabase/interfaces.dart';
+import 'package:partner_app/services/firebase/database/interfaces.dart';
 import 'package:partner_app/widgets/appInputText.dart';
 import 'package:partner_app/widgets/circularButton.dart';
 import 'package:partner_app/widgets/warning.dart';
 import 'package:provider/provider.dart';
 import 'package:partner_app/screens/insertSmsCode.dart';
-import 'package:partner_app/vendors/firebaseAuth.dart';
+import 'package:partner_app/services/firebase/firebaseAuth.dart';
 import '../mocks.dart';
 
 // TODO: test different modes

@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:partner_app/vendors/firebaseDatabase/interfaces.dart';
+import 'package:partner_app/services/firebase/database/interfaces.dart';
 import 'package:partner_app/vendors/firebaseFunctions/interfaces.dart';
 import 'package:partner_app/widgets/borderlessButton.dart';
 import 'package:partner_app/widgets/goBackButton.dart';

@@ -10,7 +10,7 @@ class AccountLocked extends StatefulWidget {
 
 class AccountLockedState extends State<AccountLocked> {
   bool lockScreen = false;
-  Widget buttonChild;
+  Widget? buttonChild;
 
   @override
   Widget build(BuildContext context) {
@@ -41,16 +41,16 @@ class AccountLockedState extends State<AccountLocked> {
       collapsed: Column(
         children: [
           SizedBox(height: screenHeight / 25),
-          buttonChild == null
-              ? Text(
-                  "CONTA BLOQUEADA",
-                  style: TextStyle(
-                    fontWeight: FontWeight.bold,
-                    fontSize: 24,
-                    color: AppColor.primaryPink,
-                  ),
-                )
-              : buttonChild,
+          buttonChild != null ?
+            buttonChild! :
+            Text(
+              "CONTA BLOQUEADA",
+              style: TextStyle(
+                fontWeight: FontWeight.bold,
+                fontSize: 24,
+                color: AppColor.primaryPink,
+              ),
+            )
         ],
       ),
       color: Colors.white,

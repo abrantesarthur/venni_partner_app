@@ -1,7 +1,6 @@
 import 'dart:io';
 
-import 'package:flutter/material.dart';
-import 'package:flutter_dotenv/flutter_dotenv.dart' as DotEnv;
+import 'package:flutter_dotenv/flutter_dotenv.dart';
 
 enum Flavor { DEV, PROD }
 
@@ -30,7 +29,7 @@ class AppConfig {
   final Flavor flavor;
   final ConfigValues values;
 
-  static AppConfig _instance;
+  static late AppConfig _instance;
   static AppConfig get env => _instance;
 
   AppConfig._internal({
@@ -39,57 +38,83 @@ class AppConfig {
   });
 
   factory AppConfig({required Flavor flavor}) {
+    // Check for required environment variables
+    final autocompleteBaseURL = dotenv.env["AUTOCOMPLETE_BASE_URL"];
+    if (autocompleteBaseURL == null || autocompleteBaseURL.isEmpty) {
+      throw Exception("Missing required environment variable: AUTOCOMPLETE_BASE_URL");
+    }
+    
+    final directionsBaseURL = dotenv.env["DIRECTIONS_BASE_URL"];
+    if (directionsBaseURL == null || directionsBaseURL.isEmpty) {
+      throw Exception("Missing required environment variable: DIRECTIONS_BASE_URL");
+    }
+
+    final emulateCloudFunctions = dotenv.env["EMULATE_CLOUD_FUNCTIONS"];
+    if (emulateCloudFunctions == null || emulateCloudFunctions.isEmpty) {
+      throw Exception("Missing required environment variable: EMULATE_CLOUD_FUNCTIONS");
+    }
+    
     ConfigValues values = ConfigValues(
-      autocompleteBaseURL: DotEnv.env["AUTOCOMPLETE_BASE_URL"],
+      autocompleteBaseURL: autocompleteBaseURL,
       googleMapsApiKey: AppConfig._buildGoogleMapsApiKey(flavor),
-      emulateCloudFunctions: DotEnv.env["EMULATE_CLOUD_FUNCTIONS"] == "true",
+      emulateCloudFunctions: emulateCloudFunctions == "true",
       cloudFunctionsBaseURL: AppConfig._buildCloudFunctionsBaseURL(),
       cloudFunctionsPort: AppConfig._buildCountFunctionsPort(),
       realtimeDatabaseURL: _buildRealtimeDatabaseURL(flavor),
-      directionsBaseURL: DotEnv.env["DIRECTIONS_BASE_URL"],
+      directionsBaseURL: directionsBaseURL,
     );
-    _instance ??= AppConfig._internal(flavor: flavor, values: values);
+    _instance = AppConfig._internal(flavor: flavor, values: values);
     return _instance;
   }
 
   static String _buildRealtimeDatabaseURL(Flavor flavor) {
-    if (flavor == Flavor.DEV) {
-      return DotEnv.env["DEV_REALTIME_DATABASE_BASE_URL"];
+    final envVar = flavor == Flavor.DEV ? "DEV_REALTIME_DATABASE_BASE_URL" : "REALTIME_DATABASE_BASE_URL";
+    final realTimeDatabaseUrl = dotenv.env[envVar];
+    if (realTimeDatabaseUrl == null || realTimeDatabaseUrl.isEmpty) {
+      throw Exception("Missing required environment variable: $envVar");
     }
-    if (flavor == Flavor.PROD) {
-      return DotEnv.env["REALTIME_DATABASE_BASE_URL"];
-    }
-    return "";
+    return realTimeDatabaseUrl;
   }
 
   static String _buildGoogleMapsApiKey(Flavor flavor) {
     if (flavor == Flavor.DEV) {
-      if (Platform.isAndroid) {
-        return DotEnv.env["DEV_ANDROID_GOOGLE_MAPS_API_KEY"];
-      } else if (Platform.isIOS) {
-        return DotEnv.env["DEV_IOS_GOOGLE_MAPS_API_KEY"];
+      final envVar = Platform.isAndroid ? "DEV_ANDROID_GOOGLE_MAPS_API_KEY" : "DEV_IOS_GOOGLE_MAPS_API_KEY";
+      final apiKey = dotenv.env[envVar];
+      if(apiKey == null || apiKey.isEmpty) {
+        throw Exception("Missing required environment variable: $envVar");
       }
+      return apiKey;
     }
+    
     if (flavor == Flavor.PROD) {
-      if (Platform.isAndroid) {
-        return DotEnv.env["ANDROID_GOOGLE_MAPS_API_KEY"];
-      } else if (Platform.isIOS) {
-        return DotEnv.env["IOS_GOOGLE_MAPS_API_KEY"];
+      final envVar = Platform.isAndroid ? "ANDROID_GOOGLE_MAPS_API_KEY" : "IOS_GOOGLE_MAPS_API_KEY";
+      final apiKey = dotenv.env[envVar];
+      if(apiKey == null || apiKey.isEmpty) {
+        throw Exception("Missing required environment variable: $envVar");
       }
+      return apiKey;
     }
     return "";
   }
 
-  static String _buildCloudFunctionsBaseURL() {
-    return "http://" +
-        DotEnv.env["HOST_IP_ADDRESS"] +
-        ":" +
-        DotEnv.env["CLOUD_FUNCTIONS_PORT"];
+  static int _buildCountFunctionsPort() {
+    final port = dotenv.env["CLOUD_FUNCTIONS_PORT"];
+    if(port == null || port.isEmpty) {
+      throw Exception("Missing required environment variable: CLOUD_FUNCTIONS_PORT  ");
+    }
+    return int.parse(port);
   }
 
-  static int _buildCountFunctionsPort() {
-    return int.parse(DotEnv.env["CLOUD_FUNCTIONS_PORT"]);
+
+  static String _buildCloudFunctionsBaseURL() {
+    final hostIpAddress = dotenv.env["HOST_IP_ADDRESS"];
+    if(hostIpAddress == null || hostIpAddress.isEmpty) {
+      throw Exception("Missing required environment variable: HOST_IP_ADDRESS");
+    }
+    final port = _buildCountFunctionsPort();
+    return "http://$hostIpAddress:$port";
   }
+
 
   static isProduction() => _instance.flavor == Flavor.PROD;
   static isDevelopment() => _instance.flavor == Flavor.DEV;

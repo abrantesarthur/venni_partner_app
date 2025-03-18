@@ -7,7 +7,7 @@ import 'package:partner_app/models/trip.dart';
 import 'package:partner_app/screens/rateClient.dart';
 import 'package:partner_app/vendors/firebaseFunctions/interfaces.dart';
 import 'package:partner_app/vendors/firebaseFunctions/methods.dart';
-import 'package:partner_app/vendors/firebaseDatabase/methods.dart';
+import 'package:partner_app/services/firebase/database/methods.dart';
 import 'package:partner_app/styles.dart';
 import 'package:partner_app/utils/utils.dart';
 import 'package:partner_app/vendors/urlLauncher.dart';

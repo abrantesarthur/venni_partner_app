@@ -1,12 +1,5 @@
-import 'package:cloud_functions/cloud_functions.dart';
-import 'package:firebase_analytics/firebase_analytics.dart';
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:firebase_core/firebase_core.dart';
-import 'package:firebase_database/firebase_database.dart';
-import 'package:firebase_messaging/firebase_messaging.dart';
-import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
-import 'package:partner_app/config/config.dart';
 import 'package:partner_app/models/connectivity.dart';
 import 'package:partner_app/models/user.dart';
 import 'package:partner_app/models/googleMaps.dart';
@@ -51,9 +44,9 @@ import 'package:partner_app/screens/transferDetail.dart';
 import 'package:partner_app/screens/transfers.dart';
 import 'package:partner_app/screens/wallet.dart';
 import 'package:partner_app/screens/withdraw.dart';
-import 'package:partner_app/services/firebase.dart';
-import 'package:partner_app/vendors/firebaseDatabase/interfaces.dart';
-import 'package:partner_app/vendors/firebaseAnalytics.dart';
+import 'package:partner_app/services/firebase/firebase.dart';
+import 'package:partner_app/services/firebase/database/interfaces.dart';
+import 'package:partner_app/services/firebase/firebaseAnalytics.dart';
 import 'package:provider/provider.dart';
 
 class App extends StatefulWidget {
@@ -61,78 +54,50 @@ class App extends StatefulWidget {
 }
 
 class _AppState extends State<App> {
-  // Using late for non-nullable variables that will be initialized in initState
-  late PartnerModel partnerModel;
-  late ConnectivityModel connectivity;
-  late GoogleMapsModel googleMaps;
-  late TimerModel timer;
-  late TripModel trip;
   // use Future<void>, since we only care about completion, not a result value.
-  late Future<void> initializationFinished;
-  late UserModel userModel;
+  late Future<void> _initialized;
+  late FirebaseService firebase;
 
 
   @override
   void initState() {
-    initializationFinished = initializeApp();
+    _initialized = initialize();
     super.initState();
   }
 
   @override
   void dispose() {
-    // No need to check for null with null safety
-    googleMaps.dispose();
+    firebase.model.googleMaps.dispose();
     super.dispose();
   }
 
-  Future<void> initializeApp() async {
-    try {
-      final firebase = FirebaseService();
-      await firebase.initialize();
-    } catch (e) {
-      print(e);
-      throw FirebaseAuthException(code: "firebase-initialization-error", message: e.toString());
-    }
-    initializeModels();
+
+  Future<void> initialize() async {
+    firebase = FirebaseService();
+    await firebase.initialize();
     await logEvents();
 
     // throw error if there is no connection, so Start screen can be pushed
-    bool hasConnection = await connectivity.checkConnection();
+    bool hasConnection = await firebase.model.connectivity.checkConnection();
     if (!hasConnection) {
       throw FirebaseAuthException(code: "network-error", message: "No internet connection");
     }
-
-    // download partner data so we can know their 'account_status' and decide
-    // whether to push Home or Start
-    try {
-      await initializePartner();
-    } catch (e) {
-      throw FirebaseAuthException(code: "partner-initialization-error", message: e.toString());
-    }
   }
-
-
 
   Future<void> logEvents() async {
     try {
       await Future.wait([
-        firebaseAnalytics.logAppOpen(),
-        firebaseAnalytics.setPartnerUserProperty(),
+        firebase.analytics.logAppOpen(),
+        firebase.analytics.setPartnerUserProperty(),
       ]);
     } catch (_) {
       // Silently handle analytics errors
     }
   }
 
-  Future<void> initializePartner() async {
-    // download partner data
-    await partnerModel.downloadData(userModel, notify: false);
-    // if partner has active trip request, download it as well
-    if (partnerModel.partnerStatus == PartnerStatus.busy) {
-      await trip.downloadData(userModel, notify: false);
-    }
-  }
-
+  // TODO: update code so that it's backend agnostic and replacing the backend is very easy!
+  // TODO: move all errors to the same enum
+  // TODO: move as much logic as possible to the backend
   // TODO: README How to test locally taking DEV flavor into account. Explain that need to run emulator locally.
   // TODO: Find a way of using xcode flavors so that it's not necessary to manually switch bundle id in xcode when running in dev or prod.
   // TODO: make sure that phone authentication works in android in both development and production mode
@@ -149,7 +114,7 @@ class _AppState extends State<App> {
   @override
   Widget build(BuildContext context) {
     return FutureBuilder(
-      future: initializationFinished,
+      future: _initialized,
       builder: (
         BuildContext context,
         AsyncSnapshot<void> snapshot,
@@ -159,7 +124,7 @@ class _AppState extends State<App> {
           return Splash();
         }
 
-        // Handle error safely with null safety
+        // Handle errors
         if (snapshot.hasError) {
           final error = snapshot.error;
           if (error is FirebaseAuthException && 
@@ -185,6 +150,7 @@ class _AppState extends State<App> {
             );
           }
           
+          // FIXME: treat other errors
           // Default error handling for other error types
           return MaterialApp(
             home: Scaffold(
@@ -198,31 +164,30 @@ class _AppState extends State<App> {
           );
         }
 
-        // if everything is setup, show Home screen or Start screen, depending
-        // on whether user is signed in
+        // if no errors, show Home screen or Start screen, depending on whether user is signed in
         return MultiProvider(
           providers: [
             ChangeNotifierProvider<UserModel>(
-              create: (context) => userModel,
+              create: (context) => firebase.model.user,
             ),
             ChangeNotifierProvider<PartnerModel>(
-              create: (context) => partnerModel,
+              create: (context) => firebase.model.partner,
             ),
             ChangeNotifierProvider<ConnectivityModel>(
-              create: (context) => connectivity,
+              create: (context) => firebase.model.connectivity,
             ),
             ChangeNotifierProvider<GoogleMapsModel>(
-              create: (context) => googleMaps,
+              create: (context) => firebase.model.googleMaps,
             ),
             ChangeNotifierProvider<TimerModel>(
-              create: (context) => timer,
+              create: (context) => firebase.model.timer,
             ),
             ChangeNotifierProvider<TripModel>(
-              create: (context) => trip,
+              create: (context) => firebase.model.trip,
             ),
-          ], // pass user model down
+          ],
           builder: (context, child) {
-            UserModel firebase = Provider.of<UserModel>(
+            UserModel user = Provider.of<UserModel>(
               context,
               listen: false,
             );
@@ -237,9 +202,9 @@ class _AppState extends State<App> {
               // push Start screen if user is not registered, his account is not
               // approved, or we failed to download partner data. In this last case
               // it will come a step in which he will be warned to connect to the
-              // internet if that's the reason why the download failed. Moreover,
+              // internet if that's the reason why the download failed. Either way,
               // Home won't be pushed without downloading the data either way later on.
-              initialRoute: !firebase.isUserSignedIn ||
+              initialRoute: !user.isUserSignedIn ||
                       partner.accountStatus != AccountStatus.approved ||
                       (snapshot.hasError &&
                           snapshot.error is FirebaseAuthException &&
@@ -251,7 +216,6 @@ class _AppState extends State<App> {
               onGenerateRoute: (RouteSettings settings) {
                 // if Home is pushed
                 if (settings.name == Home.routeName) {
-                  final HomeArguments args = settings.arguments;
                   return MaterialPageRoute(builder: (context) {
                     return Home();
                   });
@@ -259,7 +223,7 @@ class _AppState extends State<App> {
 
                 // if InsertSmsCode is pushed
                 if (settings.name == InsertSmsCode.routeName) {
-                  final InsertSmsCodeArguments args = settings.arguments;
+                  final InsertSmsCodeArguments args = settings.arguments as InsertSmsCodeArguments;
                   return MaterialPageRoute(builder: (context) {
                     return InsertSmsCode(
                       verificationId: args.verificationId,
@@ -272,7 +236,7 @@ class _AppState extends State<App> {
 
                 // if InsertEmail is pushed
                 if (settings.name == InsertEmail.routeName) {
-                  final InsertEmailArguments args = settings.arguments;
+                  final InsertEmailArguments args = settings.arguments as InsertEmailArguments;
                   return MaterialPageRoute(builder: (context) {
                     return InsertEmail(
                       userCredential: args.userCredential,
@@ -282,7 +246,7 @@ class _AppState extends State<App> {
 
                 // if InsertName is pushed
                 if (settings.name == InsertName.routeName) {
-                  final InsertNameArguments args = settings.arguments;
+                  final InsertNameArguments args = settings.arguments as InsertNameArguments;
                   return MaterialPageRoute(builder: (context) {
                     return InsertName(
                       userCredential: args.userCredential,
@@ -293,7 +257,7 @@ class _AppState extends State<App> {
 
                 // if InsertAditionalInfo is pushed
                 if (settings.name == InsertAditionalInfo.routeName) {
-                  final InsertAditionalInfoArguments args = settings.arguments;
+                  final InsertAdditionalInfoArguments args = settings.arguments as InsertAdditionalInfoArguments;
                   return MaterialPageRoute(builder: (context) {
                     return InsertAditionalInfo(
                       userCredential: args.userCredential,
@@ -306,7 +270,7 @@ class _AppState extends State<App> {
 
                 // if InsertPassword is pushed
                 if (settings.name == InsertPassword.routeName) {
-                  final InsertPasswordArguments args = settings.arguments;
+                  final InsertPasswordArguments args = settings.arguments as InsertPasswordArguments;
                   return MaterialPageRoute(builder: (context) {
                     return InsertPassword(
                       userCredential: args.userCredential,
@@ -321,7 +285,7 @@ class _AppState extends State<App> {
 
                 // if Documents is pushed
                 if (settings.name == Documents.routeName) {
-                  final DocumentsArguments args = settings.arguments;
+                  final DocumentsArguments args = settings.arguments as DocumentsArguments;
                   return MaterialPageRoute(builder: (context) {
                     return Documents(
                       firebase: args.firebase,
@@ -332,7 +296,7 @@ class _AppState extends State<App> {
 
                 // if SendBankAccount is pushed
                 if (settings.name == SendBankAccount.routeName) {
-                  final SendBankAccountArguments args = settings.arguments;
+                  final SendBankAccountArguments args = settings.arguments as SendBankAccountArguments;
                   return MaterialPageRoute(builder: (context) {
                     return SendBankAccount(mode: args.mode);
                   });
@@ -340,7 +304,7 @@ class _AppState extends State<App> {
 
                 // if Wallet is pushed
                 if (settings.name == Wallet.routeName) {
-                  final WalletArguments args = settings.arguments;
+                  final WalletArguments args = settings.arguments as WalletArguments;
                   return MaterialPageRoute(builder: (context) {
                     return Wallet(
                       firebase: args.firebase,
@@ -351,7 +315,7 @@ class _AppState extends State<App> {
 
                 // if Withdraw is pushed
                 if (settings.name == Withdraw.routeName) {
-                  final WithdrawArguments args = settings.arguments;
+                  final WithdrawArguments args = settings.arguments as WithdrawArguments;
                   return MaterialPageRoute(builder: (context) {
                     return Withdraw(
                       availableAmount: args.availableAmount,
@@ -361,7 +325,7 @@ class _AppState extends State<App> {
 
                 // if Anticipate is pushed
                 if (settings.name == Anticipate.routeName) {
-                  final AnticipateArguments args = settings.arguments;
+                  final AnticipateArguments args = settings.arguments as AnticipateArguments;
                   return MaterialPageRoute(builder: (context) {
                     return Anticipate(
                       waitingAmount: args.waitingAmount,
@@ -371,7 +335,7 @@ class _AppState extends State<App> {
 
                 // if ShareLocation is pushed
                 if (settings.name == ShareLocation.routeName) {
-                  final ShareLocationArguments args = settings.arguments;
+                  final ShareLocationArguments args = settings.arguments as ShareLocationArguments;
                   return MaterialPageRoute(builder: (context) {
                     return ShareLocation(
                       routeToPush: args.routeToPush,
@@ -382,7 +346,7 @@ class _AppState extends State<App> {
 
                 // if Profile is pushed
                 if (settings.name == Profile.routeName) {
-                  final ProfileArguments args = settings.arguments;
+                  final ProfileArguments args = settings.arguments as ProfileArguments;
                   return MaterialPageRoute(builder: (context) {
                     return Profile(
                       firebase: args.firebase,
@@ -393,7 +357,7 @@ class _AppState extends State<App> {
 
                 // if PastTrips is pushed
                 if (settings.name == PastTrips.routeName) {
-                  final PastTripsArguments args = settings.arguments;
+                  final PastTripsArguments args = settings.arguments as PastTripsArguments;
                   return MaterialPageRoute(builder: (context) {
                     return PastTrips(
                       firebase: args.firebase,
@@ -404,7 +368,7 @@ class _AppState extends State<App> {
 
                 // if Ratings is pushed
                 if (settings.name == Ratings.routeName) {
-                  final RatingsArguments args = settings.arguments;
+                  final RatingsArguments args = settings.arguments as RatingsArguments;
                   return MaterialPageRoute(builder: (context) {
                     return Ratings(
                       firebase: args.firebase,
@@ -416,7 +380,7 @@ class _AppState extends State<App> {
 
                 // if PastTripDetail is pushed
                 if (settings.name == PastTripDetail.routeName) {
-                  final PastTripDetailArguments args = settings.arguments;
+                  final PastTripDetailArguments args = settings.arguments as PastTripDetailArguments;
                   return MaterialPageRoute(builder: (context) {
                     return PastTripDetail(
                       firebase: args.firebase,
@@ -427,7 +391,7 @@ class _AppState extends State<App> {
 
                 // if TransfersRoute is pushed
                 if (settings.name == TransfersRoute.routeName) {
-                  final TransfersRouteArguments args = settings.arguments;
+                  final TransfersRouteArguments args = settings.arguments as TransfersRouteArguments;
                   return MaterialPageRoute(builder: (context) {
                     return TransfersRoute(
                       firebase: args.firebase,
@@ -438,7 +402,7 @@ class _AppState extends State<App> {
 
                 // if TransferDetail is pushed
                 if (settings.name == TransferDetail.routeName) {
-                  final TransferDetailArguments args = settings.arguments;
+                  final TransferDetailArguments args = settings.arguments as TransferDetailArguments;
                   return MaterialPageRoute(builder: (context) {
                     return TransferDetail(transfer: args.transfer);
                   });
@@ -446,7 +410,7 @@ class _AppState extends State<App> {
 
                 // if Demand is pushed
                 if (settings.name == Demand.routeName) {
-                  final DemandArguments args = settings.arguments;
+                  final DemandArguments args = settings.arguments as DemandArguments;
                   return MaterialPageRoute(builder: (context) {
                     return Demand(firebase: args.firebase);
                   });

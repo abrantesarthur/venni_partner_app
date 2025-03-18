@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:partner_app/models/connectivity.dart';
 import 'package:partner_app/screens/insertNewEmail.dart';
 import 'package:partner_app/styles.dart';
-import 'package:partner_app/vendors/firebaseAuth.dart';
+import 'package:partner_app/services/firebase/firebaseAuth.dart';
 import 'package:partner_app/widgets/appButton.dart';
 import 'package:partner_app/widgets/goBackScaffold.dart';
 import 'package:partner_app/widgets/warning.dart';
@@ -18,9 +18,8 @@ class EditEmail extends StatefulWidget {
 }
 
 class EditEmailState extends State<EditEmail> {
-  bool emailIsConfirmed;
-  bool codeSent;
-  Widget warning;
+  late bool codeSent;
+  Widget? warning;
 
   @override
   void initState() {
@@ -32,16 +31,14 @@ class EditEmailState extends State<EditEmail> {
   @override
   Widget build(BuildContext context) {
     final double screenHeight = MediaQuery.of(context).size.height;
-    final UserModel firebase = Provider.of<UserModel>(context);
+    final UserModel user = Provider.of<UserModel>(context);
     ConnectivityModel connectivity = Provider.of<ConnectivityModel>(context);
 
     return GoBackScaffold(
       title: "Alterar Email",
       children: [
         Text(
-          firebase.auth.currentUser != null
-              ? firebase.auth.currentUser.email
-              : "",
+          user.email ?? "",
           style: TextStyle(
             fontSize: 16,
             color: Colors.black,
@@ -50,10 +47,10 @@ class EditEmailState extends State<EditEmail> {
         SizedBox(height: screenHeight / 30),
         warning != null
             ? Column(children: [
-                warning,
+                warning!,
                 SizedBox(height: screenHeight / 30),
               ])
-            : (firebase.auth.currentUser.emailVerified
+            : (user.emailVerified == true
                 ? Text(
                     "Email verificado!",
                     style: TextStyle(
@@ -79,7 +76,7 @@ class EditEmailState extends State<EditEmail> {
                             onTapCallback: (context) async {
                               // ensure user is connected to the internet
                               if (!connectivity.hasConnection) {
-                                await connectivity.alertWhenOffline(
+                                await connectivity.alertOffline(
                                   context,
                                   message:
                                       "Conecte-se à internet para reenviar o email.",
@@ -87,8 +84,7 @@ class EditEmailState extends State<EditEmail> {
                                 return;
                               }
                               try {
-                                await firebase.auth.currentUser
-                                    .sendEmailVerification();
+                                await user.sendEmailVerification();
                                 setState(() {
                                   codeSent = true;
                                 });
@@ -119,7 +115,7 @@ class EditEmailState extends State<EditEmail> {
             onTapCallBack: () async {
               // ensure user is connected to the internet
               if (!connectivity.hasConnection) {
-                await connectivity.alertWhenOffline(
+                await connectivity.alertOffline(
                   context,
                   message: "Conecte-se à internet para alterar o email.",
                 );
@@ -128,12 +124,12 @@ class EditEmailState extends State<EditEmail> {
               final response = await Navigator.pushNamed(
                 context,
                 InsertNewEmail.routeName,
-              ) as UpdateEmailResponse;
+              ) as UpdateEmailResponse?;
               if (response != null && response.successful) {
                 setState(() {
                   warning = Warning(
                     message: "Email alterado com sucesso para " +
-                        firebase.auth.currentUser?.email,
+                        (user.email ?? ""),
                     color: AppColor.secondaryGreen,
                   );
                 });

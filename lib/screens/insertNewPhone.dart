@@ -3,36 +3,38 @@ import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter/material.dart';
 import 'package:partner_app/models/connectivity.dart';
 import 'package:partner_app/screens/insertSmsCode.dart';
+import 'package:partner_app/services/firebase/firebase.dart';
 import 'package:partner_app/styles.dart';
+import 'package:partner_app/services/firebase/database/methods.dart';
 import 'package:partner_app/widgets/appButton.dart';
 import 'package:partner_app/widgets/arrowBackButton.dart';
 import 'package:partner_app/widgets/inputPhone.dart';
 import 'package:partner_app/widgets/overallPadding.dart';
 import 'package:provider/provider.dart';
 import 'package:partner_app/utils/utils.dart';
-import 'package:partner_app/vendors/firebaseAuth.dart';
-import 'package:partner_app/vendors/firebaseDatabase/methods.dart';
+import 'package:partner_app/services/firebase/firebaseAuth.dart';
 
 import '../models/user.dart';
 import '../widgets/warning.dart';
 
 class InsertNewPhone extends StatefulWidget {
   static const String routeName = "InsertNewPhone";
+  final firebase = FirebaseService();
 
   @override
   InsertNewPhoneState createState() => InsertNewPhoneState();
 }
 
 class InsertNewPhoneState extends State<InsertNewPhone> {
-  Function appButtonCallback;
-  Color buttonColor;
-  Widget buttonChild;
-  TextEditingController phoneController;
-  FocusNode phoneFocusNode;
+  Function? appButtonCallback;
+  late Color buttonColor;
+  Widget? buttonChild;
+  late TextEditingController phoneController;
+  late FocusNode phoneFocusNode;
   bool lockScreen = false;
-  String phoneNumber;
-  Warning warningMessage;
-  int resendToken;
+  String? phoneNumber;
+  Warning? warningMessage;
+  int? resendToken;
 
   @override
   void initState() {
@@ -65,7 +67,7 @@ class InsertNewPhoneState extends State<InsertNewPhone> {
     super.dispose();
   }
 
-  void setInactiveState({String message}) {
+  void setInactiveState({String? message}) {
     setState(() {
       buttonColor = AppColor.disabled;
       appButtonCallback = null;
@@ -76,7 +78,7 @@ class InsertNewPhoneState extends State<InsertNewPhone> {
     });
   }
 
-  void setActiveState({String message, required String phone}) {
+  void setActiveState({String? message, required String phone}) {
     setState(() {
       buttonColor = AppColor.primaryPink;
       appButtonCallback = buttonCallback;
@@ -99,7 +101,7 @@ class InsertNewPhoneState extends State<InsertNewPhone> {
     );
   }
 
-  void codeSentCallback(
+  Future<void> codeSentCallback(
     BuildContext context,
     String verificationId,
     int token,
@@ -117,7 +119,7 @@ class InsertNewPhoneState extends State<InsertNewPhone> {
       context,
       InsertSmsCode.routeName,
       arguments: InsertSmsCodeArguments(
-        phoneNumber: phoneNumber,
+        phoneNumber: phoneNumber!,
         verificationId: verificationId,
         resendToken: token,
         mode: InsertSmsCodeMode.editPhone,
@@ -125,14 +127,12 @@ class InsertNewPhoneState extends State<InsertNewPhone> {
     ) as FirebaseAuthException;
 
     // only display success message if phone was altered
-    if (firebase.auth.currentUser.phoneNumber ==
-        phoneNumber.withCountryCode()) {
+    if (widget.firebase.auth.currentUser?.phoneNumber ==
+        phoneNumber?.withCountryCode()) {
       setSuccessState(
         newPhoneNumber:
-            firebase.auth.currentUser.phoneNumber.withoutCountryCode(),
+            widget.firebase.auth.currentUser?.phoneNumber?.withoutCountryCode() ?? "",
       );
-    } else if (exception != null) {
-      handleException(exception);
     } else {
       setInactiveState();
     }
@@ -145,27 +145,30 @@ class InsertNewPhoneState extends State<InsertNewPhone> {
     UserModel firebase = Provider.of<UserModel>(context, listen: false);
 
     try {
-      await firebase.auth.currentUser.updatePhoneNumber(credential);
+      await widget.firebase.auth.currentUser?.updatePhoneNumber(credential);
     } catch (e) {
-      handleException(e);
+      handleException(e as FirebaseAuthException);
       return;
     }
 
     // on success
-    if (firebase.auth.currentUser.phoneNumber ==
-        phoneNumber.withCountryCode()) {
+    if (widget.firebase.auth.currentUser?.phoneNumber ==
+        phoneNumber?.withCountryCode()) {
       //update phone number on database too
       try {
-        await firebase.database.setPhoneNumber(
-          partnerID: firebase.auth.currentUser.uid,
-          phoneNumber: firebase.auth.currentUser.phoneNumber,
-        );
+        final user = widget.firebase.auth.currentUser;
+        if(user != null) {
+          await widget.firebase.database.setPhoneNumber(
+            partnerID: user.uid,
+            phoneNumber: user.phoneNumber ?? "",
+          );
+        }
       } catch (_) {}
 
       //  display success message
       setSuccessState(
         newPhoneNumber:
-            firebase.auth.currentUser.phoneNumber.withoutCountryCode(),
+            widget.firebase.auth.currentUser?.phoneNumber?.withoutCountryCode() ?? "",
       );
     }
   }
@@ -194,15 +197,15 @@ class InsertNewPhoneState extends State<InsertNewPhone> {
       listen: false,
     );
     if (!connectivity.hasConnection) {
-      await connectivity.alertWhenOffline(
+      await connectivity.alertOffline(
         context,
         message: "Conecte-se à internet para alterar o número de telefone.",
       );
       return;
     }
     if (phoneNumber != null) {
-      if (phoneNumber.withCountryCode() ==
-          firebaseAuth.currentUser.phoneNumber) {
+      if (phoneNumber!.withCountryCode() ==
+          firebaseAuth.currentUser?.phoneNumber) {
         // only alter phone number if new number is different
         setInactiveState(
             message: "O número inserido é igual ao número atual. Tente outro.");
@@ -231,8 +234,8 @@ class InsertNewPhoneState extends State<InsertNewPhone> {
           String errorMsg = firebaseAuth.verificationFailedCallback(e);
           setInactiveState(message: errorMsg);
         },
-        codeSent: (String verificatinId, int resendToken) {
-          codeSentCallback(context, verificatinId, resendToken);
+        codeSent: (String verificationId, int? forceResendingToken) {
+          codeSentCallback(context, verificationId, forceResendingToken ?? 0);
         },
         codeAutoRetrievalTimeout: (String verificationId) {},
         forceResendingToken: resendToken,
@@ -293,17 +296,17 @@ class InsertNewPhoneState extends State<InsertNewPhone> {
                     SizedBox(height: screenHeight / 30),
                     warningMessage == null
                         ? Spacer()
-                        : Expanded(child: warningMessage),
+                        : Expanded(child: warningMessage!),
                     AppButton(
                       textData: "Redefinir",
                       buttonColor: buttonColor,
                       child: buttonChild,
                       onTapCallBack: appButtonCallback == null
                           ? () {}
-                          : () => appButtonCallback(
+                          : () => appButtonCallback!(
                                 context,
-                                firebase.auth,
-                                firebase.database,
+                                widget.firebase.auth,
+                                widget.firebase.database,
                               ),
                     ),
                   ],

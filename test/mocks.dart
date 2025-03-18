@@ -10,7 +10,7 @@ import 'package:partner_app/models/googleMaps.dart';
 import 'package:partner_app/models/partner.dart';
 import 'package:partner_app/models/timer.dart';
 import 'package:partner_app/models/trip.dart';
-import 'package:partner_app/vendors/firebaseDatabase/interfaces.dart';
+import 'package:partner_app/services/firebase/database/interfaces.dart';
 
 class MockFirebaseAuth extends Mock implements FirebaseAuth {}
 

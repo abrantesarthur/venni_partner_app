@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:partner_app/models/connectivity.dart';
+import 'package:partner_app/services/firebase/firebase.dart';
 import 'package:partner_app/styles.dart';
-import 'package:partner_app/vendors/firebaseAuth.dart';
+import 'package:partner_app/services/firebase/firebaseAuth.dart';
 import 'package:partner_app/widgets/appInputPassword.dart';
 import 'package:partner_app/widgets/arrowBackButton.dart';
 import 'package:partner_app/widgets/overallPadding.dart';
@@ -16,23 +17,24 @@ import '../widgets/appButton.dart';
 // TODO: add lockScreen (and wherever else there is a CircularProgressIndicator)
 class InsertNewPassword extends StatefulWidget {
   static const String routeName = "InsertNewPassword";
+  final firebase = FirebaseService();
 
   @override
   InsertNewPasswordState createState() => InsertNewPasswordState();
 }
 
 class InsertNewPasswordState extends State<InsertNewPassword> {
-  Color appButtonColor;
-  Function appButtonCallback;
-  TextEditingController newPasswordTextEditingController;
-  TextEditingController oldPasswordTextEditingController;
-  FocusNode oldPasswordFocusNode;
-  FocusNode newPasswordFocusNode;
+  late Color appButtonColor;
+  Function? appButtonCallback;
+  late TextEditingController newPasswordTextEditingController;
+  late TextEditingController oldPasswordTextEditingController;
+  late FocusNode oldPasswordFocusNode;
+  late FocusNode newPasswordFocusNode;
   List<bool> passwordChecks = [false, false, false];
-  bool displayPasswordChecks;
-  Widget registrationWarnings;
-  bool lockScreen;
-  Widget buttonChild;
+  late bool displayPasswordChecks;
+  Widget? registrationWarnings;
+  late bool lockScreen;
+  Widget? buttonChild;
   var validateOldPasswordCriteria;
   var validateNewPasswordCriteria;
   var listener;
@@ -140,17 +142,13 @@ class InsertNewPasswordState extends State<InsertNewPassword> {
       listen: false,
     );
     if (!connectivity.hasConnection) {
-      await connectivity.alertWhenOffline(
+      await connectivity.alertOffline(
         context,
         message: "Conecte-se à internet para alterar a senha.",
       );
       return;
     }
     final screenHeight = MediaQuery.of(context).size.height;
-    final UserModel firebase = Provider.of<UserModel>(
-      context,
-      listen: false,
-    );
 
     setState(() {
       // lock screen so user can't interact with buttons
@@ -187,13 +185,13 @@ class InsertNewPasswordState extends State<InsertNewPassword> {
     });
 
     UpdatePasswordResponse response =
-        await firebase.auth.reauthenticateAndUpdatePassword(
+        await widget.firebase.auth.reauthenticateAndUpdatePassword(
       oldPassword: oldPassword,
       newPassword: newPassword,
     );
 
     setState(() {
-      String message = response.successful
+      String? message = response.successful == true
           ? "Senha atualizada com sucesso!"
           : response.message;
       if (message != null) {
@@ -304,7 +302,7 @@ class InsertNewPasswordState extends State<InsertNewPassword> {
                             )
                           : Container(),
                       registrationWarnings != null
-                          ? registrationWarnings
+                          ? registrationWarnings!
                           : Container(),
                       SizedBox(height: screenHeight / 100),
                       Spacer(),
@@ -314,7 +312,7 @@ class InsertNewPasswordState extends State<InsertNewPassword> {
                         buttonColor: appButtonColor,
                         onTapCallBack: appButtonCallback == null || lockScreen
                             ? () {}
-                            : () => appButtonCallback(
+                            : () => appButtonCallback!(
                                   context,
                                   newPasswordTextEditingController.text,
                                 ),

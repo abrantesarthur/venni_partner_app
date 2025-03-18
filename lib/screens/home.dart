@@ -1,28 +1,23 @@
 import 'dart:async';
 import 'dart:io';
 
-import 'package:awesome_notifications/awesome_notifications.dart';
-import 'package:background_location/background_location.dart';
+import 'package:background_location_tracker/background_location_tracker.dart';
 import 'package:firebase_database/firebase_database.dart';
-import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:partner_app/models/connectivity.dart';
 import 'package:partner_app/models/user.dart';
-import 'package:partner_app/models/timer.dart';
-import 'package:partner_app/models/trip.dart';
 import 'package:partner_app/screens/accountLocked.dart';
 import 'package:partner_app/screens/partnerAvailable.dart';
-import 'package:partner_app/services/firebase.dart';
-import 'package:partner_app/styles.dart';
+import 'package:partner_app/services/firebase/firebase.dart';
 import 'package:partner_app/utils/utils.dart';
 import 'package:partner_app/vendors/awesomeNotifications.dart';
-import 'package:partner_app/vendors/firebaseDatabase/interfaces.dart';
-import 'package:partner_app/vendors/firebaseDatabase/methods.dart';
+import 'package:partner_app/services/firebase/database/interfaces.dart';
+import 'package:partner_app/services/firebase/database/methods.dart';
 import 'package:partner_app/vendors/firebaseFunctions/interfaces.dart';
 import 'package:partner_app/vendors/firebaseFunctions/methods.dart';
-import 'package:partner_app/vendors/firebaseAnalytics.dart';
+import 'package:partner_app/services/firebase/firebaseAnalytics.dart';
 import 'package:partner_app/models/googleMaps.dart';
 import 'package:partner_app/models/partner.dart';
 import 'package:partner_app/screens/menu.dart';
@@ -37,26 +32,25 @@ import 'package:partner_app/widgets/partnerRequested.dart';
 import 'package:partner_app/widgets/partnerUnavailable.dart';
 import 'package:provider/provider.dart';
 import 'package:vibration/vibration.dart';
-import 'package:wakelock/wakelock.dart';
+import 'package:wakelock_plus/wakelock_plus.dart';
 
-class HomeArguments {
-  UserModel firebase;
-  PartnerModel partner;
-  GoogleMapsModel googleMaps;
-  TimerModel timer;
-  TripModel trip;
-  ConnectivityModel connectivity;
-  HomeArguments({
-    required this.firebase,
-    required this.partner,
-    required this.googleMaps,
-    required this.timer,
-    required this.trip,
-    required this.connectivity,
-  });
-}
+// class HomeArguments {
+//   UserModel firebase;
+//   PartnerModel partner;
+//   GoogleMapsModel googleMaps;
+//   TimerModel timer;
+//   TripModel trip;
+//   ConnectivityModel connectivity;
+//   HomeArguments({
+//     required this.firebase,
+//     required this.partner,
+//     required this.googleMaps,
+//     required this.timer,
+//     required this.trip,
+//     required this.connectivity,
+//   });
+// }
 
-// FIXME: only need firebaseService
 class Home extends StatefulWidget {
   static const routeName = "home";
   final firebase = FirebaseService();
@@ -70,14 +64,13 @@ class Home extends StatefulWidget {
 // splash screen before displaying final screen. After doing this, assert that
 // wallet screen works correclty because recipientID is set.
 class HomeState extends State<Home> with WidgetsBindingObserver {
-  Future<Position> partnerPositionFuture;
-  bool _hasConnection;
-  StreamSubscription partnerStatusSubscription;
-  static StreamSubscription tripStatusSubscription;
-  StreamSubscription accountStatusSubscription;
+  late Future<Position?> partnerPositionFuture;
+  late bool _hasConnection;
+  StreamSubscription? partnerStatusSubscription;
+  static StreamSubscription? tripStatusSubscription;
+  StreamSubscription? accountStatusSubscription;
   bool lockScreen = false;
-  Widget buttonChild;
-  VoidCallback didChangeAppLifecycleCallback;
+  VoidCallback? didChangeAppLifecycleCallback;
 
   var _firebaseListener;
 
@@ -85,7 +78,7 @@ class HomeState extends State<Home> with WidgetsBindingObserver {
   void initState() {
     super.initState();
 
-    _hasConnection = widget.connectivity.hasConnection;
+    _hasConnection = widget.firebase.model.connectivity.hasConnection;
 
     // HomeState uses WidgetsBindingObserver as a mixin. Thus, we can pass it as
     // argument to WidgetsBinding.addObserver. The didChangeAppLifecycleState that
@@ -93,29 +86,32 @@ class HomeState extends State<Home> with WidgetsBindingObserver {
     // puts app in background).
     WidgetsBinding.instance.addObserver(this);
 
-    // trigger _getPartnerPosition
     partnerPositionFuture = _getPartnerPosition(context);
 
-    // subscribe to changes in partner_status so UI is updated appropriately
-    partnerStatusSubscription = widget.firebase.database.onPartnerStatusUpdate(
-      widget.firebase.auth.currentUser.uid,
-      onPartnerStatusUpdate,
-    );
+    final user = widget.firebase.auth.currentUser;
+    if(user != null) {
+      // subscribe to changes in partner_status so UI is updated appropriately
+      partnerStatusSubscription = widget.firebase.database.onPartnerStatusUpdate(
+        user.uid,
+        onPartnerStatusUpdate,
+      );
 
-    // subscribe to changes in account_status so we know when partner is blocked
-    accountStatusSubscription = widget.firebase.database.onAccountStatusUpdate(
-      widget.firebase.auth.currentUser.uid,
-      onAccountStatusUpdate,
-    );
+      // subscribe to changes in account_status so we know when partner is blocked
+      accountStatusSubscription = widget.firebase.database.onAccountStatusUpdate(
+        user.uid,
+        onAccountStatusUpdate,
+      );
+    }
 
     // add listeners after tree is built and we have context
     WidgetsBinding.instance.addPostFrameCallback((_) async {
       // use retrieved position to set maps camera view after finishing _getPartnerPosition,
       partnerPositionFuture.then((position) async {
-        if (position != null) {
-          widget.googleMaps.initialCameraLatLng = LatLng(
-            widget.partner.position?.latitude,
-            widget.partner.position?.longitude,
+        final partnerPosition = widget.firebase.model.partner.position;
+        if (partnerPosition != null) {
+          widget.firebase.model.googleMaps.initialCameraLatLng = LatLng(
+            partnerPosition.latitude,
+            partnerPosition.longitude,
           );
         }
       });
@@ -124,20 +120,24 @@ class HomeState extends State<Home> with WidgetsBindingObserver {
       _firebaseListener = () {
         _signOut(context);
       };
-      widget.firebase.addListener(_firebaseListener);
+      widget.firebase.model.user.addListener(_firebaseListener);
 
-      // request notifications
-      widget.firebase.requestNotifications(context);
+      // request user to enable notifications
+      widget.firebase.model.user.requestNotifications(context);
+      
       try {
-        String token = await widget.firebase.messaging.getToken();
-        await saveTokenToDatabase(token);
+        final firebaseMessaging = widget.firebase.messaging;
+        String? token = await firebaseMessaging.getToken();
+        if(token != null) {
+          await saveTokenToDatabase(token);
+        }
 
         // Any time the token refreshes, store this in the database too.
-        FirebaseMessaging.instance.onTokenRefresh.listen(saveTokenToDatabase);
+        firebaseMessaging.onTokenRefresh.listen(saveTokenToDatabase);
       } catch (_) {}
 
       // keep app alive
-      Wakelock.enable();
+      WakelockPlus.enable();
     });
   }
 
@@ -152,24 +152,18 @@ class HomeState extends State<Home> with WidgetsBindingObserver {
     // simultaneously. After all, we already ask for them in initState.
     if (didChangeAppLifecycleCallback != null &&
         state == AppLifecycleState.resumed) {
-      didChangeAppLifecycleCallback();
+      didChangeAppLifecycleCallback!();
     }
   }
 
   @override
   void dispose() {
     WidgetsBinding.instance.removeObserver(this);
-    widget.firebase.removeListener(_firebaseListener);
-    BackgroundLocation.stopLocationService();
-    if (partnerStatusSubscription != null) {
-      partnerStatusSubscription.cancel();
-    }
-    if (tripStatusSubscription != null) {
-      tripStatusSubscription.cancel();
-    }
-    if (accountStatusSubscription != null) {
-      accountStatusSubscription.cancel();
-    }
+    widget.firebase.model.user.removeListener(_firebaseListener);
+    BackgroundLocationTrackerManager.stopTracking();
+    partnerStatusSubscription?.cancel();
+    tripStatusSubscription?.cancel();
+    accountStatusSubscription?.cancel();
     super.dispose();
   }
 
@@ -178,11 +172,9 @@ class HomeState extends State<Home> with WidgetsBindingObserver {
     final screenHeight = MediaQuery.of(context).size.height;
     final screenWidth = MediaQuery.of(context).size.width;
     ConnectivityModel connectivity = Provider.of<ConnectivityModel>(context);
-    UserModel firebase = Provider.of<UserModel>(context);
     // very important not listen for PartnerModel! We already have a Consumer
-    // for that and so that GoogleMaps doesn't get rebuilt every tiem there is a
-    // change to partners. This would delete markers, and reset the view, and just
-    // do a mess.
+    // for that. Otherwise, GoogleMaps would get rebuilt every time there is a
+    // change to partners. This would delete markers, and reset the view, and cause a mess!
     GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
 
     // if connectivity has changed
@@ -193,39 +185,43 @@ class HomeState extends State<Home> with WidgetsBindingObserver {
       if (connectivity.hasConnection) {
         try {
           // download partner data
-          widget.partner.downloadData(firebase, notify: false);
+          widget.firebase.model.partner.downloadData(notify: false);
 
-          // subscribe to changes in partner_status so UI is updated appropriately
-          // this will also download trip information if partner is busy
-          if (partnerStatusSubscription != null) {
-            partnerStatusSubscription.cancel();
+          final user = widget.firebase.auth.currentUser;
+          if(user != null) {
+            // subscribe to changes in partner_status so UI is updated appropriately
+            // this will also download trip information if partner is busy
+            partnerStatusSubscription?.cancel();
+            partnerStatusSubscription =
+                widget.firebase.database.onPartnerStatusUpdate(
+              user.uid,
+              onPartnerStatusUpdate,
+            );
           }
-          partnerStatusSubscription =
-              widget.firebase.database.onPartnerStatusUpdate(
-            widget.firebase.auth.currentUser.uid,
-            onPartnerStatusUpdate,
-          );
+
+    
 
           // save fcm token to database
-          firebase.messaging.getToken().then(
-                (token) => saveTokenToDatabase(token),
-              );
+          widget.firebase.messaging.getToken().then(
+            (token) => token != null ? saveTokenToDatabase(token) : null,
+          );
         } catch (_) {}
       }
     }
 
-    return FutureBuilder(
+    return FutureBuilder<Position?>(
       initialData: null,
       future: partnerPositionFuture,
       builder: (
         BuildContext context,
-        AsyncSnapshot<Position> snapshot,
+        AsyncSnapshot<Position?> snapshot,
       ) {
+        final user = widget.firebase.auth.currentUser;
         if (snapshot.connectionState == ConnectionState.waiting) {
           // show loading screen while waiting for download to succeed
           return Splash(
               text: "Muito bom ter você de volta, " +
-                  firebase.auth.currentUser.displayName.split(" ").first +
+                  (user?.displayName?.split(" ").first ?? "") +
                   "!");
         }
 
@@ -233,31 +229,23 @@ class HomeState extends State<Home> with WidgetsBindingObserver {
         if (snapshot.hasError || snapshot.data == null) {
           return ShareLocation(
             routeToPush: Home.routeName,
-            routeArguments: HomeArguments(
-              firebase: firebase,
-              partner: widget.partner,
-              googleMaps: widget.googleMaps,
-              timer: widget.timer,
-              trip: widget.trip,
-              connectivity: connectivity,
-            ),
             message: snapshot.error == "location-service-disabled"
                 ? "Ative o acesso à localização"
                 : "Compartilhe sua localização",
           );
         }
 
-        // after having waited succesfully, define didChangeAppLifecycleCallback
+        // after having waited successfully, define didChangeAppLifecycleCallback
         // so if user stops sharing location, we will know.
         if (didChangeAppLifecycleCallback == null) {
           didChangeAppLifecycleCallback = () async {
             // make sure user didn't disable location sharing
             await ensureLocationSharingIsOn(context);
-            // on android, workaround the google maps issue of not displaying the
-            // maps after phone being in background for a while by. See here:
+            // on android, work around the google maps issue of not displaying the
+            // maps after phone being in background for a while. See here:
             // https://stackoverflow.com/questions/59374010/flutter-googlemap-is-blank-after-resuming-from-background/59435683#59435683
             if (Platform.isAndroid) {
-              widget.googleMaps.rebuild();
+              widget.firebase.model.googleMaps.rebuild();
             }
           };
         }
@@ -300,7 +288,7 @@ class HomeState extends State<Home> with WidgetsBindingObserver {
                       onPressed: lockScreen
                           ? () {}
                           : () {
-                              _scaffoldKey.currentState.openDrawer();
+                              _scaffoldKey.currentState?.openDrawer();
                             }),
                 ),
               ),
@@ -312,24 +300,24 @@ class HomeState extends State<Home> with WidgetsBindingObserver {
                           )
                         : Stack(
                             children: [
-                              p.partnerStatus == PartnerStatus.unavailable
+                              p.status == PartnerStatus.unavailable
                                   ? PartnerUnavailable()
                                   : Container(),
-                              p.partnerStatus == PartnerStatus.available
+                              p.status == PartnerStatus.available
                                   ? PartnerAvailable()
                                   : Container(),
                               // TODO: play a sound
                               // TODO: retrieve client informatin later
-                              p.partnerStatus == PartnerStatus.requested
+                              p.status == PartnerStatus.requested
                                   ? PartnerRequested()
                                   : Container(),
                               // TODO: PartnerBusy should return a Future that only resolves
                               // once we retrieve the client information. Also, I should start thinking
                               // or at least researching about how firebase deals with connectivity issues.
-                              p.partnerStatus == PartnerStatus.busy
+                              p.status == PartnerStatus.busy
                                   ? PartnerBusy(
-                                      trip: widget.trip,
-                                      partner: widget.partner,
+                                      trip: widget.firebase.model.trip,
+                                      partner: widget.firebase.model.partner,
                                     )
                                   : Container(),
                             ],
@@ -342,10 +330,9 @@ class HomeState extends State<Home> with WidgetsBindingObserver {
     );
   }
 
-  // ensureLocationSharing is on disconnects partner if they are available but
-  // stop sharing location
+  // disconnect partner if they're available but stop sharing location
   Future<void> ensureLocationSharingIsOn(BuildContext context) async {
-    Position partnerPos;
+    Position? partnerPos;
     try {
       partnerPos = await determineUserPosition(context);
       // if user has not stopped sharing location, call handlePositionUpdates so
@@ -353,19 +340,16 @@ class HomeState extends State<Home> with WidgetsBindingObserver {
       // decided to kill the process while the app was in the background. However,
       // we only listen to these updates if the partner is connected and we could
       // get partnerPos.
-      if (widget.partner.partnerStatus != PartnerStatus.unavailable &&
+      if (widget.firebase.model.partner.status != PartnerStatus.unavailable &&
           partnerPos != null) {
-        widget.partner.handlePositionUpdates(
-          widget.firebase,
-          widget.googleMaps,
-          widget.trip,
-        );
+        widget.firebase.model.partner.handlePositionUpdates();
       }
     } catch (_) {
       partnerPos = await _getPartnerPosition(context);
     }
+
     if (partnerPos == null &&
-        widget.partner.partnerStatus == PartnerStatus.available) {
+        widget.firebase.model.partner.status == PartnerStatus.available) {
       try {
         await widget.firebase.functions.disconnect();
       } catch (e) {}
@@ -374,42 +358,43 @@ class HomeState extends State<Home> with WidgetsBindingObserver {
 
   // save firebase cloud messaging token on database
   Future<void> saveTokenToDatabase(String token) async {
-    await widget.firebase.database.updateFCMToken(
-      uid: widget.firebase.auth.currentUser.uid,
-      token: token,
-    );
+    final currentUser = widget.firebase.auth.currentUser;
+    if(currentUser != null) {
+      await widget.firebase.database.updateFCMToken(
+        uid: currentUser.uid,
+        token: token,
+      );
+    }
   }
 
-  Future<Position> _getPartnerPosition(BuildContext context) async {
+  Future<Position?> _getPartnerPosition(BuildContext context) async {
+    final partner = widget.firebase.model.partner;
     // Try getting user position. If it returns null, it's because user stopped
     // sharing location. getPosition() will automatically handle that case, asking
     // the user to share again and preventing them from using the app if they
     // don't.
-    Position pos = await widget.partner.getPosition(context, notify: false);
+    Position? pos = await partner.getPosition(context, notify: false);
     if (pos == null) {
       return null;
     }
+
     // if we could get position, make sure to resubscribe to position changes
     // again, as the subscription may have been cancelled if user stopped
     // sharing location. However, only do that if partner is connected
-    if (widget.partner.partnerStatus != PartnerStatus.unavailable) {
-      widget.partner.handlePositionUpdates(
-        widget.firebase,
-        widget.googleMaps,
-        widget.trip,
-      );
+    if (partner.status != PartnerStatus.unavailable) {
+      partner.handlePositionUpdates();
     }
     return pos;
   }
 
   // push start screen when user logs out
   void _signOut(BuildContext context) {
-    UserModel firebase = Provider.of<UserModel>(context, listen: false);
+    UserModel user = Provider.of<UserModel>(context, listen: false);
     PartnerModel partner = Provider.of<PartnerModel>(context, listen: false);
-    if (!firebase.isUserSignedIn) {
+    if (!user.isUserSignedIn) {
       // clear relevant models
       partner.clear();
-      widget.trip.clear();
+      widget.firebase.model.trip.clear();
       Navigator.pushNamedAndRemoveUntil(
         context,
         Start.routeName,
@@ -418,16 +403,21 @@ class HomeState extends State<Home> with WidgetsBindingObserver {
     }
   }
 
-  void onPartnerStatusUpdate(Event e) async {
-    PartnerStatus newPartnerStatus = PartnerStatusExtension.fromString(
-      e.snapshot.value,
-    );
+  // FIXME: do these business logics belong to home.dart?
+  void onPartnerStatusUpdate(DatabaseEvent e) async {
+    PartnerStatus? newPartnerStatus;
+    final snapshotValue = e.snapshot.value;
+    if(snapshotValue != null) {
+      newPartnerStatus = PartnerStatusExtension.fromString(
+        snapshotValue.toString()
+      );
+    }
     if (newPartnerStatus != null) {
       // if partner has been requested, kick off 15s timer. The TimerModel
       // is passed to the PartnerRequested widget which uses its 'remainingSeconds'
       // property to display how much time the partner has to accept the trip.
       // Once the timer stops, if the partner hasn't accepted
-      // the trip request we call 'declineTrip' and udpate their status locally
+      // the trip request we call 'declineTrip' and update their status locally
       if (newPartnerStatus == PartnerStatus.requested) {
         // trigger notifications so user is periodically warned if app is in background
         Notifications().trigger(repeatingPeriod: Duration(seconds: 2));
@@ -435,18 +425,18 @@ class HomeState extends State<Home> with WidgetsBindingObserver {
         // before kicking off timer, set acceptedTrip to false. If partner accepts
         // the trip before the timer goes out, acceptedTrip is set true and the
         // callback won't set the partner available.
-        widget.partner.setAcceptedTrip(false, notify: false);
-        widget.timer.kickOff(
+        widget.firebase.model.partner.setAcceptedTrip(false, notify: false);
+        widget.firebase.model.timer.kickOff(
           durationSeconds: 15,
           callback: () {
             // if partner did not accept trip after 10s
-            if (!widget.partner.acceptedTrip) {
+            if (!widget.firebase.model.partner.acceptedTrip) {
               // set partner status to available so that UI is updated and
               // they can no longer accept trip requests. It's ok to do this
               // without sending request to firebase. The trip protocol
               // guarantees that 'confirmTrip' will set a partner
               // available again if they fail to accept a trip.
-              widget.partner.updatePartnerStatus(PartnerStatus.available);
+              widget.firebase.model.partner.updatePartnerStatus(PartnerStatus.available);
 
               // log event
               try {
@@ -461,34 +451,37 @@ class HomeState extends State<Home> with WidgetsBindingObserver {
         Notifications().stopTriggering(NotificationType.tripRequest);
 
         // download trip data before updating PartnerModel status and thus UI
-        await widget.trip.downloadData(widget.firebase, notify: false);
+        await widget.firebase.model.trip.downloadData(notify: false);
+
         // cancel any previous trip status subscriptions
-        if (tripStatusSubscription != null) {
-          await tripStatusSubscription.cancel();
-        }
+        await tripStatusSubscription?.cancel();
+
         // listen for trip status updates calling a function that redraws markers
         // whenever a new partner is heard
-        tripStatusSubscription = widget.firebase.database.onTripStatusUpdate(
-          widget.trip.clientID,
-          onTripStatusUpdate,
-        );
+        final clientID = widget.firebase.model.trip.clientID;
+        if(clientID != null) {
+          tripStatusSubscription = widget.firebase.database.onTripStatusUpdate(
+            clientID,
+            onTripStatusUpdate,
+          );
+        }
 
         // remove demand polygons and stop redrawing them
-        widget.googleMaps.stopDrawingPolygons();
-        widget.googleMaps.undrawPolygons();
+        widget.firebase.model.googleMaps.stopDrawingPolygons();
+        widget.firebase.model.googleMaps.undrawPolygons();
       } else {
         // undraw markers
-        widget.googleMaps.undrawMarkers();
+        widget.firebase.model.googleMaps.undrawMarkers();
 
         // clear trip model
-        widget.trip.clear();
+        widget.firebase.model.trip.clear();
       }
 
       // if partner is anything but 'unavailable', constantly report his position. We already do
       // this when calling 'connect', but it's important to do here too in case
       // the partner relaunches the app.
       if (newPartnerStatus != PartnerStatus.unavailable) {
-        widget.partner.sendPositionToFirebase(true);
+        widget.firebase.model.partner.sendPositionToFirebase(true);
       }
 
       // if partner is 'unavailable',
@@ -496,19 +489,19 @@ class HomeState extends State<Home> with WidgetsBindingObserver {
         // stop reporting his position. We already do this when calling
         // 'disconnect', but it's important to do here too in case the partner
         // relaunches the app.
-        widget.partner.sendPositionToFirebase(false);
+        widget.firebase.model.partner.sendPositionToFirebase(false);
 
         // remove demand polygons and stop redrawing them
-        widget.googleMaps.stopDrawingPolygons();
-        widget.googleMaps.undrawPolygons();
+        widget.firebase.model.googleMaps.stopDrawingPolygons();
+        widget.firebase.model.googleMaps.undrawPolygons();
       }
 
       // if partner's status was 'requested' but was updated to 'available' it means
       // they were denied a trip, so display a warning
       if (newPartnerStatus == PartnerStatus.available &&
-          widget.partner.partnerStatus == PartnerStatus.requested) {
+          widget.firebase.model.partner.status == PartnerStatus.requested) {
         // cancel timer that was set off when partner was requested then display the warning
-        widget.timer.cancel();
+        widget.firebase.model.timer.cancel();
         await showOkDialog(
           context: context,
           title: "Corrida indisponível",
@@ -521,15 +514,16 @@ class HomeState extends State<Home> with WidgetsBindingObserver {
         // stop triggering trip request notifications if user becomes available
         Notifications().stopTriggering(NotificationType.tripRequest);
         // animate maps camera to center on the partner
-        if (widget.partner.position != null) {
-          widget.googleMaps.animateCameraToPosition(LatLng(
-            widget.partner.position.latitude,
-            widget.partner.position.longitude,
+        final position = widget.firebase.model.partner.position;
+        if (position != null) {
+          widget.firebase.model.googleMaps.animateCameraToPosition(LatLng(
+            position.latitude,
+            position.longitude,
           ));
         }
 
         // periodically draw demand polygons
-        await widget.googleMaps.kickoffDrawPolygon(widget.firebase);
+        await widget.firebase.model.googleMaps.kickoffDrawPolygon();
       }
 
       // log events
@@ -537,51 +531,47 @@ class HomeState extends State<Home> with WidgetsBindingObserver {
         await widget.firebase.analytics.logEventOnPartnerStatus(
           context: context,
           newStatus: newPartnerStatus,
-          oldStatus: widget.partner.partnerStatus,
+          oldStatus: widget.firebase.model.partner.status
         );
       } catch (_) {}
 
       // update partner model accordingly. This will trigger a tree rebuild
-      widget.partner.updatePartnerStatus(newPartnerStatus);
+      widget.firebase.model.partner.updatePartnerStatus(newPartnerStatus);
     }
   }
 
-  void onTripStatusUpdate(Event e) async {
+  void onTripStatusUpdate(DatabaseEvent e) async {
     TripStatus newTripStatus = TripStatusExtension.fromString(
-      e.snapshot.value,
+      e.snapshot.value.toString(),
     );
-    widget.trip.updateTripStatus(newTripStatus);
+    widget.firebase.model.trip.updateTripStatus(newTripStatus);
 
     // update trip status
     // draw markers
     if (newTripStatus == TripStatus.waitingPartner) {
       // if trip is 'waitingPartner', draw origin marker so partner knows
       // where to pick up the client
-      await widget.googleMaps.drawOriginMarker(context);
+      await widget.firebase.model.googleMaps.drawOriginMarker(context);
     } else if (newTripStatus == TripStatus.inProgress) {
       // if trip is 'inProgress', draw destination marker so partner
       // knows where to drop off the client
-      await widget.googleMaps.drawDestinationMarker(context);
+      await widget.firebase.model.googleMaps.drawDestinationMarker(context);
     } else if (newTripStatus == TripStatus.cancelledByClient) {
       // cancel trip status subscriptions
-      if (tripStatusSubscription != null) {
-        await tripStatusSubscription.cancel();
-      }
+        await tripStatusSubscription?.cancel();
       await showOkDialog(
         context: context,
         title: "O cliente cancelou o pedido",
       );
     } else if (newTripStatus == TripStatus.cancelledByPartner) {
       // cancel trip status subscriptions
-      if (tripStatusSubscription != null) {
-        await tripStatusSubscription.cancel();
-      }
+      await tripStatusSubscription?.cancel();
     }
   }
 
-  void onAccountStatusUpdate(Event e) async {
+  void onAccountStatusUpdate(DatabaseEvent e) async {
     AccountStatus newAccountStatus = AccountStatusExtension.fromString(
-      e.snapshot.value,
+      e.snapshot.value.toString(),
     );
     if (newAccountStatus == AccountStatus.locked) {
       await showOkDialog(
@@ -589,7 +579,7 @@ class HomeState extends State<Home> with WidgetsBindingObserver {
           title: "Conta bloqueada",
           content: "Entre em contato conosco para saber mais detalhes.");
     } else if (newAccountStatus == AccountStatus.approved &&
-        widget.partner.accountStatus == AccountStatus.locked) {
+        widget.firebase.model.partner.accountStatus == AccountStatus.locked) {
       await showOkDialog(
           context: context,
           title: "Conta aprovada",
@@ -597,6 +587,6 @@ class HomeState extends State<Home> with WidgetsBindingObserver {
     }
 
     // update partner's account status
-    widget.partner.updateAccountStatus(newAccountStatus);
+    widget.firebase.model.partner.updateAccountStatus(newAccountStatus);
   }
 }

@@ -14,39 +14,29 @@ import 'package:partner_app/screens/sendCrlv.dart';
 import 'package:partner_app/screens/sendPhotoWithCnh.dart';
 import 'package:partner_app/screens/sendProfilePhoto.dart';
 import 'package:partner_app/screens/start.dart';
-import 'package:partner_app/vendors/firebaseDatabase/interfaces.dart';
-import 'package:partner_app/vendors/firebaseDatabase/methods.dart';
+import 'package:partner_app/services/firebase/firebase.dart';
+import 'package:partner_app/services/firebase/database/interfaces.dart';
 import 'package:partner_app/styles.dart';
 import 'package:partner_app/utils/utils.dart';
+import 'package:partner_app/services/firebase/database/methods.dart';
 import 'package:partner_app/vendors/urlLauncher.dart';
 import 'package:partner_app/widgets/appButton.dart';
 import 'package:partner_app/widgets/overallPadding.dart';
 import 'package:provider/provider.dart';
-import 'package:url_launcher/url_launcher.dart';
-
-class DocumentsArguments {
-  final UserModel firebase;
-  final PartnerModel partner;
-
-  DocumentsArguments({required this.firebase, required this.partner});
-}
 
 class Documents extends StatefulWidget {
   static const routeName = "Documents";
-  final UserModel firebase;
-  final PartnerModel partner;
-
-  Documents({required this.firebase, required this.partner});
+    final FirebaseService firebase = FirebaseService();
 
   @override
   DocumentsState createState() => DocumentsState();
 }
 
 class DocumentsState extends State<Documents> {
-  StreamSubscription accountStatusSubscription;
-  StreamSubscription submittedDocumentsSubscription;
+  StreamSubscription? accountStatusSubscription;
+  StreamSubscription? submittedDocumentsSubscription;
   var _firebaseListener;
-  Widget buttonChild;
+  Widget? buttonChild;
   bool lockScreen = false;
 
   @override
@@ -54,59 +44,57 @@ class DocumentsState extends State<Documents> {
     super.initState();
 
     // subscribe to changes in account_status so UI is updated appropriately
-    accountStatusSubscription = widget.firebase.database.onAccountStatusUpdate(
-      widget.firebase.auth.currentUser.uid,
-      (e) {
-        AccountStatus accountStatus = AccountStatusExtension.fromString(
-          e.snapshot.value,
-        );
-        // update partner model accordingly
-        if (accountStatus != null) {
-          widget.partner.updateAccountStatus(accountStatus);
-        }
-      },
-    );
+    final user = widget.firebase.auth.currentUser;
+    if(user != null) {
+      accountStatusSubscription =widget.firebase.database.onAccountStatusUpdate(
+        user.uid,
+          (e) {
+          AccountStatus accountStatus = AccountStatusExtension.fromString(
+            e.snapshot.value.toString(),
+          );
+          // update partner model accordingly
+          widget.firebase.model.partner.updateAccountStatus(accountStatus);
+        },
+      );
 
-    // subscribe to changes in submitted_documents so UI is updated appropriately
-    submittedDocumentsSubscription =
-        widget.firebase.database.onSubmittedDocumentsUpdate(
-      widget.firebase.auth.currentUser.uid,
-      (e) {
-        SubmittedDocuments sd = SubmittedDocuments.fromJson(e.snapshot.value);
-        if (sd != null) {
-          widget.partner.updateBankAccountSubmitted(sd.bankAccount);
-          widget.partner.updateCnhSubmitted(sd.cnh);
-          widget.partner.updateCrlvSubmitted(sd.crlv);
-          widget.partner.updatePhotoWithCnhSubmitted(sd.photoWithCnh);
-          widget.partner.updateProfilePhotoSubmitted(sd.profilePhoto);
-        }
-      },
-    );
+      // subscribe to changes in submitted_documents so UI is updated appropriately
+      submittedDocumentsSubscription =
+          widget.firebase.database.onSubmittedDocumentsUpdate(
+        user.uid,
+        (e) {
+          final partner = widget.firebase.model.partner;
+          SubmittedDocuments sd = SubmittedDocuments.fromJson(e.snapshot.value as Map);
+          partner.updateBankAccountSubmitted(sd.bankAccount);
+          partner.updateCnhSubmitted(sd.cnh);
+          partner.updateCrlvSubmitted(sd.crlv);
+          partner.updatePhotoWithCnhSubmitted(sd.photoWithCnh);
+          partner.updateProfilePhotoSubmitted(sd.profilePhoto);
+        },
+      );
+    }
+
+
 
     WidgetsBinding.instance.addPostFrameCallback((_) {
       // add listener to UserModel so user is redirected to Start when logs out
       _firebaseListener = () {
         _signOut(context);
       };
-      widget.firebase.addListener(_firebaseListener);
+      widget.firebase.model.user.addListener(_firebaseListener);
     });
   }
 
   @override
   void dispose() {
-    widget.firebase.removeListener(_firebaseListener);
-    if (accountStatusSubscription != null) {
-      accountStatusSubscription.cancel();
-    }
-    if (submittedDocumentsSubscription != null) {
-      submittedDocumentsSubscription.cancel();
-    }
+    widget.firebase.model.user.removeListener(_firebaseListener);
+    accountStatusSubscription?.cancel();
+    submittedDocumentsSubscription?.cancel();
     super.dispose();
   }
 
   // push start screen when user logs out
   void _signOut(BuildContext context) {
-    if (!widget.firebase.isUserSignedIn) {
+    if (!widget.firebase.model.user.isUserSignedIn) {
       Navigator.pushNamedAndRemoveUntil(context, Start.routeName, (_) => false);
     }
   }
@@ -114,7 +102,6 @@ class DocumentsState extends State<Documents> {
   @override
   Widget build(BuildContext context) {
     PartnerModel partner = Provider.of<PartnerModel>(context);
-    UserModel firebase = Provider.of<UserModel>(context, listen: false);
     final screenHeight = MediaQuery.of(context).size.height;
     final screenWidth = MediaQuery.of(context).size.width;
 
@@ -176,7 +163,7 @@ class DocumentsState extends State<Documents> {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Text(
-                      "Bem-vindo(a), " + partner.name,
+                      "Bem-vindo(a), " + (partner.name ?? ""),
                       style:
                           TextStyle(fontSize: 22, fontWeight: FontWeight.w600),
                     ),
@@ -272,7 +259,7 @@ class DocumentsState extends State<Documents> {
                                 AccountStatus.deniedApproval
                         ? ListBody(
                             children: [
-                              partner.crlvSubmitted
+                              partner.crlvSubmitted == true
                                   ? Container()
                                   : Column(
                                       children: [
@@ -301,7 +288,7 @@ class DocumentsState extends State<Documents> {
                                             thickness: 0.1),
                                       ],
                                     ),
-                              partner.cnhSubmitted
+                              partner.cnhSubmitted == true
                                   ? Container()
                                   : Column(
                                       children: [
@@ -330,7 +317,7 @@ class DocumentsState extends State<Documents> {
                                             thickness: 0.1),
                                       ],
                                     ),
-                              partner.photoWithCnhSubmitted
+                              partner.photoWithCnhSubmitted == true
                                   ? Container()
                                   : Column(
                                       children: [
@@ -361,7 +348,7 @@ class DocumentsState extends State<Documents> {
                                             thickness: 0.1),
                                       ],
                                     ),
-                              partner.profilePhotoSubmitted
+                              partner.profilePhotoSubmitted == true
                                   ? Container()
                                   : Column(
                                       children: [
@@ -392,7 +379,7 @@ class DocumentsState extends State<Documents> {
                                             thickness: 0.1),
                                       ],
                                     ),
-                              partner.bankAccountSubmitted
+                              partner.bankAccountSubmitted == true
                                   ? Container()
                                   : Column(
                                       children: [
@@ -462,7 +449,7 @@ class DocumentsState extends State<Documents> {
                                 AccountStatus.deniedApproval
                         ? ListBody(
                             children: [
-                              partner.crlvSubmitted
+                              partner.crlvSubmitted == true
                                   ? Column(
                                       children: [
                                         ListTile(
@@ -488,7 +475,7 @@ class DocumentsState extends State<Documents> {
                                       ],
                                     )
                                   : Container(),
-                              partner.cnhSubmitted
+                              partner.cnhSubmitted == true
                                   ? Column(
                                       children: [
                                         ListTile(
@@ -514,7 +501,7 @@ class DocumentsState extends State<Documents> {
                                       ],
                                     )
                                   : Container(),
-                              partner.photoWithCnhSubmitted
+                              partner.photoWithCnhSubmitted == true
                                   ? Column(
                                       children: [
                                         ListTile(
@@ -540,7 +527,7 @@ class DocumentsState extends State<Documents> {
                                       ],
                                     )
                                   : Container(),
-                              partner.profilePhotoSubmitted
+                              partner.profilePhotoSubmitted == true
                                   ? Column(
                                       children: [
                                         ListTile(
@@ -566,7 +553,7 @@ class DocumentsState extends State<Documents> {
                                       ],
                                     )
                                   : Container(),
-                              partner.bankAccountSubmitted
+                              partner.bankAccountSubmitted == true
                                   ? Column(
                                       children: [
                                         ListTile(
@@ -630,7 +617,7 @@ class DocumentsState extends State<Documents> {
 
     // make sure user is connected to the internet
     if (!connectivity.hasConnection) {
-      await connectivity.alertWhenOffline(
+      await connectivity.alertOffline(
         context,
         message: "Conecte-se à internet para fazer começar",
       );
@@ -647,7 +634,7 @@ class DocumentsState extends State<Documents> {
 
     // download partner data
     try {
-      await partner.downloadData(firebase, notify: false);
+      await partner.downloadData(notify: false);
     } catch (_) {
       await showOkDialog(
         context: context,
@@ -662,20 +649,12 @@ class DocumentsState extends State<Documents> {
       context,
       Home.routeName,
       (_) => false,
-      arguments: HomeArguments(
-        firebase: firebase,
-        partner: partner,
-        googleMaps: googleMaps,
-        timer: timer,
-        trip: trip,
-        connectivity: connectivity,
-      ),
     );
   }
 }
 
 Future<dynamic> _showHelpDialog(BuildContext context, String phoneNumber) {
-  UserModel firebase = Provider.of<UserModel>(context, listen: false);
+  final firebase = FirebaseService();
   return showDialog(
     context: context,
     builder: (BuildContext context) {

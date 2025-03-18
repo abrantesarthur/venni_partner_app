@@ -1,86 +1,86 @@
 import 'package:flutter/material.dart';
-import 'package:partner_app/models/user.dart';
 import 'package:partner_app/models/partner.dart';
+import 'package:partner_app/services/firebase/firebase.dart';
 import 'package:partner_app/vendors/firebaseFunctions/interfaces.dart';
 import 'package:partner_app/vendors/firebaseFunctions/methods.dart';
-import 'package:partner_app/vendors/firebaseStorage.dart';
+import 'package:partner_app/services/firebase/firebaseStorage.dart';
 
 class TripModel extends ChangeNotifier {
-  final FirebaseService firebase;
-  String _clientID;
-  TripStatus _tripStatus;
-  String _originPlaceID;
-  String _destinationPlaceID;
-  double _originLat;
-  double _originLng;
-  double _destinationLat;
-  double _destinationLng;
-  int _farePrice;
-  int _distanceMeters;
-  String _distanceText;
-  int _durationSeconds;
-  String _durationText;
-  String _clientToDestinationEncodedPoints;
-  int _requestTime;
-  String _originAddress;
-  String _destinationAddress;
-  PaymentMethod _paymentMethod;
-  String _clientName;
-  String _clientPhone;
-  ProfileImage _profileImage;
+  late FirebaseService firebase;
+  String? _clientID;
+  TripStatus? _tripStatus;
+  String? _originPlaceID;
+  String? _destinationPlaceID;
+  int? _farePrice;
+  int? _distanceMeters;
+  String? _distanceText;
+  int? _durationSeconds;
+  String? _durationText;
+  String? _clientToDestinationEncodedPoints;
+  int? _requestTime;
+  String? _originAddress;
+  String? _destinationAddress;
+  PaymentMethod? _paymentMethod;
+  String? _clientName;
+  String? _clientPhone;
+  ProfileImage? _profileImage;
+  double? _originLat;
+  double? _originLng;
+  double? _destinationLat;
+  double? _destinationLng;
 
-  String get clientID => _clientID;
-  TripStatus get tripStatus => _tripStatus;
-  String get originPlaceID => _originPlaceID;
-  String get destinationPlaceID => _destinationPlaceID;
-  double get originLat => _originLat;
-  double get originLng => _originLng;
-  double get destinationLat => _destinationLat;
-  double get destinationLng => _destinationLng;
-  int get farePrice => _farePrice;
-  int get distanceMeters => _distanceMeters;
-  String get distanceText => _distanceText;
-  int get durationSeconds => _durationSeconds;
-  String get durationText => _durationText;
-  String get clientToDestinationEncodedPoints =>
+
+  String? get clientID => _clientID;
+  TripStatus? get tripStatus => _tripStatus;
+  String? get originPlaceID => _originPlaceID;
+  String? get destinationPlaceID => _destinationPlaceID;
+  double? get originLat => _originLat;
+  double? get originLng => _originLng;
+  double? get destinationLat => _destinationLat;
+  double? get destinationLng => _destinationLng;
+  int? get farePrice => _farePrice;
+  int? get distanceMeters => _distanceMeters;
+  String? get distanceText => _distanceText;
+  int? get durationSeconds => _durationSeconds;
+  String? get durationText => _durationText;
+  String? get clientToDestinationEncodedPoints =>
       _clientToDestinationEncodedPoints;
-  int get requestTime => _requestTime;
-  String get originAddress => _originAddress;
-  String get destinationAddress => _destinationAddress;
-  PaymentMethod get paymentMethod => _paymentMethod;
-  String get clientName => _clientName != null ? _clientName.split(" ")[0] : "";
-  String get clientFullName => _clientName;
-  String get clientPhone => _clientPhone;
-  ProfileImage get profileImage => _profileImage;
+  int? get requestTime => _requestTime;
+  String? get originAddress => _originAddress;
+  String? get destinationAddress => _destinationAddress;
+  PaymentMethod? get paymentMethod => _paymentMethod;
+  String get clientName => _clientName?.split(" ")[0] ?? "";
+  String? get clientFullName => _clientName;
+  String? get clientPhone => _clientPhone;
+  ProfileImage? get profileImage => _profileImage;
 
-  // FIXME: 
   TripModel(this.firebase);
 
-  void fromTripInterface(Trip t, {bool notify = true}) {
-    if (t != null) {
-      _clientID = t.clientID;
-      _tripStatus = t.tripStatus;
-      _originPlaceID = t.originPlaceID;
-      _destinationPlaceID = t.destinationPlaceID;
-      _originLat = t.originLat;
-      _originLng = t.originLng;
-      _destinationLat = t.destinationLat;
-      _destinationLng = t.destinationLng;
-      _farePrice = t.farePrice;
-      _distanceMeters = t.distanceMeters;
-      _distanceText = t.distanceText;
-      _durationSeconds = t.durationSeconds;
-      _durationText = t.durationText;
-      _clientToDestinationEncodedPoints = t.clientToDestinationEncodedPoints;
-      _requestTime = t.requestTime;
-      _originAddress = t.originAddress;
-      _destinationAddress = t.destinationAddress;
-      _paymentMethod = t.paymentMethod;
-      _clientName = t.clientName;
-      _clientPhone = t.clientPhone;
-    } else {
-      clear();
-    }
+  Future<void> initialize() async {
+    await downloadData(notify: false);
+  }
+
+  void fromTripInterface(Trip trip, {bool notify = true}) {
+    _clientID = trip.clientID;
+    _tripStatus = trip.tripStatus;
+    _originPlaceID = trip.originPlaceID;
+    _destinationPlaceID = trip.destinationPlaceID;
+    _originLat = trip.originLat;
+    _originLng = trip.originLng;
+    _destinationLat = trip.destinationLat;
+    _destinationLng = trip.destinationLng;
+    _farePrice = trip.farePrice;
+    _distanceMeters = trip.distanceMeters;
+    _distanceText = trip.distanceText;
+    _durationSeconds = trip.durationSeconds;
+    _durationText = trip.durationText;
+    _clientToDestinationEncodedPoints = trip.clientToDestinationEncodedPoints;
+    _requestTime = trip.requestTime;
+    _originAddress = trip.originAddress;
+    _destinationAddress = trip.destinationAddress;
+    _paymentMethod = trip.paymentMethod;
+    _clientName = trip.clientName;
+    _clientPhone = trip.clientPhone;
     if (notify) {
       notifyListeners();
     }
@@ -101,16 +101,18 @@ class TripModel extends ChangeNotifier {
   }
 
   // downloadData sends a request to download partner's current trip
-  Future<void> downloadData(
-    {
+  Future<void> downloadData({
     bool notify = true,
   }) async {
-    Trip t = await firebase.functions.getCurrentTrip();
-    fromTripInterface(t, notify: notify);
-
-    // get client profile image
-    ProfileImage pi = await firebase.storage.getClientProfilePicture(clientID);
-    updateProfileImage(pi, notify: notify);
+    Trip? trip = await firebase.functions.getCurrentTrip();
+    if(trip != null) {
+      fromTripInterface(trip , notify: notify);
+      // get client profile image
+      ProfileImage pi = await firebase.storage.getClientProfilePicture(trip.clientID);
+      updateProfileImage(pi, notify: notify);
+    } else {
+      clear();
+    }
   }
 
   void clear() {

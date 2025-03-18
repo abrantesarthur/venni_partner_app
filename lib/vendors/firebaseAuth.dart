@@ -11,12 +11,14 @@ import 'package:partner_app/screens/documents.dart';
 import 'package:partner_app/screens/home.dart';
 import 'package:partner_app/screens/insertEmail.dart';
 import 'package:partner_app/screens/insertName.dart';
-import 'package:partner_app/vendors/firebaseDatabase/interfaces.dart';
-import 'package:partner_app/vendors/firebaseDatabase/methods.dart';
+import 'package:partner_app/services/firebase/database/interfaces.dart';
+import 'package:partner_app/services/firebase/database/methods.dart';
 import 'package:provider/provider.dart';
 import 'package:uuid/uuid.dart';
 
 extension AppFirebaseAuth on FirebaseAuth {
+  final firebase = FirebaseService();
+
   Future<void> verificationCompletedCallback({
     required BuildContext context,
     required PhoneAuthCredential credential,
@@ -406,8 +408,8 @@ extension AppFirebaseAuth on FirebaseAuth {
 
 class CreateEmailResponse {
   final bool successful;
-  final String message;
-  final String code;
+  final String? message;
+  final String? code;
 
   CreateEmailResponse({
     required this.successful,

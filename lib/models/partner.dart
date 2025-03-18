@@ -1,16 +1,17 @@
 import 'dart:async';
 
+import 'package:background_location_tracker/background_location_tracker.dart';
 import 'package:flutter/material.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:partner_app/models/user.dart';
 import 'package:partner_app/models/googleMaps.dart';
 import 'package:partner_app/models/trip.dart';
-import 'package:partner_app/services/firebase.dart';
-import 'package:partner_app/vendors/firebaseDatabase/interfaces.dart';
-import 'package:partner_app/vendors/firebaseDatabase/methods.dart';
+import 'package:partner_app/services/firebase/firebase.dart';
+import 'package:partner_app/services/firebase/database/interfaces.dart';
+import 'package:partner_app/services/firebase/database/methods.dart';
 import 'package:partner_app/vendors/firebaseFunctions/interfaces.dart';
-import 'package:partner_app/vendors/firebaseStorage.dart';
+import 'package:partner_app/services/firebase/firebaseStorage.dart';
 import 'package:partner_app/vendors/permissionHandler.dart';
 
 class ProfileImage {
@@ -32,7 +33,7 @@ class PartnerModel extends ChangeNotifier {
   double? _rating;
   int? _totalTrips;
   String? _pagarmeRecipientID;
-  PartnerStatus? _partnerStatus;
+  PartnerStatus? _status;
   AccountStatus? _accountStatus;
   String? _denialReason;
   String? _lockReason;
@@ -62,7 +63,7 @@ class PartnerModel extends ChangeNotifier {
   double? get rating => _rating;
   int? get totalTrips => _totalTrips;
   String? get pagarmeRecipientID => _pagarmeRecipientID;
-  PartnerStatus? get partnerStatus => _partnerStatus;
+  PartnerStatus? get status => _status;
   AccountStatus? get accountStatus => _accountStatus;
   String? get denialReason => _denialReason;
   String? get lockReason => _lockReason;
@@ -83,6 +84,12 @@ class PartnerModel extends ChangeNotifier {
 
   PartnerModel(this.firebase);
 
+  Future<void> initialize() async {
+    // download partner data
+    await this.downloadData(notify: false);
+  }
+
+
   void sendPositionToFirebase(bool v) {
     _sendPositionToFirebase = v;
   }
@@ -100,7 +107,7 @@ class PartnerModel extends ChangeNotifier {
   }
 
   void updatePartnerStatus(PartnerStatus ps) {
-    _partnerStatus = ps;
+    _status = ps;
     notifyListeners();
   }
 
@@ -147,7 +154,7 @@ class PartnerModel extends ChangeNotifier {
   }
 
   void setProfileImage(
-    ProfileImage img, {
+    ProfileImage? img, {
     bool notify = true,
   }) {
     _profileImage = img;
@@ -170,7 +177,11 @@ class PartnerModel extends ChangeNotifier {
       firebase.auth.currentUser?.uid,
     );
 
-    this.fromPartnerInterface(partnerInterface, notify: notify);
+    if (partnerInterface == null) {
+      clear();
+    } else {
+      this.fromPartnerInterface(partnerInterface, notify: notify);
+    }
   }
 
   Future<Position?> getPosition(
@@ -189,35 +200,33 @@ class PartnerModel extends ChangeNotifier {
     return _position;
   }
 
-  void resetLocationService() {
-    BackgroundLocation.stopLocationService();
-    BackgroundLocation.startLocationService(distanceFilter: 10);
+  Future<void> resetLocationService() async {
+    await BackgroundLocationTrackerManager.stopTracking();
+    await BackgroundLocationTrackerManager.startTracking(config: AndroidConfig(distanceFilterMeters: 10));
   }
 
-  // handlePositionUpdates starts listener that gets triggered whenever partner
-  // moves at least 20 meters. This listener, in turn, updates PartnerModel position,
-  // reports it to firebase if _sendPositionToFirebase flag is set, and animates
-  // google maps camera if _animateMapsCamera flag is set. THis is to better
-  // display partner position in relation to either trip's origin or destination
-  // depending on whether there is a trip with 'waitingPartner' or 'inProgress'
-  // status.
-  void handlePositionUpdates(
-    GoogleMapsModel googleMaps,
-    TripModel trip,
-  ) {
+  /// handlePositionUpdates starts listener that gets triggered whenever partner
+  /// moves at least 20 meters. This listener, in turn, updates PartnerModel position,
+  /// reports it to firebase if _sendPositionToFirebase flag is set, and animates
+  /// google maps camera if _animateMapsCamera flag is set. This is to better
+  /// display partner position in relation to either trip's origin or destination
+  /// depending on whether there is a trip with 'waitingPartner' or 'inProgress'
+  /// status.
+  void handlePositionUpdates() {
     try {
-      // reset location service to flush out any previous listeners set by "getLocationUpdates"
-      // if partner is near client, we update location at higher rights so client
+      // reset location service to flush out any previous listeners set by "getLocationUpdates".
+      // If partner is near client, we update location at higher rates so client
       // can view partner arriving better
       resetLocationService();
+
       // subscribe to changes in position, updating position and geocoding on changes
-      BackgroundLocation.getLocationUpdates((p) async {
+      BackgroundLocationTrackerManager.handleBackgroundUpdated((p) async {
         final position = Position(
-          longitude: p.longitude,
-          latitude: p.latitude,
+          longitude: p.lon,
+          latitude: p.lat,
           timestamp: DateTime.now(),
-          accuracy: p.accuracy,
-          altitude: p.altitude,
+          accuracy: p.horizontalAccuracy,
+          altitude: p.alt,
           heading: 0.0,
           speed: p.speed,
           speedAccuracy: 0.0,
@@ -246,19 +255,26 @@ class PartnerModel extends ChangeNotifier {
           position.longitude,
         );
         LatLng? secondCoordinates;
-        // if partner is going to pick the client, redraw bounds between partner and origin
-        if (trip.tripStatus == TripStatus.waitingPartner) {
-          secondCoordinates = LatLng(trip.originLat, trip.originLng);
-          // if partner is driving the client, redraw bonds between partner and destination
-        } else if (trip.tripStatus == TripStatus.inProgress) {
-          secondCoordinates = LatLng(trip.destinationLat, trip.destinationLng);
+
+        final trip = firebase.model.trip;
+        // Set secondCoordinates based on trip status
+        if (trip.tripStatus == TripStatus.waitingPartner &&
+            trip.originLat != null &&
+            trip.originLng != null) {
+          // Use origin coordinates if partner is going to pick up client
+          secondCoordinates = LatLng(trip.originLat!, trip.originLng!);
+        } else if (trip.tripStatus == TripStatus.inProgress &&
+                  trip.destinationLat != null &&
+                  trip.destinationLng != null) {
+          // Use destination coordinates if trip is in progress
+          secondCoordinates = LatLng(trip.destinationLat!, trip.destinationLng!);
         }
 
         if (secondCoordinates != null) {
-          googleMaps.animateCameraToBounds(partnerPosition, secondCoordinates);
+          firebase.model.googleMaps.animateCameraToBounds(partnerPosition, secondCoordinates);
         } else {
           // if partner is not handling a trip, redraw view centered on his position
-          googleMaps.animateCameraToPosition(partnerPosition);
+          firebase.model.googleMaps.animateCameraToPosition(partnerPosition);
         }
 
         // notifyListeners triggers a rebuild in PartnerBusy, which uses the
@@ -270,44 +286,41 @@ class PartnerModel extends ChangeNotifier {
   }
 
   void fromPartnerInterface(
-    PartnerInterface? pi, {
+    PartnerInterface pi, {
     bool notify = true,
   }) {
-    if (pi == null) {
-      clear();
-    } else {
-      _id = pi.id;
-      _name = pi.name;
-      _lastName = pi.lastName;
-      _cpf = pi.cpf;
-      _gender = pi.gender;
-      _memberSince = pi.memberSince;
-      _phoneNumber = pi.phoneNumber;
-      _rating = pi.rating;
-      _totalTrips = pi.totalTrips;
-      _pagarmeRecipientID = pi.pagarmeRecipientID;
-      _partnerStatus = pi.partnerStatus;
-      _accountStatus = pi.accountStatus;
-      _denialReason = pi.denialReason;
-      _lockReason = pi.lockReason;
-      _vehicle = pi.vehicle;
-      _cnhSubmitted =
-          pi.submittedDocuments == null ? false : pi.submittedDocuments.cnh;
-      _crlvSubmitted =
-          pi.submittedDocuments == null ? false : pi.submittedDocuments.crlv;
-      _photoWithCnhSubmitted = pi.submittedDocuments == null
-          ? false
-          : pi.submittedDocuments.photoWithCnh;
-      _profilePhotoSubmitted = pi.submittedDocuments == null
-          ? false
-          : pi.submittedDocuments.profilePhoto;
-      _bankAccountSubmitted = pi.submittedDocuments == null
-          ? false
-          : pi.submittedDocuments.bankAccount;
-      _amountOwed = pi.amountOwed;
-      _bankAccount = pi.bankAccount;
-      _gains = (_gains ?? 0) > 0 ? _gains : 0;
-    }
+    _id = pi.id;
+    _name = pi.name;
+    _lastName = pi.lastName;
+    _cpf = pi.cpf;
+    _gender = pi.gender;
+    _memberSince = pi.memberSince;
+    _phoneNumber = pi.phoneNumber;
+    _rating = pi.rating;
+    _totalTrips = pi.totalTrips;
+    _pagarmeRecipientID = pi.pagarmeRecipientID;
+    _status = pi.partnerStatus;
+    _accountStatus = pi.accountStatus;
+    _denialReason = pi.denialReason;
+    _lockReason = pi.lockReason;
+    _vehicle = pi.vehicle;
+    _cnhSubmitted =
+        pi.submittedDocuments == null ? false : pi.submittedDocuments.cnh;
+    _crlvSubmitted =
+        pi.submittedDocuments == null ? false : pi.submittedDocuments.crlv;
+    _photoWithCnhSubmitted = pi.submittedDocuments == null
+        ? false
+        : pi.submittedDocuments.photoWithCnh;
+    _profilePhotoSubmitted = pi.submittedDocuments == null
+        ? false
+        : pi.submittedDocuments.profilePhoto;
+    _bankAccountSubmitted = pi.submittedDocuments == null
+        ? false
+        : pi.submittedDocuments.bankAccount;
+    _amountOwed = pi.amountOwed;
+    _bankAccount = pi.bankAccount;
+    _gains = (_gains ?? 0) > 0 ? _gains : 0;
+  
     if (notify) {
       notifyListeners();
     }
@@ -330,7 +343,7 @@ class PartnerModel extends ChangeNotifier {
     _rating = null;
     _totalTrips = null;
     _pagarmeRecipientID = null;
-    _partnerStatus = null;
+    _status = null;
     _accountStatus = null;
     _denialReason = null;
     _lockReason = null;

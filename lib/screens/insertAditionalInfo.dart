@@ -4,19 +4,19 @@ import 'package:flutter/services.dart';
 import 'package:partner_app/screens/insertPassword.dart';
 import 'package:partner_app/styles.dart';
 import 'package:partner_app/utils/utils.dart';
-import 'package:partner_app/vendors/firebaseDatabase/interfaces.dart';
+import 'package:partner_app/services/firebase/database/interfaces.dart';
 import 'package:partner_app/widgets/appInputText.dart';
 import 'package:partner_app/widgets/arrowBackButton.dart';
 import 'package:partner_app/widgets/circularButton.dart';
 import 'package:partner_app/widgets/overallPadding.dart';
 import 'package:partner_app/widgets/warning.dart';
 
-class InsertAditionalInfoArguments {
+class InsertAdditionalInfoArguments {
   final UserCredential userCredential;
   final String name;
   final String surname;
   final String userEmail;
-  InsertAditionalInfoArguments({
+  InsertAdditionalInfoArguments({
     required this.userCredential,
     required this.name,
     required this.surname,
@@ -45,9 +45,9 @@ class InsertAditionalInfo extends StatefulWidget {
 class InsertAditionalInfoState extends State<InsertAditionalInfo> {
   TextEditingController cpfTextEditingController = TextEditingController();
   FocusNode cpfFocusNode = FocusNode();
-  String cpf;
+  String? cpf;
   bool cpfIsValid = true;
-  Gender selectedGender;
+  Gender? selectedGender;
 
   @override
   void initState() {
@@ -55,7 +55,7 @@ class InsertAditionalInfoState extends State<InsertAditionalInfo> {
     cpfTextEditingController.addListener(() {
       setState(() {
         cpf = cpfTextEditingController.text.getCleanedCPF();
-        cpfIsValid = cpf.isValidCPF();
+        cpfIsValid = cpf?.isValidCPF() ?? false;
       });
     });
   }
@@ -79,8 +79,8 @@ class InsertAditionalInfoState extends State<InsertAditionalInfo> {
         name: widget.name,
         surname: widget.surname,
         userEmail: widget.userEmail,
-        cpf: cpf,
-        gender: selectedGender,
+        cpf: cpf ?? "",
+        gender: selectedGender ?? Gender.masculino,
       ),
     );
   }

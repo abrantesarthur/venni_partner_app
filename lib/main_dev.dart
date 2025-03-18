@@ -1,15 +1,30 @@
-import 'package:awesome_notifications/awesome_notifications.dart';
+import 'package:background_location_tracker/background_location_tracker.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:flutter_dotenv/flutter_dotenv.dart' as DotEnv;
+import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:partner_app/app.dart';
 import 'package:partner_app/config/config.dart';
-import 'package:partner_app/styles.dart';
 import 'package:partner_app/vendors/awesomeNotifications.dart';
+
+// FIXME: move these to a dedicated package and properly integrate with firebase
+@pragma('vm:entry-point')
+void backgroundLocationCallback() {
+  BackgroundLocationTrackerManager.handleBackgroundUpdated(
+    (data) async => print(data)
+  );
+}
+
+Future startLocationTracking() async {
+  await BackgroundLocationTrackerManager.startTracking();
+}
+
+Future stopLocationTracking() async {
+  await BackgroundLocationTrackerManager.stopTracking();
+}
 
 // TODO: store sensitive data safely https://medium.com/flutterdevs/secure-storage-in-flutter-660d7cb81bc
 void main() async {
-  await DotEnv.load(fileName: ".env");
+  await dotenv.load(fileName: ".env");
   AppConfig(flavor: Flavor.DEV);
 
   // disable landscape mode
@@ -23,6 +38,26 @@ void main() async {
     channelName: "Venni Pedidos de Viagens",
     channelDescription: "Notificações quando receber pedidos de viagens",
   );
+
+    // initialize background location tracking
+  WidgetsFlutterBinding.ensureInitialized();
+  await BackgroundLocationTrackerManager.initialize(
+    backgroundLocationCallback,
+    config: const BackgroundLocationTrackerConfig(
+      loggingEnabled: true,
+      androidConfig: AndroidConfig(
+        notificationIcon: 'explore',
+        trackingInterval: Duration(seconds: 4),
+        distanceFilterMeters: null,
+      ),
+      iOSConfig: IOSConfig(
+        activityType: ActivityType.FITNESS,
+        distanceFilterMeters: null,
+        restartAfterKill: true,
+      ),
+    ),
+  );
+
 
   runApp(App());
 }

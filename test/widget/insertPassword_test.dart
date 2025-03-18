@@ -9,7 +9,7 @@ import 'package:partner_app/screens/documents.dart';
 import 'package:partner_app/screens/insertPassword.dart';
 import 'package:partner_app/screens/start.dart';
 import 'package:partner_app/styles.dart';
-import 'package:partner_app/vendors/firebaseDatabase/interfaces.dart';
+import 'package:partner_app/services/firebase/database/interfaces.dart';
 import 'package:partner_app/widgets/appInputText.dart';
 import 'package:partner_app/widgets/circularButton.dart';
 import 'package:partner_app/widgets/warning.dart';

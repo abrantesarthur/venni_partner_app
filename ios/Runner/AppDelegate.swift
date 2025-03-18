@@ -29,9 +29,14 @@ import GoogleMaps
     // if(googleMapsApiKeyNameAndValue.count > 1) {
     //   googleMapsApiKey = googleMapsApiKeyNameAndValue[1]
     // }
+    // FIXME: remove hardcoded API keys
     GMSServices.provideAPIKey("AIzaSyCK58KogR8m_I_unlhint9mwQkAy-_Ft3g")
 
     GeneratedPluginRegistrant.register(with: self)
+    BackgroundLocationTrackerPlugin.setPluginRegistrantCallback { registry in
+      GeneratedPluginRegistrant.register(with: registry)
+    }
+
     return super.application(application, didFinishLaunchingWithOptions: launchOptions)
   }
 }

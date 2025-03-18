@@ -13,8 +13,8 @@ import 'package:partner_app/widgets/circularButton.dart';
 import 'package:partner_app/widgets/overallPadding.dart';
 import 'package:partner_app/widgets/warning.dart';
 import 'package:provider/provider.dart';
-import 'package:partner_app/vendors/firebaseAuth.dart';
-import 'package:partner_app/vendors/firebaseDatabase/methods.dart';
+import 'package:partner_app/services/firebase/firebaseAuth.dart';
+import 'package:partner_app/services/firebase/database/methods.dart';
 
 enum InsertSmsCodeMode {
   insertNewPhone,
@@ -268,7 +268,7 @@ class InsertSmsCodeState extends State<InsertSmsCode> {
       listen: false,
     );
     if (!connectivity.hasConnection) {
-      await connectivity.alertWhenOffline(
+      await connectivity.alertOffline(
         context,
         message: "Conecte-se à internet para fazer login",
       );

@@ -1,17 +1,18 @@
 import 'dart:async';
 import 'package:firebase_database/firebase_database.dart';
-import 'package:flutter/material.dart';
 import 'package:partner_app/utils/utils.dart';
-import 'package:partner_app/vendors/firebaseDatabase/interfaces.dart';
+import 'package:partner_app/services/firebase/database/interfaces.dart';
 
+// FIXME: move to FirebaseServices
 extension AppFirebaseDatabase on FirebaseDatabase {
   Future<PartnerInterface?> getPartnerFromID(String? pilotID) async {
     if (pilotID == null || pilotID.isEmpty) {
       return null;
     }
-    DataSnapshot snapshot =
-        await this.reference().child("partners").child(pilotID).once();
-    return PartnerInterface.fromJson(snapshot.value);
+    DatabaseEvent event =
+        await this.ref().child("partners").child(pilotID).once();
+    // FIXME: double check that casting as Map is safe
+    return PartnerInterface.fromJson(event.snapshot.value as Map);
   }
 
   Future<void> createPartner(PartnerInterface partner) async {
@@ -145,7 +146,7 @@ extension AppFirebaseDatabase on FirebaseDatabase {
   // account status of partner with uid partnerID
   StreamSubscription onAccountStatusUpdate(
     String partnerID,
-    void Function(Event) onData,
+    void Function(DatabaseEvent) onData,
   ) {
     return this
         .reference()
@@ -160,7 +161,7 @@ extension AppFirebaseDatabase on FirebaseDatabase {
   // account status of partner with uid partnerID
   StreamSubscription onSubmittedDocumentsUpdate(
     String partnerID,
-    void Function(Event) onData,
+    void Function(DatabaseEvent) onData,
   ) {
     return this
         .reference()
@@ -175,7 +176,7 @@ extension AppFirebaseDatabase on FirebaseDatabase {
   // of the partner with uid partnerID
   StreamSubscription onPartnerStatusUpdate(
     String partnerID,
-    void Function(Event) onData,
+    void Function(DatabaseEvent) onData,
   ) {
     return this
         .reference()
@@ -188,7 +189,7 @@ extension AppFirebaseDatabase on FirebaseDatabase {
 
   StreamSubscription onTripStatusUpdate(
     String clientID,
-    void Function(Event) onData,
+    void Function(DatabaseEvent) onData,
   ) {
     return this
         .reference()
@@ -201,7 +202,7 @@ extension AppFirebaseDatabase on FirebaseDatabase {
 
   StreamSubscription onAccountStatusupdate(
     String partnerID,
-    void Function(Event) onData,
+    void Function(DatabaseEvent) onData,
   ) {
     return this
         .reference()
@@ -223,9 +224,9 @@ extension AppFirebaseDatabase on FirebaseDatabase {
 
   // updateFCMToken updates the user's firebase cloud messaging token so they
   // can receive targeted notifications from the backend
-  Future<void> updateFCMToken({String uid, String token}) async {
+  Future<void> updateFCMToken({required String uid, required String token}) async {
     return await this
-        .reference()
+        .ref()
         .child("partners")
         .child(uid)
         .update({"fcm_token": token});
@@ -235,10 +236,6 @@ extension AppFirebaseDatabase on FirebaseDatabase {
     required Map<DeleteReason, bool> reasons,
     required String uid,
   }) async {
-    if (reasons == null) {
-      return Future.value();
-    }
-
     // iterate over reasons, adding them to database
     reasons.keys.forEach((key) async {
       String reasonString;
@@ -268,7 +265,7 @@ extension AppFirebaseDatabase on FirebaseDatabase {
 
       try {
         await this
-            .reference()
+            .ref()
             .child("partner-delete-reasons")
             .child(reasonString)
             .child(uid)

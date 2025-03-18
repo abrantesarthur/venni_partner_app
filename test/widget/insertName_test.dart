@@ -158,7 +158,7 @@ void main() {
           navigatorObservers: [mockNavigatorObserver],
           onGenerateRoute: (RouteSettings settings) {
             if (settings.name == InsertAditionalInfo.routeName) {
-              final InsertAditionalInfoArguments args = settings.arguments;
+              final InsertAdditionalInfoArguments args = settings.arguments;
               return MaterialPageRoute(builder: (context) {
                 return InsertAditionalInfo(
                   userCredential: args.userCredential,

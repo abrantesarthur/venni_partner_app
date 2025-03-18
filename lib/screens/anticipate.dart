@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:flutter_masked_text/flutter_masked_text.dart';
+import 'package:flutter_masked_text2/flutter_masked_text2.dart' show MoneyMaskedTextController;
 import 'package:partner_app/styles.dart';
 import 'package:partner_app/utils/utils.dart';
 import 'package:partner_app/widgets/appButton.dart';
@@ -30,7 +30,7 @@ class AnticipateState extends State<Anticipate> {
     thousandSeparator: ",",
   );
   bool lockScreen = false;
-  Widget buttonChild;
+  Widget? buttonChild;
 
   @override
   Widget build(BuildContext context) {
@@ -116,12 +116,14 @@ class AnticipateState extends State<Anticipate> {
             ),
             Spacer(),
             // TODO: lockScreen and show circular progress indicator
-            AppButton(
-              textData: "Confirmar",
-              child: buttonChild,
-              onTapCallBack: () async =>
-                  lockScreen == true ? () {} : await confirm(context),
-            ),
+            buttonChild != null
+              ? AppButton(
+                  textData: "Confirmar",
+                  child: buttonChild!,
+                  onTapCallBack: () async =>
+                      lockScreen == true ? () {} : await confirm(context),
+                )
+              : Container(),
           ],
         ),
       ),

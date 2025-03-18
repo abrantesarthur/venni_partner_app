@@ -1,8 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:partner_app/models/connectivity.dart';
+import 'package:partner_app/services/firebase/firebase.dart';
 import 'package:partner_app/styles.dart';
-import 'package:partner_app/vendors/firebaseAuth.dart';
+import 'package:partner_app/services/firebase/firebaseAuth.dart';
 import 'package:partner_app/widgets/appButton.dart';
 import 'package:partner_app/widgets/appInputPassword.dart';
 import 'package:partner_app/widgets/appInputText.dart';
@@ -16,21 +17,22 @@ import '../widgets/warning.dart';
 
 class InsertNewEmail extends StatefulWidget {
   static const String routeName = "InsertNewEmail";
+  final firebase = FirebaseService();
 
   @override
   InsertNewEmailState createState() => InsertNewEmailState();
 }
 
 class InsertNewEmailState extends State<InsertNewEmail> {
-  Function appButtonCallback;
-  Color appButtonColor;
-  Widget appButtonChild;
-  TextEditingController emailTextEditingController;
-  TextEditingController passwordTextEditingController;
-  Warning warningMessage;
-  FocusNode emailFocusNode;
-  FocusNode passwordFocusNode;
-  bool lockScreen;
+  Function? appButtonCallback;
+  late Color appButtonColor;
+  Widget? appButtonChild;
+  late TextEditingController emailTextEditingController;
+  late TextEditingController passwordTextEditingController;
+  Warning? warningMessage;
+  late FocusNode emailFocusNode;
+  late FocusNode passwordFocusNode;
+  late bool lockScreen;
   var listener;
 
   @override
@@ -79,14 +81,12 @@ class InsertNewEmailState extends State<InsertNewEmail> {
       listen: false,
     );
     if (!connectivity.hasConnection) {
-      await connectivity.alertWhenOffline(
+      await connectivity.alertOffline(
         context,
         message: "Conecte-se à internet para redefinir o email.",
       );
       return;
     }
-    final UserModel firebase =
-        Provider.of<UserModel>(context, listen: false);
 
     // remove email and password focus and lock screen
     setState(() {
@@ -95,7 +95,7 @@ class InsertNewEmailState extends State<InsertNewEmail> {
       lockScreen = true;
     });
 
-    if (emailTextEditingController.text == firebase.auth.currentUser.email) {
+    if (emailTextEditingController.text == widget.firebase.model.user.email) {
       setState(() {
         warningMessage = Warning(
           message: "O email inserido é idêntico ao email atual. Tente outro.",
@@ -115,7 +115,7 @@ class InsertNewEmailState extends State<InsertNewEmail> {
     });
 
     UpdateEmailResponse response =
-        await firebase.auth.reauthenticateAndUpdateEmail(
+        await widget.firebase.auth.reauthenticateAndUpdateEmail(
       email: emailTextEditingController.text,
       password: passwordTextEditingController.text,
     );
@@ -126,9 +126,9 @@ class InsertNewEmailState extends State<InsertNewEmail> {
 
     if (!response.successful) {
       setState(() {
-        warningMessage = Warning(
-          message: response.message,
-        );
+        warningMessage = response.message != null ? Warning(
+          message: response.message!,
+        ) : null;
         appButtonColor = AppColor.disabled;
         appButtonCallback = null;
         lockScreen = false;
@@ -195,14 +195,14 @@ class InsertNewEmailState extends State<InsertNewEmail> {
                     SizedBox(height: screenHeight / 40),
                     warningMessage == null
                         ? Spacer()
-                        : Expanded(child: warningMessage),
+                        : Expanded(child: warningMessage!),
                     AppButton(
                       textData: "Redefinir",
                       buttonColor: appButtonColor,
                       child: appButtonChild,
                       onTapCallBack: appButtonCallback == null || lockScreen
                           ? () {}
-                          : () => appButtonCallback(context),
+                          : () => appButtonCallback!(context),
                     ),
                   ],
                 ),

@@ -12,7 +12,7 @@ import 'package:partner_app/widgets/overallPadding.dart';
 import 'package:partner_app/widgets/warning.dart';
 import 'package:provider/provider.dart';
 import 'package:partner_app/utils/utils.dart';
-import 'package:partner_app/vendors/firebaseAuth.dart';
+import 'package:partner_app/services/firebase/firebaseAuth.dart';
 
 // TODO: allow user to sign in with email, specially if limit of phone verifications was reached
 
@@ -134,7 +134,7 @@ class InsertPhoneNumberState extends State<InsertPhone> {
       listen: false,
     );
     if (!connectivity.hasConnection) {
-      await connectivity.alertWhenOffline(
+      await connectivity.alertOffline(
         context,
         message: "Conecte-se à internet para fazer login",
       );

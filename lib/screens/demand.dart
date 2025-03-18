@@ -1,8 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:partner_app/models/connectivity.dart';
 import 'package:partner_app/models/user.dart';
+import 'package:partner_app/services/firebase/firebase.dart';
 import 'package:partner_app/styles.dart';
-import 'package:partner_app/vendors/firebaseDatabase/interfaces.dart';
+import 'package:partner_app/services/firebase/database/interfaces.dart';
 import 'package:partner_app/widgets/arrowBackButton.dart';
 import 'package:partner_app/widgets/horizontalBar.dart';
 import 'package:partner_app/widgets/overallPadding.dart';
@@ -10,24 +11,17 @@ import 'package:partner_app/vendors/firebaseFunctions/methods.dart';
 import 'package:partner_app/vendors/firebaseFunctions/interfaces.dart';
 import 'package:provider/provider.dart';
 
-class DemandArguments {
-  final FirebaseModel firebase;
-
-  DemandArguments({required this.firebase});
-}
 
 class Demand extends StatefulWidget {
   static const routeName = "Demand";
-  final FirebaseModel firebase;
-
-  Demand({required this.firebase});
+  final FirebaseService firebase = FirebaseService();
 
   @override
   DemandState createState() => DemandState();
 }
 
 class DemandState extends State<Demand> {
-  Future<void> future;
+  late Future<void> future;
   int approvedPartnersCount = 0;
   int connectedPartnersCount = 0;
   int busyPartnersCount = 0;

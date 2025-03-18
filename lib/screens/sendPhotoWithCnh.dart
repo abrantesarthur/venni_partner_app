@@ -5,8 +5,8 @@ import 'package:partner_app/models/user.dart';
 import 'package:partner_app/models/partner.dart';
 import 'package:partner_app/styles.dart';
 import 'package:partner_app/vendors/imagePicker.dart';
-import 'package:partner_app/vendors/firebaseStorage.dart';
-import 'package:partner_app/vendors/firebaseDatabase/methods.dart';
+import 'package:partner_app/services/firebase/firebaseStorage.dart';
+import 'package:partner_app/services/firebase/database/methods.dart';
 import 'package:partner_app/widgets/appButton.dart';
 import 'package:partner_app/widgets/arrowBackButton.dart';
 import 'package:partner_app/widgets/overallPadding.dart';
@@ -144,7 +144,7 @@ class SendPhotoWithCnhState extends State<SendPhotoWithCnh> {
 
     // make sure user is connected to the internet
     if (!connectivity.hasConnection) {
-      await connectivity.alertWhenOffline(
+      await connectivity.alertOffline(
         context,
         message: "Conecte-se à internet para enviar o CRLV.",
       );

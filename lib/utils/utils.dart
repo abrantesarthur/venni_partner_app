@@ -64,7 +64,7 @@ extension CPFExtension on String {
 
   // get cpf in format xxx.xxx.xxx-xx and return in format xxxxxxxxxxx
   String getCleanedCPF() {
-    if (this == null || this.length != 14) {
+    if (this.length != 14) {
       return "";
     }
     return this.substring(0, 3) +

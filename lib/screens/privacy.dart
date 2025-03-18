@@ -24,7 +24,7 @@ class PrivacyState extends State<Privacy> {
           onTap: () async {
             // ensure user is connected to the internet
             if (!connectivity.hasConnection) {
-              await connectivity.alertWhenOffline(
+              await connectivity.alertOffline(
                 context,
                 message: "Conecte-se à internet para excluir a sua conta.",
               );

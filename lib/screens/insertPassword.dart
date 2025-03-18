@@ -5,20 +5,21 @@ import 'package:flutter/scheduler.dart';
 import 'package:partner_app/models/connectivity.dart';
 import 'package:partner_app/models/user.dart';
 import 'package:partner_app/models/partner.dart';
-import 'package:partner_app/vendors/firebaseDatabase/methods.dart';
 import 'package:partner_app/screens/documents.dart';
 import 'package:partner_app/screens/splash.dart';
 import 'package:partner_app/screens/start.dart';
+import 'package:partner_app/services/firebase/firebase.dart';
 import 'package:partner_app/styles.dart';
 import 'package:partner_app/utils/utils.dart';
-import 'package:partner_app/vendors/firebaseDatabase/interfaces.dart';
+import 'package:partner_app/services/firebase/database/interfaces.dart';
+import 'package:partner_app/services/firebase/database/methods.dart';
 import 'package:partner_app/widgets/appInputPassword.dart';
 import 'package:partner_app/widgets/arrowBackButton.dart';
 import 'package:partner_app/widgets/circularButton.dart';
 import 'package:partner_app/widgets/overallPadding.dart';
 import 'package:partner_app/widgets/passwordWarning.dart';
 import 'package:partner_app/widgets/warning.dart';
-import 'package:partner_app/vendors/firebaseAuth.dart';
+import 'package:partner_app/services/firebase/firebaseAuth.dart';
 import 'package:provider/provider.dart';
 import 'package:url_launcher/url_launcher.dart';
 
@@ -41,6 +42,7 @@ class InsertPasswordArguments {
 
 class InsertPassword extends StatefulWidget {
   static const String routeName = "insertPassword";
+  final firebase = FirebaseService();
 
   final UserCredential userCredential;
   final String name;
@@ -62,17 +64,17 @@ class InsertPassword extends StatefulWidget {
 }
 
 class InsertPasswordState extends State<InsertPassword> {
-  Future<bool> successfullyRegisteredUser;
-  double screenHeight;
-  Color circularButtonColor;
-  Function circularButtonCallback;
-  bool obscurePassword;
+  Future<bool>? successfullyRegisteredUser;
+  late double screenHeight;
+  late Color circularButtonColor;
+  Function? circularButtonCallback;
+  late bool obscurePassword;
   TextEditingController passwordTextEditingController = TextEditingController();
   List<bool> passwordChecks = [false, false, false];
-  bool displayPasswordWarnings;
-  Widget registrationErrorWarnings;
-  bool passwordTextFieldEnabled;
-  bool preventNavigateBack;
+  late bool displayPasswordWarnings;
+  Widget? registrationErrorWarnings;
+  late bool passwordTextFieldEnabled;
+  late bool preventNavigateBack;
 
   @override
   void initState() {
@@ -139,7 +141,6 @@ class InsertPasswordState extends State<InsertPassword> {
   }
 
   Future<void> handleRegistrationFailure(
-    UserModel firebase,
     FirebaseAuthException e,
   ) async {
     // desactivate CircularButton callback
@@ -168,12 +169,15 @@ class InsertPasswordState extends State<InsertPassword> {
       });
     } else {
       // delete partner entry in database
-      await firebase.database.deletePartner(widget.userCredential.user.uid);
+      final user = widget.userCredential.user;
+      if(user != null) {
+        await widget.firebase.database.deletePartner(user.uid);
 
-      // if user did not already have a client account
-      if (!firebase.isUserSignedIn) {
-        // rollback and delete user
-        await widget.userCredential.user.delete();
+        // if user did not already have a client account
+        if (!widget.firebase.model.user.isUserSignedIn) {
+          // rollback and delete user
+          await user.delete();
+        }
       }
 
       String firstWarningMessage;
@@ -226,23 +230,20 @@ class InsertPasswordState extends State<InsertPassword> {
   // If the user already has a client account, registerUser makes sure they enter
   // a correct password. If so, it updates their name and other entered information.
   // If the user is registering for the first time, it just creates their account
-  Future<bool> registerUser(
-    UserModel firebase,
-    PartnerModel partner,
-  ) async {
+  Future<bool> registerUser() async {
     print("registerUser");
     // dismiss keyboard
     FocusScope.of(context).requestFocus(FocusNode());
 
     // if the user already has a client account
-    if (firebase.isUserSignedIn) {
+    if (widget.firebase.model.user.isUserSignedIn) {
       print("firebase.isUserSignedIn");
 
       // make sure they've entered a valid password
-      CheckPasswordResponse cpr = await firebase.auth.checkPassword(
+      CheckPasswordResponse cpr = await widget.firebase.auth.checkPassword(
         passwordTextEditingController.text.trim(),
       );
-      if (cpr != null && !cpr.successful) {
+      if (!cpr.successful) {
         // if not, display appropriate warning and return false
         setState(() {
           registrationErrorWarnings = Column(
@@ -250,7 +251,7 @@ class InsertPasswordState extends State<InsertPassword> {
             children: [
               SizedBox(height: screenHeight / 40),
               Warning(
-                message: cpr.message,
+                message: cpr.message ?? "", 
               ),
               SizedBox(height: screenHeight / 80),
             ],
@@ -262,8 +263,7 @@ class InsertPasswordState extends State<InsertPassword> {
       // if yes, finish registration by updating user's display name and inserting
       // their cpf, gender and other relevant information in the database
       try {
-        await firebase.auth.createPartner(
-          firebase,
+        await widget.firebase.auth.createPartner(
           widget.userCredential,
           displayName: widget.name + " " + widget.surname,
           cpf: widget.cpf,
@@ -272,10 +272,10 @@ class InsertPasswordState extends State<InsertPassword> {
         // we enforce a variant that, by the time Documents is pushed, PartnerModel
         // must have been updated with the user information
         // try getting partner credentials
-        await partner.downloadData(firebase);
+        await widget.firebase.model.partner.downloadData();
         return true;
       } on FirebaseAuthException catch (e) {
-        await handleRegistrationFailure(firebase, e);
+        await handleRegistrationFailure(e);
         return false;
       }
     } else {
@@ -285,8 +285,7 @@ class InsertPasswordState extends State<InsertPassword> {
       try {
         // finish registration by updating user's credentials and inserting
         // their cpf, gender and other relevant information in the database
-        await firebase.auth.createPartner(
-          firebase,
+        await widget.firebase.auth.createPartner(
           widget.userCredential,
           displayName: widget.name + " " + widget.surname,
           cpf: widget.cpf,
@@ -298,14 +297,20 @@ class InsertPasswordState extends State<InsertPassword> {
         // we enforce a variant that, by the time Documents is pushed, PartnerModel
         // must have been updated with the user information
         // try getting partner credentials
-        PartnerInterface partnerInterface =
-            await firebase.database.getPartnerFromID(
-          widget.userCredential.user.uid,
-        );
-        partner.fromPartnerInterface(partnerInterface);
-        return true;
+        final user = widget.firebase.auth.currentUser;
+        if(user != null) {  
+          PartnerInterface? partnerInterface =
+            await widget.firebase.database.getPartnerFromID(
+          user.uid,
+          );
+          if(partnerInterface != null) {
+            widget.firebase.model.partner.fromPartnerInterface(partnerInterface);
+          }
+          return true;
+        }
+        return false;
       } on FirebaseAuthException catch (e) {
-        await handleRegistrationFailure(firebase, e);
+        await handleRegistrationFailure(e);
         return false;
       }
     }
@@ -319,15 +324,12 @@ class InsertPasswordState extends State<InsertPassword> {
       listen: false,
     );
     if (!connectivity.hasConnection) {
-      await connectivity.alertWhenOffline(
+      await connectivity.alertOffline(
         context,
         message: "Conecte-se à internet para fazer login",
       );
       return;
     }
-
-    UserModel firebase = Provider.of<UserModel>(context, listen: false);
-    PartnerModel partner = Provider.of<PartnerModel>(context, listen: false);
 
     // ask user to abide by privacy terms
     await showYesNoDialog(
@@ -363,15 +365,12 @@ class InsertPasswordState extends State<InsertPassword> {
         // dismiss dialog
         Navigator.pop(context);
         setState(() {
-          successfullyRegisteredUser = registerUser(
-            firebase,
-            partner,
-          );
+          successfullyRegisteredUser = registerUser();
         });
       },
     );
   }
-
+    
   @override
   Widget build(BuildContext context) {
     screenHeight = MediaQuery.of(context).size.height;
@@ -395,10 +394,6 @@ class InsertPasswordState extends State<InsertPassword> {
             Navigator.pushReplacementNamed(
               context,
               Documents.routeName,
-              arguments: DocumentsArguments(
-                firebase: firebase,
-                partner: partner,
-              ),
             );
           });
           return Container();
@@ -453,8 +448,7 @@ class InsertPasswordState extends State<InsertPassword> {
                                   children: [
                                     Text(
                                       "Já existe uma conta na Venni com telefone " +
-                                          firebase.auth.currentUser.phoneNumber
-                                              .withoutCountryCode() +
+                                          (widget.firebase.auth.currentUser?.phoneNumber?.withoutCountryCode() ?? "") +
                                           ". Insira sua senha para completar o cadastro",
                                       style: TextStyle(
                                         color: AppColor.disabled,
@@ -499,7 +493,7 @@ class InsertPasswordState extends State<InsertPassword> {
                                 )
                               : Container(),
                           registrationErrorWarnings != null
-                              ? registrationErrorWarnings
+                              ? registrationErrorWarnings!
                               : Container(),
                           Spacer(),
                           Row(
@@ -515,7 +509,7 @@ class InsertPasswordState extends State<InsertPassword> {
                                 onPressedCallback:
                                     circularButtonCallback == null
                                         ? () {}
-                                        : () => circularButtonCallback(context),
+                                        : () => circularButtonCallback!(context),
                               ),
                             ],
                           ),

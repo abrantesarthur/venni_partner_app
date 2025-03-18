@@ -34,8 +34,8 @@ class InsertName extends StatefulWidget {
 }
 
 class InsertNameState extends State<InsertName> {
-  Color circularButtonColor;
-  Function circularButtonCallback;
+  late Color circularButtonColor;
+  Function? circularButtonCallback;
   TextEditingController nameTextEditingController = TextEditingController();
   TextEditingController surnameTextEditingController = TextEditingController();
   FocusNode nameFocusNode = FocusNode();
@@ -87,7 +87,7 @@ class InsertNameState extends State<InsertName> {
     Navigator.pushNamed(
       context,
       InsertAditionalInfo.routeName,
-      arguments: InsertAditionalInfoArguments(
+      arguments: InsertAdditionalInfoArguments(
         userCredential: widget.userCredential,
         name: nameTextEditingController.text.trim().capitalize,
         surname: surnameTextEditingController.text.trim().capitalize,

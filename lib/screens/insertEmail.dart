@@ -3,8 +3,9 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:partner_app/models/user.dart';
 import 'package:partner_app/screens/insertName.dart';
+import 'package:partner_app/services/firebase/firebase.dart';
 import 'package:partner_app/styles.dart';
-import 'package:partner_app/vendors/firebaseAuth.dart';
+import 'package:partner_app/services/firebase/firebaseAuth.dart';
 import 'package:partner_app/widgets/appInputText.dart';
 import 'package:partner_app/widgets/arrowBackButton.dart';
 import 'package:partner_app/widgets/circularButton.dart';
@@ -33,16 +34,17 @@ class InsertEmail extends StatefulWidget {
 }
 
 class InsertEmailState extends State<InsertEmail> {
-  Warning warningMessage;
-  Color circularButtonColor;
-  Function circularButtonCallback;
-  Widget _circularButtonChild;
-  TextEditingController emailTextEditingController;
-  FirebaseAuth _firebaseAuth;
+  Warning? warningMessage;
+  late Color circularButtonColor;
+  Function? circularButtonCallback;
+  late Widget _circularButtonChild;
+  late TextEditingController emailTextEditingController;
+  late FirebaseService firebase;
 
   @override
   void initState() {
     super.initState();
+    firebase = FirebaseService();
     emailTextEditingController = TextEditingController();
     circularButtonColor = AppColor.disabled;
     _circularButtonChild = Icon(
@@ -54,7 +56,7 @@ class InsertEmailState extends State<InsertEmail> {
     emailTextEditingController.addListener(
       () {
         String email = emailTextEditingController.text ?? "";
-        if (email != null && email.isValid()) {
+        if (email.isValid()) {
           setState(() {
             warningMessage = null;
             circularButtonCallback = buttonCallback;
@@ -88,7 +90,7 @@ class InsertEmailState extends State<InsertEmail> {
     });
 
     CreateEmailResponse response =
-        await _firebaseAuth.createEmail(emailTextEditingController.text);
+        await firebase.auth.createEmail(emailTextEditingController.text);
 
     // stop progress
     setState(() {
@@ -101,7 +103,7 @@ class InsertEmailState extends State<InsertEmail> {
 
     if (response.message != null) {
       setState(() {
-        warningMessage = Warning(message: response.message);
+        warningMessage = Warning(message: response.message!);
         circularButtonCallback = null;
         circularButtonColor = AppColor.disabled;
       });
@@ -121,7 +123,6 @@ class InsertEmailState extends State<InsertEmail> {
   @override
   Widget build(BuildContext context) {
     final screenHeight = MediaQuery.of(context).size.height;
-    _firebaseAuth = Provider.of<UserModel>(context, listen: false).auth;
 
     return Scaffold(
       body: LayoutBuilder(builder: (
@@ -165,7 +166,7 @@ class InsertEmailState extends State<InsertEmail> {
                       inputFormatters: [LengthLimitingTextInputFormatter(60)],
                     ),
                     SizedBox(height: screenHeight / 40),
-                    warningMessage != null ? warningMessage : Container(),
+                    warningMessage != null ? warningMessage! : Container(),
                     SizedBox(height: screenHeight / 40),
                     Spacer(),
                     Row(

@@ -4,9 +4,10 @@ import 'package:partner_app/models/user.dart';
 import 'package:partner_app/models/partner.dart';
 import 'package:partner_app/models/trip.dart';
 import 'package:partner_app/screens/home.dart';
+import 'package:partner_app/services/firebase/firebase.dart';
 import 'package:partner_app/styles.dart';
 import 'package:partner_app/utils/utils.dart';
-import 'package:partner_app/vendors/firebaseDatabase/interfaces.dart';
+import 'package:partner_app/services/firebase/database/interfaces.dart';
 import 'package:partner_app/vendors/firebaseFunctions/interfaces.dart';
 import 'package:partner_app/vendors/firebaseFunctions/methods.dart';
 import 'package:partner_app/widgets/appButton.dart';
@@ -26,6 +27,7 @@ class RateClientState extends State<RateClient> {
   bool _showThankYouMessage;
   bool activateButton;
   bool _lockScreen;
+  final firebase = FirebaseService();
 
   @override
   void initState() {
@@ -237,13 +239,13 @@ class RateClientState extends State<RateClient> {
       context,
       listen: false,
     );
-    UserModel firebase = Provider.of<UserModel>(context, listen: false);
+    UserModel user = Provider.of<UserModel>(context, listen: false);
     PartnerModel partner = Provider.of<PartnerModel>(context, listen: false);
     TripModel trip = Provider.of<TripModel>(context, listen: false);
 
     // ensure partner is connected to the internet
     if (!connectivity.hasConnection) {
-      await connectivity.alertWhenOffline(
+      await connectivity.alertOffline(
         context,
         message: "Conecte-se à internet para avaliar o cliente.",
       );
@@ -263,7 +265,7 @@ class RateClientState extends State<RateClient> {
       // the client's trips.
       if (HomeState.tripStatusSubscription != null) {
         try {
-          await HomeState.tripStatusSubscription.cancel();
+          await HomeState.tripStatusSubscription!.cancel();
         } catch (_) {}
       }
     } catch (e) {

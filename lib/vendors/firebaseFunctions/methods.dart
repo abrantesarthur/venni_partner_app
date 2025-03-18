@@ -4,9 +4,9 @@ import 'package:partner_app/models/user.dart';
 import 'package:partner_app/models/partner.dart';
 import 'package:partner_app/models/trip.dart';
 import 'package:partner_app/utils/utils.dart';
-import 'package:partner_app/vendors/firebaseDatabase/interfaces.dart';
+import 'package:partner_app/services/firebase/database/interfaces.dart';
 import 'package:partner_app/vendors/firebaseFunctions/interfaces.dart';
-import 'package:partner_app/vendors/firebaseAnalytics.dart';
+import 'package:partner_app/services/firebase/firebaseAnalytics.dart';
 import 'package:provider/provider.dart';
 
 extension AppFirebaseFunctions on FirebaseFunctions {
@@ -83,10 +83,10 @@ extension AppFirebaseFunctions on FirebaseFunctions {
     await this.httpsCallable("trip-accept").call();
   }
 
-  Future<Trip> getCurrentTrip() async {
+  Future<Trip?> getCurrentTrip() async {
     HttpsCallableResult result =
         await this.httpsCallable("trip-partner_get_current_trip").call();
-    if (result != null && result.data != null) {
+    if (result.data != null) {
       return Trip.fromJson(result.data);
     }
     return null;

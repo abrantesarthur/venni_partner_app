@@ -1,9 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:partner_app/models/connectivity.dart';
+import 'package:partner_app/services/firebase/firebase.dart';
 import 'package:partner_app/styles.dart';
-import 'package:partner_app/vendors/firebaseAuth.dart';
-import 'package:partner_app/vendors/firebaseDatabase/interfaces.dart';
-import 'package:partner_app/vendors/firebaseDatabase/methods.dart';
+import 'package:partner_app/services/firebase/firebaseAuth.dart';
+import 'package:partner_app/services/firebase/database/interfaces.dart';
+import 'package:partner_app/services/firebase/database/methods.dart';
 import 'package:partner_app/vendors/firebaseFunctions/methods.dart';
 import 'package:partner_app/widgets/appButton.dart';
 import 'package:partner_app/widgets/appInputPassword.dart';
@@ -14,8 +15,6 @@ import 'package:partner_app/widgets/warning.dart';
 import 'package:partner_app/widgets/yesNoDialog.dart';
 import 'package:provider/provider.dart';
 
-import '../models/user.dart';
-
 class DeleteAccount extends StatefulWidget {
   static const String routeName = "DeleteAccount";
 
@@ -23,19 +22,20 @@ class DeleteAccount extends StatefulWidget {
 }
 
 class DeleteAccountState extends State<DeleteAccount> {
-  TextEditingController passwordTextEditingController;
-  FocusNode passwordFocusNode;
-  Widget warningMessage;
-  Color buttonColor;
-  Widget buttonChild;
-  Function buttonCallback;
-  IconData badTripExperienceIcon;
-  IconData badAppExperienceIcon;
-  IconData hasAnotherAccountIcon;
-  IconData doesntUseServiceIcon;
-  IconData anotherIcon;
-  Map<DeleteReason, bool> deleteReasons;
-  bool lockScreen;
+  final  firebase = FirebaseService();
+  late TextEditingController passwordTextEditingController;
+  late FocusNode passwordFocusNode;
+  Widget? warningMessage;
+  late Color buttonColor;
+  Widget? buttonChild;
+  Function? buttonCallback;
+  late IconData badTripExperienceIcon;
+  late IconData badAppExperienceIcon;
+  late IconData hasAnotherAccountIcon;
+  late IconData doesntUseServiceIcon;
+  late IconData anotherIcon;
+  late Map<DeleteReason, bool> deleteReasons;
+  late bool lockScreen;
 
   @override
   void initState() {
@@ -87,17 +87,12 @@ class DeleteAccountState extends State<DeleteAccount> {
       listen: false,
     );
     if (!connectivity.hasConnection) {
-      await connectivity.alertWhenOffline(
+      await connectivity.alertOffline(
         context,
         message: "Conecte-se à internet para deletar a sua conta.",
       );
       return;
     }
-
-    final UserModel firebase = Provider.of<UserModel>(
-      context,
-      listen: false,
-    );
 
     showDialog(
       context: context,
@@ -132,21 +127,23 @@ class DeleteAccountState extends State<DeleteAccount> {
               password,
             );
 
-            if (cpr != null && !cpr.successful) {
+            if (!cpr.successful) {
               // if password is wrong remove loading icon and display warnings
               setState(() {
                 buttonChild = null;
-                warningMessage = Warning(message: cpr.message);
+                warningMessage = cpr.message != null ? Warning(message: cpr.message!) : null;
                 lockScreen = false;
               });
               return;
             }
 
             // submit delete reasons
-            await firebase.database.submitDeleteReasons(
-              reasons: deleteReasons,
-              uid: firebase.auth.currentUser.uid,
-            );
+            final user = firebase.auth.currentUser;
+            if(user != null){
+              await firebase.database.submitDeleteReasons(
+                reasons: deleteReasons,
+                uid: user.uid);
+            }
 
             // request to delete
             try {
@@ -331,14 +328,14 @@ class DeleteAccountState extends State<DeleteAccount> {
                     SizedBox(height: screenHeight / 40),
                     warningMessage == null
                         ? Spacer()
-                        : Expanded(child: warningMessage),
+                        : Expanded(child: warningMessage!),
                     AppButton(
                       textData: "Excluir Conta",
                       child: buttonChild,
                       buttonColor: buttonColor,
                       onTapCallBack: buttonCallback == null || lockScreen
                           ? () {}
-                          : () => buttonCallback(context),
+                          : () => buttonCallback!(context),
                     ),
                   ],
                 ),

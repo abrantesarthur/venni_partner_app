@@ -3,17 +3,17 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 
 class TimerModel extends ChangeNotifier {
-  Timer _timer;
-  int _remainingSeconds;
+  Timer? _timer;
+  int? _remainingSeconds;
 
   // getters
-  Timer get timer => _timer;
-  int get remainingSeconds => _remainingSeconds;
+  Timer? get timer => _timer;
+  int? get remainingSeconds => _remainingSeconds;
 
   // kickOffTimer decrements remainingSeconds once per second until 0
   void kickOff({
-    required durationSeconds,
-    void Function() callback,
+    required int durationSeconds,
+    void Function()? callback,
   }) {
     // cancel any previous timers
     cancel();
@@ -32,7 +32,7 @@ class TimerModel extends ChangeNotifier {
             callback();
           }
         } else {
-          _remainingSeconds--;
+          _remainingSeconds = _remainingSeconds! - 1;
           notifyListeners();
         }
       },
@@ -42,7 +42,7 @@ class TimerModel extends ChangeNotifier {
 
   void cancel() {
     if (_timer != null) {
-      _timer.cancel();
+      _timer!.cancel();
       _timer = null;
     }
   }

@@ -12,7 +12,7 @@ class AppButton extends StatelessWidget {
   final IconData iconLeft;
   final Color buttonColor;
   final VoidCallback onTapCallBack;
-  final Widget child;
+  final Widget? child;
   final BoxBorder border;
   final bool hasShadow;
   final Widget widgetRight;

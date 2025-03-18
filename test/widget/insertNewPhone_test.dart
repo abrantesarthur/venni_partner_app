@@ -8,7 +8,7 @@ import 'package:partner_app/models/partner.dart';
 import 'package:partner_app/screens/insertNewPhone.dart';
 import 'package:partner_app/screens/insertSmsCode.dart';
 import 'package:partner_app/styles.dart';
-import 'package:partner_app/vendors/firebaseAuth.dart';
+import 'package:partner_app/services/firebase/firebaseAuth.dart';
 import 'package:partner_app/widgets/appButton.dart';
 import 'package:partner_app/widgets/appInputText.dart';
 import 'package:partner_app/widgets/arrowBackButton.dart';
