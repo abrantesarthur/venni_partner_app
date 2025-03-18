@@ -6,6 +6,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:partner_app/models/connectivity.dart';
 import 'package:partner_app/models/user.dart';
+import 'package:partner_app/services/firebase/firebase.dart';
 import 'package:partner_app/styles.dart';
 import 'package:partner_app/widgets/appInputText.dart';
 import 'package:partner_app/widgets/arrowBackButton.dart';
@@ -37,6 +38,7 @@ class InsertSmsCodeArguments {
 
 class InsertSmsCode extends StatefulWidget {
   static const String routeName = "InsertSmsCode";
+  final firebase = FirebaseService();
 
   final String verificationId;
   final String phoneNumber;
@@ -58,19 +60,17 @@ class InsertSmsCode extends StatefulWidget {
 
 class InsertSmsCodeState extends State<InsertSmsCode> {
   TextEditingController smsCodeTextEditingController = TextEditingController();
-  Color circularButtonColor;
-  Function circularButtonCallback;
-  String smsCode;
-  Widget _circularButtonChild;
-  Widget _resendCodeWarning;
-  Widget warningMessage;
-  Timer timer;
+  late Color circularButtonColor;
+  Function? circularButtonCallback;
+  String? smsCode;
+  late Widget _circularButtonChild;
+  Widget? _resendCodeWarning;
+  Widget? warningMessage;
+  late Timer timer;
   int remainingSeconds = 15;
-  String _verificationId;
+  late String _verificationId;
   int? _resendToken;
-  FirebaseAuth _firebaseAuth;
-  FirebaseDatabase _firebaseDatabase;
-  Exception _exception;
+  Exception? _exception;
 
   @override
   void initState() {
@@ -139,7 +139,7 @@ class InsertSmsCodeState extends State<InsertSmsCode> {
 
   // codeSentCallback is called when sms code is successfully sent.
   // it resets the state to value similar to initState.
-  void codeSentCallback(String verificationId, int resendToken) {
+  void codeSentCallback(String verificationId, int? resendToken) {
     setState(() {
       _verificationId = verificationId;
       _resendToken = resendToken;
@@ -150,7 +150,7 @@ class InsertSmsCodeState extends State<InsertSmsCode> {
   }
 
   void resendCodeVerificationFailedCallback(FirebaseAuthException e) {
-    String errorMsg = _firebaseAuth.verificationFailedCallback(e);
+    String errorMsg = widget.firebase.auth.verificationFailedCallback(e);
     setState(() {
       // reset timer and resendCodeWarning
       remainingSeconds = 15;
@@ -163,31 +163,30 @@ class InsertSmsCodeState extends State<InsertSmsCode> {
   Future<void> verificationCompletedCallback(
     BuildContext context,
     PhoneAuthCredential credential, {
-    Function onExceptionCallback,
+    Function? onExceptionCallback,
   }) async {
-    UserModel firebase = Provider.of<UserModel>(context, listen: false);
-
     if (widget.mode == InsertSmsCodeMode.editPhone &&
-        firebase.auth.currentUser != null) {
+        widget.firebase.auth.currentUser != null) {
       try {
-        await firebase.auth.currentUser.updatePhoneNumber(credential);
+        await widget.firebase.auth.currentUser?.updatePhoneNumber(credential);
       } catch (e) {
-        _exception = e;
+        _exception = e as Exception;
         return;
       }
       // on success, update phone number on database too
       try {
-        await firebase.database.setPhoneNumber(
-          partnerID: firebase.auth.currentUser.uid,
-          phoneNumber: firebase.auth.currentUser.phoneNumber,
-        );
+        final user = widget.firebase.auth.currentUser;
+        if(user != null) {
+          await widget.firebase.database.setPhoneNumber(
+            partnerID: user.uid,
+            phoneNumber: user.phoneNumber ?? "",
+          );
+        }
       } catch (_) {}
     } else {
-      await _firebaseAuth.verificationCompletedCallback(
+      await widget.firebase.auth.verificationCompletedCallback(
         context: context,
         credential: credential,
-        firebaseDatabase: _firebaseDatabase,
-        firebaseAuth: _firebaseAuth,
         onExceptionCallback: onExceptionCallback ??
             (FirebaseAuthException e) => displayErrorMessage(context, e),
       );
@@ -202,9 +201,9 @@ class InsertSmsCodeState extends State<InsertSmsCode> {
       warningMessage = null;
     });
 
-    await _firebaseAuth.verifyPhoneNumber(
+    await widget.firebase.auth.verifyPhoneNumber(
       phoneNumber: widget.phoneNumber,
-      // verificatoinCompleted fires only in Android phones that automatically
+      // verificationCompleted fires only in Android phones that automatically
       // create a credential with the SMS code that arrives without the user
       // having to input it.
       verificationCompleted: (PhoneAuthCredential credential) {
@@ -284,10 +283,12 @@ class InsertSmsCodeState extends State<InsertSmsCode> {
     });
 
     // Create a PhoneAuthCredential with the entered verification code
-    PhoneAuthCredential phoneCredential = PhoneAuthProvider.credential(
-        verificationId: _verificationId, smsCode: smsCode);
+    if(smsCode != null) {
+      PhoneAuthCredential phoneCredential = PhoneAuthProvider.credential(
+          verificationId: _verificationId, smsCode: smsCode!);
+      await verificationCompletedCallback(context, phoneCredential);
+    }
 
-    await verificationCompletedCallback(context, phoneCredential);
 
     setState(() {
       // stop circular Progress indicator
@@ -315,9 +316,9 @@ class InsertSmsCodeState extends State<InsertSmsCode> {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              warningMessage,
+              warningMessage!,
               SizedBox(height: padding),
-              _resendCodeWarning,
+              _resendCodeWarning!,
               SizedBox(height: padding),
               editPhoneWarning,
             ],
@@ -335,7 +336,7 @@ class InsertSmsCodeState extends State<InsertSmsCode> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            warningMessage,
+            warningMessage!,
             SizedBox(height: padding),
             editPhoneWarning,
           ],
@@ -347,7 +348,7 @@ class InsertSmsCodeState extends State<InsertSmsCode> {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          _resendCodeWarning,
+          _resendCodeWarning!,
           SizedBox(height: padding),
           editPhoneWarning,
         ],
@@ -358,8 +359,6 @@ class InsertSmsCodeState extends State<InsertSmsCode> {
   @override
   Widget build(BuildContext context) {
     final screenHeight = MediaQuery.of(context).size.height;
-    _firebaseAuth = Provider.of<UserModel>(context).auth;
-    _firebaseDatabase = Provider.of<UserModel>(context).database;
 
     if (remainingSeconds <= 0) {
       // if remainingSeconds reaches 0, allow user to resend sms code.
@@ -432,7 +431,7 @@ class InsertSmsCodeState extends State<InsertSmsCode> {
                             child: _circularButtonChild,
                             onPressedCallback: circularButtonCallback == null
                                 ? () {}
-                                : () => circularButtonCallback(context),
+                                : () => circularButtonCallback!(context),
                           ),
                         ],
                       ),
