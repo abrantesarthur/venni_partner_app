@@ -31,25 +31,8 @@ import 'package:partner_app/widgets/partnerBusy.dart';
 import 'package:partner_app/widgets/partnerRequested.dart';
 import 'package:partner_app/widgets/partnerUnavailable.dart';
 import 'package:provider/provider.dart';
-import 'package:vibration/vibration.dart';
 import 'package:wakelock_plus/wakelock_plus.dart';
 
-// class HomeArguments {
-//   UserModel firebase;
-//   PartnerModel partner;
-//   GoogleMapsModel googleMaps;
-//   TimerModel timer;
-//   TripModel trip;
-//   ConnectivityModel connectivity;
-//   HomeArguments({
-//     required this.firebase,
-//     required this.partner,
-//     required this.googleMaps,
-//     required this.timer,
-//     required this.trip,
-//     required this.connectivity,
-//   });
-// }
 
 class Home extends StatefulWidget {
   static const routeName = "home";
@@ -266,7 +249,7 @@ class HomeState extends State<Home> with WidgetsBindingObserver {
                   initialCameraPosition: CameraPosition(
                     target:
                         g.initialCameraLatLng ?? LatLng(-17.217600, -46.874621),
-                    zoom: g.initialZoom ?? 16.5,
+                    zoom: g.initialZoom,
                   ),
                   padding: EdgeInsets.only(
                     top: g.googleMapsTopPadding ?? screenHeight / 12,

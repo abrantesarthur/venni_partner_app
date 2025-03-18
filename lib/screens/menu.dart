@@ -9,7 +9,6 @@ import 'package:partner_app/screens/profile.dart';
 import 'package:partner_app/screens/ratings.dart';
 import 'package:partner_app/screens/settings.dart';
 import 'package:partner_app/screens/wallet.dart';
-import 'package:partner_app/styles.dart';
 import 'package:partner_app/widgets/borderlessButton.dart';
 import 'package:partner_app/widgets/circularImage.dart';
 import 'package:partner_app/widgets/overallPadding.dart';

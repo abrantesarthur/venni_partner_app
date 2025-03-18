@@ -34,7 +34,7 @@ class GoogleMapsModel extends ChangeNotifier {
     _polygons = {};
     _myLocationEnabled = true;
     _myLocationButtonEnabled = true;
-    _initialZoom = 15;
+    _initialZoom = 16.5;
     rootBundle
         .loadString("assets/map_style.txt")
         .then((value) => {_mapStyle = value});

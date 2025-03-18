@@ -11,7 +11,6 @@ import 'package:partner_app/widgets/warning.dart';
 import 'package:provider/provider.dart';
 import 'package:partner_app/utils/utils.dart';
 
-import '../models/user.dart';
 import '../widgets/appButton.dart';
 
 // TODO: add lockScreen (and wherever else there is a CircularProgressIndicator)

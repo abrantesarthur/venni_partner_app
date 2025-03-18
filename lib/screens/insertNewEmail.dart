@@ -12,7 +12,6 @@ import 'package:partner_app/widgets/overallPadding.dart';
 import 'package:provider/provider.dart';
 import 'package:partner_app/utils/utils.dart';
 
-import '../models/user.dart';
 import '../widgets/warning.dart';
 
 class InsertNewEmail extends StatefulWidget {

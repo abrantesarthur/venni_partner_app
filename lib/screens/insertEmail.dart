@@ -1,7 +1,6 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:partner_app/models/user.dart';
 import 'package:partner_app/screens/insertName.dart';
 import 'package:partner_app/services/firebase/firebase.dart';
 import 'package:partner_app/styles.dart';
@@ -11,7 +10,6 @@ import 'package:partner_app/widgets/arrowBackButton.dart';
 import 'package:partner_app/widgets/circularButton.dart';
 import 'package:partner_app/widgets/overallPadding.dart';
 import 'package:partner_app/widgets/warning.dart';
-import 'package:provider/provider.dart';
 import 'package:partner_app/utils/utils.dart';
 
 class InsertEmailArguments {
@@ -55,7 +53,7 @@ class InsertEmailState extends State<InsertEmail> {
 
     emailTextEditingController.addListener(
       () {
-        String email = emailTextEditingController.text ?? "";
+        String email = emailTextEditingController.text;
         if (email.isValid()) {
           setState(() {
             warningMessage = null;

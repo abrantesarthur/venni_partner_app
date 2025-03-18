@@ -590,23 +590,7 @@ class DocumentsState extends State<Documents> {
   }
 
   Future<void> start(BuildContext context) async {
-    UserModel firebase = Provider.of<UserModel>(
-      context,
-      listen: false,
-    );
     PartnerModel partner = Provider.of<PartnerModel>(
-      context,
-      listen: false,
-    );
-    GoogleMapsModel googleMaps = Provider.of<GoogleMapsModel>(
-      context,
-      listen: false,
-    );
-    TimerModel timer = Provider.of<TimerModel>(
-      context,
-      listen: false,
-    );
-    TripModel trip = Provider.of<TripModel>(
       context,
       listen: false,
     );
