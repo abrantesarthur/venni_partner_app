@@ -1,20 +1,19 @@
 import 'package:flutter/material.dart';
-import 'package:partner_app/models/user.dart';
-import 'package:partner_app/models/partner.dart';
 import 'package:partner_app/screens/bankAccountDetail.dart';
 import 'package:partner_app/screens/privacy.dart';
 import 'package:partner_app/screens/profile.dart';
+import 'package:partner_app/services/firebase/firebase.dart';
+import 'package:partner_app/services/firebase/firebaseAnalytics.dart';
 import 'package:partner_app/styles.dart';
 import 'package:partner_app/services/firebase/database/interfaces.dart';
 import 'package:partner_app/vendors/firebaseFunctions/methods.dart';
-import 'package:partner_app/services/firebase/firebaseAnalytics.dart';
 import 'package:partner_app/widgets/borderlessButton.dart';
 import 'package:partner_app/widgets/goBackScaffold.dart';
 import 'package:partner_app/widgets/yesNoDialog.dart';
-import 'package:provider/provider.dart';
 
 class Settings extends StatefulWidget {
   static const String routeName = "Settings";
+  final firebase = FirebaseService();
 
   @override
   SettingsState createState() => SettingsState();
@@ -26,14 +25,8 @@ class SettingsState extends State<Settings> {
   @override
   Widget build(BuildContext context) {
     final double screenHeight = MediaQuery.of(context).size.height;
-    final UserModel firebase = Provider.of<UserModel>(
-      context,
-      listen: false,
-    );
-    final PartnerModel partner = Provider.of<PartnerModel>(
-      context,
-      listen: false,
-    );
+    final partner = widget.firebase.model.partner;
+
     return GoBackScaffold(
       title: "Configurações",
       onPressed: lockScreen ? () {} : () => Navigator.pop(context),
@@ -44,10 +37,6 @@ class SettingsState extends State<Settings> {
               : () => Navigator.pushNamed(
                     context,
                     Profile.routeName,
-                    arguments: ProfileArguments(
-                      partner: partner,
-                      firebase: firebase,
-                    ),
                   ),
           iconLeft: Icons.account_circle_rounded,
           iconLeftSize: 26,
@@ -102,18 +91,18 @@ class SettingsState extends State<Settings> {
                             Navigator.pop(context);
 
                             // try disconnecting partner if connected
-                            if (partner.partnerStatus ==
+                            if (partner.status ==
                                 PartnerStatus.available) {
                               try {
-                                await firebase.functions.disconnect();
+                                await widget.firebase.functions.disconnect();
                               } catch (_) {}
                             }
 
                             // log logout event
                             try {
-                              await firebase.analytics.logLogout();
+                              await widget.firebase.analytics.logLogout();
                             } catch (_) {}
-                            await firebase.auth.signOut();
+                            await widget.firebase.auth.signOut();
 
                             setState(() {
                               lockScreen = false;

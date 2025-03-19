@@ -13,16 +13,6 @@ import 'package:partner_app/utils/utils.dart';
 
 import '../models/user.dart';
 
-class ProfileArguments {
-  final PartnerModel partner;
-  final UserModel user;
-
-  ProfileArguments({
-    required this.partner,
-    required this.user,
-  });
-}
-
 class Profile extends StatefulWidget {
   static const String routeName = "Profile";
   final firebase = FirebaseService();

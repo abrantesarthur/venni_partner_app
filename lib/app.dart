@@ -346,12 +346,8 @@ class _AppState extends State<App> {
 
                 // if Profile is pushed
                 if (settings.name == Profile.routeName) {
-                  final ProfileArguments args = settings.arguments as ProfileArguments;
                   return MaterialPageRoute(builder: (context) {
-                    return Profile(
-                      firebase: args.firebase,
-                      partner: args.partner,
-                    );
+                    return Profile();
                   });
                 }
 
