@@ -3,48 +3,51 @@ import 'package:flutter/material.dart';
 import 'package:partner_app/models/user.dart';
 import 'package:partner_app/models/partner.dart';
 import 'package:partner_app/models/trip.dart';
+import 'package:partner_app/services/firebase/firebase.dart';
+import 'package:partner_app/services/firebase/firebaseAnalytics.dart';
 import 'package:partner_app/utils/utils.dart';
 import 'package:partner_app/services/firebase/database/interfaces.dart';
 import 'package:partner_app/vendors/firebaseFunctions/interfaces.dart';
-import 'package:partner_app/services/firebase/firebaseAnalytics.dart';
 import 'package:provider/provider.dart';
 
 extension AppFirebaseFunctions on FirebaseFunctions {
-  Future<BankAccount> createBankAccount(BankAccount bankAccount) async {
+  Future<BankAccount?> createBankAccount(BankAccount bankAccount) async {
     Map<String, String> data = {
       "bank_code": bankAccount.bankCode,
       "agencia": bankAccount.agencia,
       "conta": bankAccount.conta,
-      "conta_dv": bankAccount.contaDv,
       "type": bankAccount.type.getString(),
       "document_number": bankAccount.documentNumber,
       "legal_name": bankAccount.legalName,
     };
-    if (bankAccount.agenciaDv != null && bankAccount.agenciaDv.isNotEmpty) {
-      data["agencia_dv"] = bankAccount.agenciaDv;
+    if (bankAccount.agenciaDv != null && bankAccount.agenciaDv!.isNotEmpty) {
+      data["agencia_dv"] = bankAccount.agenciaDv!;
+    }
+    if (bankAccount.contaDv != null && bankAccount.contaDv!.isNotEmpty) {
+      data["conta_dv"] = bankAccount.contaDv!;
     }
     HttpsCallableResult result =
         await this.httpsCallable("payment-create_bank_account").call(data);
-    if (result != null && result.data != null) {
+    if (result.data != null) {
       return BankAccount.fromJson(result.data);
     }
 
     return null;
   }
 
-  Future<Balance> getBalance(String pagarmeRecipientID) async {
+  Future<Balance?> getBalance(String pagarmeRecipientID) async {
     Map<String, String> data = {
       "pagarme_recipient_id": pagarmeRecipientID,
     };
     HttpsCallableResult result =
         await this.httpsCallable("payment-get_balance").call(data);
-    if (result != null && result.data != null) {
+    if (result.data != null) {
       return Balance.fromJson(result.data);
     }
     return null;
   }
 
-  Future<Transfer> createTransfer({
+  Future<Transfer?> createTransfer({
     required String amount,
     required String pagarmeRecipientID,
   }) async {
@@ -119,14 +122,13 @@ extension AppFirebaseFunctions on FirebaseFunctions {
   }
 
   Future<void> startTrip(BuildContext context) async {
-    TripModel trip = Provider.of<TripModel>(context, listen: false);
-    UserModel firebase = Provider.of<UserModel>(context, listen: false);
+    final firebase = FirebaseService();
 
     try {
       await this.httpsCallable("trip-start").call();
       // calculate client waiting time and log event
       int clientWaitingTime =
-          DateTime.now().millisecondsSinceEpoch - trip.requestTime;
+          DateTime.now().millisecondsSinceEpoch - (firebase.model.trip.requestTime ?? 0);
       try {
         firebase.analytics.logPartnerStartTrip(
           clientWaitingTime: clientWaitingTime,
@@ -141,14 +143,13 @@ extension AppFirebaseFunctions on FirebaseFunctions {
     required BuildContext context,
     required int clientRating,
   }) async {
-    UserModel firebase = Provider.of<UserModel>(context, listen: false);
-    PartnerModel partner = Provider.of<PartnerModel>(context, listen: false);
+    final firebase = FirebaseService();
 
     Map<String, int> data = {"client_rating": clientRating};
     try {
       await this.httpsCallable("trip-complete").call(data);
       int tripDuration =
-          DateTime.now().millisecondsSinceEpoch - partner.busySince;
+          DateTime.now().millisecondsSinceEpoch - (firebase.model.partner.busySince ?? 0);
       try {
         await Future.wait([
           firebase.analytics.logPartnerCompleteTrip(
@@ -176,19 +177,19 @@ extension AppFirebaseFunctions on FirebaseFunctions {
     return null;
   }
 
-  Future<DemandByZone> getDemandByZone() async {
+  Future<DemandByZone?> getDemandByZone() async {
     HttpsCallableResult result =
         await this.httpsCallable("demand_by_zone-get").call();
-    if (result != null && result.data != null) {
+    if (result.data != null) {
       return DemandByZone.fromJson(result.data);
     }
     return null;
   }
 
-  Future<ApprovedPartners> getApprovedPartners() async {
+  Future<ApprovedPartners?> getApprovedPartners() async {
     HttpsCallableResult result =
         await this.httpsCallable("partner-get_approved").call();
-    if (result != null && result.data != null) {
+    if (result.data != null) {
       return ApprovedPartners.fromJson(result.data);
     }
 
