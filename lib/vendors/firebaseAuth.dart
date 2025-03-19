@@ -13,11 +13,11 @@ import 'package:partner_app/screens/insertEmail.dart';
 import 'package:partner_app/screens/insertName.dart';
 import 'package:partner_app/services/firebase/database/interfaces.dart';
 import 'package:partner_app/services/firebase/database/methods.dart';
+import 'package:partner_app/services/firebase/firebase.dart';
 import 'package:provider/provider.dart';
 import 'package:uuid/uuid.dart';
 
 extension AppFirebaseAuth on FirebaseAuth {
-  final firebase = FirebaseService();
 
   Future<void> verificationCompletedCallback({
     required BuildContext context,
@@ -26,6 +26,8 @@ extension AppFirebaseAuth on FirebaseAuth {
     required FirebaseAuth firebaseAuth,
     required Function onExceptionCallback,
   }) async {
+    final firebase = FirebaseService();
+
     try {
       // important: if the user doesn't have an account, one will be created
       UserCredential userCredential =
@@ -33,88 +35,52 @@ extension AppFirebaseAuth on FirebaseAuth {
 
       // however, we only consider the user to be registered as a pilot, if they
       // have an entry in partners database. It may also be the case that the user
-      // already has an account throught the client app (e.g., firebase.isUserSignedIn
+      // already has an account through the client app (e.g., firebase.isUserSignedIn
       // is true and they have a displayName). In those cases, we use some of
       // their already provided information (phone number, email and password).
-      UserModel firebase = Provider.of<UserModel>(
-        context,
-        listen: false,
-      );
-
-      // try download partner data
-      PartnerModel partner = Provider.of<PartnerModel>(
-        context,
-        listen: false,
-      );
-      TripModel trip = Provider.of<TripModel>(
-        context,
-        listen: false,
-      );
-
       try {
         // download partner data
-        await partner.downloadData(firebase);
+        await firebase.model.partner.downloadData();
         // if partner has active trip request, download it as well
-        if (partner.partnerStatus == PartnerStatus.busy) {
-          await trip.downloadData(firebase, notify: false);
+        if (firebase.model.partner.status == PartnerStatus.busy) {
+          await firebase.model.trip.downloadData(notify: false);
         }
       } catch (e) {
         throw FirebaseAuthException(code: "internal-error");
       }
 
       // if user already has a partner account
-      if (partner.id != null && firebase.isUserSignedIn) {
+      if (firebase.model.partner.id != null && firebase.model.user.isUserSignedIn) {
         // log sign in event
         try {
           await firebase.analytics.logLogin();
         } catch (_) {}
 
         // if accountStatus is 'approved', push Home screen
-        if (partner.accountStatus == AccountStatus.approved) {
-          GoogleMapsModel googleMaps = Provider.of<GoogleMapsModel>(
-            context,
-            listen: false,
-          );
-          TimerModel timer = Provider.of<TimerModel>(
-            context,
-            listen: false,
-          );
-
-          ConnectivityModel connectivity = Provider.of<ConnectivityModel>(
-            context,
-            listen: false,
-          );
+        if (firebase.model.partner.accountStatus == AccountStatus.approved) {
           Navigator.pushNamedAndRemoveUntil(
             context,
             Home.routeName,
             (_) => false,
-            arguments: HomeArguments(
-              firebase: firebase,
-              partner: partner,
-              googleMaps: googleMaps,
-              timer: timer,
-              trip: trip,
-              connectivity: connectivity,
-            ),
           );
         } else {
           // otherwise, push documents screen
           Navigator.pushReplacementNamed(
             context,
             Documents.routeName,
-            arguments: DocumentsArguments(firebase: firebase, partner: partner),
           );
         }
-      } else if (firebase.isUserSignedIn) {
+      } else if (firebase.model.user.isUserSignedIn) {
         // if user already has a client account, skip insertEmail and push
-        // inserName screen. After all, they are to keep their login credentials
+        // insertName screen. After all, they are to keep their login credentials
         // but have the chance of inserting their actual name and other info.
         Navigator.pushNamed(
           context,
           InsertName.routeName,
           arguments: InsertNameArguments(
             userCredential: userCredential,
-            userEmail: firebase.auth.currentUser.email,
+            // FIXME: email must not be empty string
+            userEmail: firebase.model.user.email ?? "",
           ),
         );
       } else {
@@ -187,44 +153,47 @@ extension AppFirebaseAuth on FirebaseAuth {
   }
 
   Future<void> createPartner(
-    UserModel firebase,
     UserCredential credential, {
-    String email,
-    String password,
+    String? email,
+    String? password,
     required String displayName,
     required String cpf,
     required Gender gender,
   }) async {
+    final firebase = FirebaseService();
     try {
       //update other userCredential information
       if (email != null) {
-        await credential.user.updateEmail(email);
+        // FIXME: user must be defined
+        await credential.user?.updateEmail(email);
       }
       if (password != null) {
-        await credential.user.updatePassword(password);
+        await credential.user?.updatePassword(password);
       }
-      await credential.user.updateDisplayName(displayName);
+      await credential.user?.updateDisplayName(displayName);
 
       // create partner entry in database with some of the fields set
+      // FIXME: user must be defined
       final partner = this.currentUser;
       try {
-        await firebase.database.createPartner(PartnerInterface.fromJson({
-          "uid": partner.uid,
-          "name": partner.displayName.split(" ").first,
-          "last_name": partner.displayName
-              .substring(partner.displayName.indexOf(" ") + 1),
-          "cpf": cpf,
-          "gender": gender.toString().substring(7),
-          "phone_number": partner.phoneNumber,
-          "account_status": "pending_documents",
-        }));
+        if(partner != null) {
+          await firebase.database.createPartner(PartnerInterface.fromJson({
+            "uid": partner.uid,
+            "name": partner.displayName?.split(" ").first,
+            "last_name": partner.displayName?.substring(partner.displayName?.indexOf(" ") ?? 0 + 1),
+            "cpf": cpf,
+            "gender": gender.toString().substring(7),
+            "phone_number": partner.phoneNumber,
+            "account_status": "pending_documents",
+          }));
+        }
       } catch (e) {
         throw FirebaseAuthException(code: "database-failure");
       }
 
       // send email verification if necessary
-      if (!firebase.auth.currentUser.emailVerified) {
-        await credential.user.sendEmailVerification();
+      if (firebase.auth.currentUser?.emailVerified == false) {
+        await credential.user?.sendEmailVerification();
       }
 
       // log sign up event
@@ -236,13 +205,17 @@ extension AppFirebaseAuth on FirebaseAuth {
     }
   }
 
-  Future<UserCredential> _reauthenticateWithEmailAndPassword(String password) {
+  Future<UserCredential?> _reauthenticateWithEmailAndPassword(String password) {
     // reauthenticate user to avoid 'requires-recent-login' error
-    EmailAuthCredential credential = EmailAuthProvider.credential(
-      email: this.currentUser.email,
-      password: password,
-    );
-    return this.currentUser.reauthenticateWithCredential(credential);
+    final user = this.currentUser;
+    if(user != null && user.email != null) {
+      AuthCredential credential = EmailAuthProvider.credential(
+          email: user.email!,
+          password: password,
+        );
+        return user.reauthenticateWithCredential(credential);
+    }
+    return Future(() => null);
   }
 
   Future<CheckPasswordResponse> checkPassword(String password) async {
@@ -283,7 +256,7 @@ extension AppFirebaseAuth on FirebaseAuth {
   }) async {
     // check if user entered correct old password and avoid 'requires-recent-login' error
     CheckPasswordResponse cpr = await checkPassword(oldPassword);
-    if (cpr != null && !cpr.successful) {
+    if (!cpr.successful) {
       return UpdatePasswordResponse(
         successful: cpr.successful,
         code: cpr.code,
@@ -293,7 +266,7 @@ extension AppFirebaseAuth on FirebaseAuth {
 
     try {
       // update password
-      await this.currentUser.updatePassword(newPassword);
+      await this.currentUser?.updatePassword(newPassword);
       return UpdatePasswordResponse(successful: true);
     } on FirebaseAuthException catch (e) {
       switch (e.code) {
@@ -340,7 +313,7 @@ extension AppFirebaseAuth on FirebaseAuth {
 
     try {
       // try to update email
-      await this.currentUser.updateEmail(email);
+      await this.currentUser?.updateEmail(email);
       return UpdateEmailResponse(successful: true);
     } on FirebaseAuthException catch (e) {
       if (e.code == "email-already-in-use") {
@@ -421,8 +394,8 @@ class CreateEmailResponse {
 class UpdateEmailResponse extends CreateEmailResponse {
   UpdateEmailResponse({
     required bool successful,
-    String code,
-    String message,
+    String? code,
+    String? message,
   }) : super(
           successful: successful,
           message: message,
@@ -433,8 +406,8 @@ class UpdateEmailResponse extends CreateEmailResponse {
 class UpdatePasswordResponse extends CreateEmailResponse {
   UpdatePasswordResponse({
     required bool successful,
-    String code,
-    String message,
+    String? code,
+    String? message,
   }) : super(
           successful: successful,
           message: message,
@@ -445,8 +418,8 @@ class UpdatePasswordResponse extends CreateEmailResponse {
 class CheckPasswordResponse extends CreateEmailResponse {
   CheckPasswordResponse({
     required bool successful,
-    String code,
-    String message,
+    String? code,
+    String? message,
   }) : super(
           successful: successful,
           message: message,
@@ -457,8 +430,8 @@ class CheckPasswordResponse extends CreateEmailResponse {
 class DeleteAccountResponse extends CreateEmailResponse {
   DeleteAccountResponse({
     required bool successful,
-    String code,
-    String message,
+    String? code,
+    String? message,
   }) : super(
           successful: successful,
           message: message,

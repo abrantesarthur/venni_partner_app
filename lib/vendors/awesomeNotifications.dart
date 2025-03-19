@@ -16,7 +16,7 @@ class Notifications {
     return _notifications;
   }
 
-  Timer _tripRequestTimer;
+  Timer? _tripRequestTimer;
 
   void init({
     required String channelKey,
@@ -40,14 +40,14 @@ class Notifications {
     // stop triggering notification when user taps on it
     AwesomeNotifications().actionStream.listen((ReceivedAction _) {
       if (_tripRequestTimer != null) {
-        _tripRequestTimer.cancel();
+        _tripRequestTimer!.cancel();
       }
     });
 
     // stop triggering notification when user dismisses it
     AwesomeNotifications().dismissedStream.listen((ReceivedAction event) {
       if (_tripRequestTimer != null) {
-        _tripRequestTimer.cancel();
+        _tripRequestTimer!.cancel();
       }
     });
   }
@@ -55,7 +55,7 @@ class Notifications {
   // stopTriggering stops triggering any existing notification
   void stopTriggering(NotificationType type) {
     if (type == NotificationType.tripRequest && _tripRequestTimer != null) {
-      _tripRequestTimer.cancel();
+      _tripRequestTimer!.cancel();
     }
   }
 
@@ -63,14 +63,14 @@ class Notifications {
   // the notification with the specified period
   void trigger({
     NotificationType type = NotificationType.tripRequest,
-    Duration repeatingPeriod,
+    Duration? repeatingPeriod,
   }) {
     _trigger(type);
     if (repeatingPeriod != null) {
       if (type == NotificationType.tripRequest) {
         _tripRequestTimer =
             Timer.periodic(repeatingPeriod, (_) => _trigger(type));
-        Future.delayed(Duration(seconds: 15), () => _tripRequestTimer.cancel());
+        Future.delayed(Duration(seconds: 15), () => _tripRequestTimer!.cancel());
       }
     }
   }
