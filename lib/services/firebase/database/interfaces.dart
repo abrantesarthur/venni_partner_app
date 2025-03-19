@@ -75,8 +75,6 @@ extension AccountStatusExtension on AccountStatus {
         return "denied_approval";
       case AccountStatus.locked:
         return "locked";
-      default:
-        return "";
     }
   }
 }
@@ -95,20 +93,19 @@ class Vehicle {
   });
 
   factory Vehicle.fromJson(Map<dynamic, dynamic> json) {
-    return json != null
-        ? Vehicle(
-            brand: json["brand"],
-            model: json["model"],
-            year: json["year"],
-            plate: json["plate"])
-        : null;
+    return Vehicle(
+      brand: json["brand"],
+      model: json["model"],
+      year: json["year"],
+      plate: json["plate"],
+    );
   }
 }
 
 enum Gender { masculino, feminino, outro }
 
 extension GenderExtension on Gender {
-  static Gender fromString(String s) {
+  static Gender? fromString(String? s) {
     if (s == null) {
       return null;
     }
@@ -130,34 +127,32 @@ extension GenderExtension on Gender {
 }
 
 class SubmittedDocuments {
-  final bool cnh;
-  final bool crlv;
-  final bool photoWithCnh;
-  final bool profilePhoto;
-  final bool bankAccount;
+  bool? cnh;
+  bool? crlv;
+  bool? photoWithCnh;
+  bool? profilePhoto;
+  bool? bankAccount;
 
   SubmittedDocuments({
-    required this.cnh,
-    required this.crlv,
-    required this.photoWithCnh,
-    required this.profilePhoto,
-    required this.bankAccount,
+    this.cnh,
+    this.crlv,
+    this.photoWithCnh,
+    this.profilePhoto,
+    this.bankAccount,
   });
 
   factory SubmittedDocuments.fromJson(Map json) {
-    return json == null
-        ? null
-        : SubmittedDocuments(
-            cnh: json["cnh"] == null ? false : json["cnh"],
-            crlv: json["crlv"] == null ? false : json["crlv"],
-            photoWithCnh:
-                json["photo_with_cnh"] == null ? false : json["photo_with_cnh"],
-            profilePhoto:
-                json["profile_photo"] == null ? false : json["profile_photo"],
-            bankAccount:
-                json["bank_account"] == null ? false : json["bank_account"],
-          );
-  }
+    return SubmittedDocuments(
+      cnh: json["cnh"] == null ? false : json["cnh"],
+      crlv: json["crlv"] == null ? false : json["crlv"],
+      photoWithCnh:
+          json["photo_with_cnh"] == null ? false : json["photo_with_cnh"],
+      profilePhoto:
+          json["profile_photo"] == null ? false : json["profile_photo"],
+      bankAccount:
+          json["bank_account"] == null ? false : json["bank_account"],
+    );
+}
 }
 
 enum Banks {
@@ -171,7 +166,7 @@ enum Banks {
 
 extension BanksExtension on Banks {
   String getCode() {
-    return bankTypeToNameMap[this].substring(0, 3);
+    return bankTypeToNameMap[this]?.substring(0, 3) ?? "";
   }
 }
 
@@ -202,7 +197,7 @@ enum BankAccountType {
 }
 
 extension BankAccountTypeExtension on BankAccountType {
-  String getString({bool format}) {
+  String getString({bool? format}) {
     if (format != null && format) {
       switch (this) {
         case BankAccountType.conta_corrente:
@@ -213,15 +208,16 @@ extension BankAccountTypeExtension on BankAccountType {
           return "corrente conjunta";
         case BankAccountType.conta_poupanca_conjunta:
           return "poupança conjunta";
-        default:
-          return "";
       }
     } else {
       return this.toString().substring(16);
     }
   }
 
-  static BankAccountType fromString(String s) {
+  static BankAccountType? fromString(String? s) {
+    if (s == null) {
+      return null;
+    }
     switch (s) {
       case "conta_corrente":
         return BankAccountType.conta_corrente;
@@ -268,16 +264,14 @@ class BankAccount {
   });
 
   factory BankAccount.fromJson(Map json) {
-    return json == null
-        ? null
-        : BankAccount(
+    return BankAccount(
             id: json["id"],
             bankCode: json["bank_code"],
             agencia: json["agencia"],
             agenciaDv: json["agencia_dv"],
             conta: json["conta"],
             contaDv: json["conta_dv"],
-            type: BankAccountTypeExtension.fromString(json["type"]),
+            type: BankAccountTypeExtension.fromString(json["type"]) ?? BankAccountType.conta_corrente,
             documentNumber: json["document_number"],
             legalName: json["legal_name"],
           );
@@ -285,30 +279,18 @@ class BankAccount {
 
   Map<String, String> toJson() {
     Map<String, String> map = {};
-    if (this.bankCode != null) {
-      map["bank_code"] = this.bankCode;
-    }
-    if (this.agencia != null) {
-      map["agencia"] = this.agencia;
-    }
+    map["bank_code"] = this.bankCode;
+    map["agencia"] = this.agencia;
     if (this.agenciaDv != null) {
-      map["agencia_dv"] = this.agenciaDv;
+      map["agencia_dv"] = this.agenciaDv!;
     }
-    if (this.conta != null) {
-      map["conta"] = this.conta;
-    }
+    map["conta"] = this.conta;
     if (this.contaDv != null) {
-      map["conta_dv"] = this.contaDv;
+      map["conta_dv"] = this.contaDv!;
     }
-    if (this.type != null) {
-      map["type"] = this.type.getString();
-    }
-    if (this.documentNumber != null) {
-      map["document_number"] = this.documentNumber;
-    }
-    if (this.legalName != null) {
-      map["legal_name"] = this.legalName;
-    }
+    map["type"] = this.type.getString();
+    map["document_number"] = this.documentNumber;
+    map["legal_name"] = this.legalName;
     return map;
   }
 }
@@ -319,23 +301,23 @@ class PartnerInterface {
   final String lastName;
   final String cpf;
   final Gender gender;
-  final int memberSince;
+  final int? memberSince;
   final String phoneNumber;
-  final double rating;
-  final int totalTrips;
+  final double? rating;
+  final int? totalTrips;
   final String pagarmeRecipientID;
-  final PartnerStatus partnerStatus;
-  final AccountStatus accountStatus;
+  final PartnerStatus? partnerStatus;
+  final AccountStatus? accountStatus;
   final String denialReason;
   final String lockReason;
   final String currentClientID;
-  final num currentLatitude;
-  final num currentLongitude;
+  final num? currentLatitude;
+  final num? currentLongitude;
   final String currentZone;
-  final num idleSince;
+  final num? idleSince;
   final Vehicle vehicle;
   final SubmittedDocuments submittedDocuments;
-  final BankAccount bankAccount;
+  final BankAccount? bankAccount;
   final int amountOwed;
 
   PartnerInterface({
@@ -344,55 +326,52 @@ class PartnerInterface {
     required this.lastName,
     required this.cpf,
     required this.gender,
-    required this.memberSince,
+    this.memberSince,
     required this.phoneNumber,
-    required this.rating,
-    required this.totalTrips,
+    this.rating,
+    this.totalTrips,
     required this.pagarmeRecipientID,
-    required this.partnerStatus,
-    required this.accountStatus,
+    this.partnerStatus,
+    this.accountStatus,
     required this.denialReason,
     required this.lockReason,
     required this.currentClientID,
-    required this.currentLatitude,
-    required this.currentLongitude,
+    this.currentLatitude,
+    this.currentLongitude,
     required this.currentZone,
-    required this.idleSince,
+    this.idleSince,
     required this.vehicle,
     required this.submittedDocuments,
-    required this.bankAccount,
+    this.bankAccount,
     required this.amountOwed,
   });
 
   factory PartnerInterface.fromJson(Map json) {
-    if (json == null) {
-      return null;
-    }
 
-    int memberSince =
+    int? memberSince =
         json["member_since"] != null ? int.parse(json["member_since"]) : null;
-    double rating =
+    double? rating =
         json["rating"] != null ? double.parse(json["rating"]) : null;
-    int totalTrips =
+    int? totalTrips =
         json["total_trips"] != null ? int.parse(json["total_trips"]) : null;
-    num currentLatitude = json["current_latitude"] == null
+    num? currentLatitude = json["current_latitude"] == null
         ? null
         : double.parse(json["current_latitude"]);
-    num currentLongitude = json["current_longitude"] == null
+    num? currentLongitude = json["current_longitude"] == null
         ? null
         : double.parse(json["current_longitude"]);
-    num idleSince =
+    num? idleSince =
         json["idle_since"] == null ? null : int.parse(json["idle_since"]);
     SubmittedDocuments submittedDocuments =
         SubmittedDocuments.fromJson(json["submitted_documents"]);
-    BankAccount bankAccount = BankAccount.fromJson(json["bank_account"]);
+    BankAccount? bankAccount = json["bank_account"] != null ? BankAccount.fromJson(json["bank_account"]) : null;
 
     return PartnerInterface(
       id: json["uid"],
       name: json["name"],
       lastName: json["last_name"],
       cpf: json["cpf"],
-      gender: GenderExtension.fromString(json["gender"]),
+      gender: GenderExtension.fromString(json["gender"]) ?? Gender.masculino,
       memberSince: memberSince,
       phoneNumber: json["phone_number"],
       rating: rating,
@@ -416,100 +395,58 @@ class PartnerInterface {
 
   Map<String, dynamic> toJson() {
     Map<String, dynamic> json = {};
-    if (this.id != null) {
-      json["uid"] = this.id;
-    }
-    if (this.name != null) {
-      json["name"] = this.name;
-    }
-    if (this.lastName != null) {
-      json["last_name"] = this.lastName;
-    }
-    if (this.cpf != null) {
-      json["cpf"] = this.cpf;
-    }
-    if (this.gender != null) {
-      json["gender"] = this.gender.getString();
-    }
-    if (this.memberSince != null) {
-      json["member_since"] = this.memberSince.toString();
-    }
-    if (this.phoneNumber != null) {
-      json["phone_number"] = this.phoneNumber;
-    }
-    if (this.rating != null) {
-      json["rating"] = this.rating.toString();
-    }
-    if (this.totalTrips != null) {
-      json["total_trips"] = this.totalTrips.toString();
-    }
-    if (this.pagarmeRecipientID != null) {
-      json["pagarme_recipient_id"] = this.pagarmeRecipientID;
-    }
-    if (this.partnerStatus != null) {
-      json["status"] = this.partnerStatus.getString();
-    }
-    if (this.accountStatus != null) {
-      json["account_status"] = this.accountStatus.getString();
-    }
-    if (this.denialReason != null) {
-      json["denial_reason"] = this.denialReason;
-    }
-    if (this.lockReason != null) {
-      json["lock_reason"] = this.lockReason;
-    }
-    if (this.currentClientID != null) {
-      json["current_client_uid"] = this.currentClientID;
-    }
-    if (this.currentLatitude != null) {
-      json["current_latitude"] = this.currentLatitude.toString();
-    }
-    if (this.currentLongitude != null) {
-      json["current_longitude"] = this.currentLongitude.toString();
-    }
-    if (this.currentZone != null) {
-      json["current_zone"] = this.currentZone;
-    }
-    if (this.idleSince != null) {
-      json["idleSince"] = this.idleSince.toString();
-    }
-    if (this.vehicle != null) {
-      json["vehicle"] = {
-        "brand": this.vehicle.brand,
-        "model": this.vehicle.model,
-        "year": this.vehicle.year,
-        "plate": this.vehicle.plate,
-      };
-    }
-    if (this.submittedDocuments != null) {
-      json["submitted_documents"] = {
-        "cnh": this.submittedDocuments.cnh == null
-            ? false
-            : this.submittedDocuments.cnh,
-        "crlv": this.submittedDocuments.crlv == null
-            ? false
-            : this.submittedDocuments.crlv,
-        "photo_with_cnh": this.submittedDocuments.photoWithCnh == null
-            ? false
-            : this.submittedDocuments.photoWithCnh,
-        "profile_photo": this.submittedDocuments.profilePhoto == null
-            ? false
-            : this.submittedDocuments.profilePhoto,
-        "bank_account": this.submittedDocuments.bankAccount == null
-            ? false
-            : this.submittedDocuments.profilePhoto,
-      };
-    }
+    json["uid"] = this.id;
+    json["name"] = this.name;
+    json["last_name"] = this.lastName;
+    json["cpf"] = this.cpf;
+    json["gender"] = this.gender.getString();
+    json["member_since"] = this.memberSince.toString();
+    json["phone_number"] = this.phoneNumber;
+    json["rating"] = this.rating.toString();
+    json["total_trips"] = this.totalTrips.toString();
+    json["pagarme_recipient_id"] = this.pagarmeRecipientID;
+    json["status"] = this.partnerStatus?.getString();
+    json["account_status"] = this.accountStatus?.getString();
+    json["denial_reason"] = this.denialReason;
+    json["lock_reason"] = this.lockReason;
+    json["current_client_uid"] = this.currentClientID;
+    json["current_latitude"] = this.currentLatitude.toString();
+    json["current_longitude"] = this.currentLongitude.toString();
+    json["current_zone"] = this.currentZone;
+    json["idleSince"] = this.idleSince.toString();
+    json["vehicle"] = {
+      "brand": this.vehicle.brand,
+      "model": this.vehicle.model,
+      "year": this.vehicle.year,
+      "plate": this.vehicle.plate,
+    };
+    json["submitted_documents"] = {
+      "cnh": this.submittedDocuments.cnh == null
+          ? false
+          : this.submittedDocuments.cnh,
+      "crlv": this.submittedDocuments.crlv == null
+          ? false
+          : this.submittedDocuments.crlv,
+      "photo_with_cnh": this.submittedDocuments.photoWithCnh == null
+          ? false
+          : this.submittedDocuments.photoWithCnh,
+      "profile_photo": this.submittedDocuments.profilePhoto == null
+          ? false
+          : this.submittedDocuments.profilePhoto,
+      "bank_account": this.submittedDocuments.bankAccount == null
+          ? false
+          : this.submittedDocuments.profilePhoto,
+    };
     if (this.bankAccount != null) {
       json["bank_account"] = {
-        "bank_code": this.bankAccount.bankCode,
-        "agencia": this.bankAccount.agencia,
-        "agencia_dv": this.bankAccount.agenciaDv,
-        "conta": this.bankAccount.conta,
-        "conta_dv": this.bankAccount.contaDv,
-        "type": this.bankAccount.type.getString(),
-        "document_number": this.bankAccount.documentNumber,
-        "legal_name": this.bankAccount.legalName,
+        "bank_code": this.bankAccount!.bankCode,
+        "agencia": this.bankAccount!.agencia,
+        "agencia_dv": this.bankAccount!.agenciaDv,
+        "conta": this.bankAccount!.conta,
+        "conta_dv": this.bankAccount!.contaDv,
+        "type": this.bankAccount!.type.getString(),
+        "document_number": this.bankAccount!.documentNumber,
+        "legal_name": this.bankAccount!.legalName,
       };
     }
     return json;
