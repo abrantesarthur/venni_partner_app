@@ -1,12 +1,6 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter/material.dart';
-import 'package:partner_app/models/connectivity.dart';
-import 'package:partner_app/models/user.dart';
-import 'package:partner_app/models/googleMaps.dart';
-import 'package:partner_app/models/partner.dart';
-import 'package:partner_app/models/timer.dart';
-import 'package:partner_app/models/trip.dart';
 import 'package:partner_app/screens/documents.dart';
 import 'package:partner_app/screens/home.dart';
 import 'package:partner_app/screens/insertEmail.dart';
@@ -14,7 +8,6 @@ import 'package:partner_app/screens/insertName.dart';
 import 'package:partner_app/services/firebase/database/interfaces.dart';
 import 'package:partner_app/services/firebase/database/methods.dart';
 import 'package:partner_app/services/firebase/firebase.dart';
-import 'package:provider/provider.dart';
 import 'package:uuid/uuid.dart';
 
 extension AppFirebaseAuth on FirebaseAuth {
