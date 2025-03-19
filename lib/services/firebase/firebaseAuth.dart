@@ -245,7 +245,7 @@ extension AppFirebaseAuth on FirebaseAuth {
   }) async {
     // check if user entered correct old password and avoid 'requires-recent-login' error
     CheckPasswordResponse cpr = await checkPassword(oldPassword);
-    if (cpr != null && !cpr.successful) {
+    if (!cpr.successful) {
       return UpdatePasswordResponse(
         successful: cpr.successful,
         code: cpr.code,
@@ -255,7 +255,8 @@ extension AppFirebaseAuth on FirebaseAuth {
 
     try {
       // update password
-      await this.currentUser.updatePassword(newPassword);
+      // FIXME: user must not be null
+      await this.currentUser?.updatePassword(newPassword);
       return UpdatePasswordResponse(successful: true);
     } on FirebaseAuthException catch (e) {
       switch (e.code) {
@@ -302,7 +303,8 @@ extension AppFirebaseAuth on FirebaseAuth {
 
     try {
       // try to update email
-      await this.currentUser.updateEmail(email);
+      // FIXME: user must not be null
+      await this.currentUser?.updateEmail(email);
       return UpdateEmailResponse(successful: true);
     } on FirebaseAuthException catch (e) {
       if (e.code == "email-already-in-use") {
@@ -383,8 +385,8 @@ class CreateEmailResponse {
 class UpdateEmailResponse extends CreateEmailResponse {
   UpdateEmailResponse({
     required bool successful,
-    String code,
-    String message,
+    String? code,
+    String? message,
   }) : super(
           successful: successful,
           message: message,
@@ -395,8 +397,8 @@ class UpdateEmailResponse extends CreateEmailResponse {
 class UpdatePasswordResponse extends CreateEmailResponse {
   UpdatePasswordResponse({
     required bool successful,
-    String code,
-    String message,
+    String? code,
+    String? message,
   }) : super(
           successful: successful,
           message: message,
@@ -407,8 +409,8 @@ class UpdatePasswordResponse extends CreateEmailResponse {
 class CheckPasswordResponse extends CreateEmailResponse {
   CheckPasswordResponse({
     required bool successful,
-    String code,
-    String message,
+    String? code,
+    String? message,
   }) : super(
           successful: successful,
           message: message,
@@ -419,8 +421,8 @@ class CheckPasswordResponse extends CreateEmailResponse {
 class DeleteAccountResponse extends CreateEmailResponse {
   DeleteAccountResponse({
     required bool successful,
-    String code,
-    String message,
+    String? code,
+    String? message,
   }) : super(
           successful: successful,
           message: message,
