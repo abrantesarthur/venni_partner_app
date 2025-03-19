@@ -6,12 +6,12 @@ class Splash extends StatelessWidget {
   final String? text;
   final Widget? button;
   final Widget? child;
-  final VoidCallback onTap;
+  final VoidCallback? onTap;
 
   Splash({
     this.text,
     this.button,
-    required this.onTap,
+    this.onTap,
     this.child
   });
 

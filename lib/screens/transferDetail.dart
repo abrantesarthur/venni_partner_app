@@ -89,7 +89,7 @@ class TransferDetailState extends State<TransferDetail> {
                     primaryText: "Data de depósito",
                     secondaryText: formatDatetime(
                       widget.transfer.fundingDate.millisecondsSinceEpoch,
-                    ),
+                    ) ?? "",
                     primaryTextSize: 16,
                     secondaryTextSize: 18,
                     paddingTop: screenHeight / 150,
@@ -103,7 +103,7 @@ class TransferDetailState extends State<TransferDetail> {
                     secondaryText: formatDatetime(
                       widget
                           .transfer.fundingEstimatedDate.millisecondsSinceEpoch,
-                    ),
+                    ) ?? "",
                     primaryTextSize: 16,
                     secondaryTextSize: 18,
                     paddingTop: screenHeight / 150,
@@ -113,7 +113,7 @@ class TransferDetailState extends State<TransferDetail> {
             BorderlessButton(
               primaryText: "Banco",
               secondaryText:
-                  bankCodeToNameMap[widget.transfer.bankAccount.bankCode],
+                  bankCodeToNameMap[widget.transfer.bankAccount.bankCode] ?? "",
               primaryTextSize: 16,
               secondaryTextSize: 18,
               paddingTop: screenHeight / 150,
@@ -164,7 +164,7 @@ class TransferDetailState extends State<TransferDetail> {
   }
 }
 
-String formatDatetime(int ms) {
+String? formatDatetime(int? ms) {
   if (ms == null) {
     return null;
   }
