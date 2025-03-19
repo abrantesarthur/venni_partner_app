@@ -364,13 +364,8 @@ class _AppState extends State<App> {
 
                 // if Ratings is pushed
                 if (settings.name == Ratings.routeName) {
-                  final RatingsArguments args = settings.arguments as RatingsArguments;
                   return MaterialPageRoute(builder: (context) {
-                    return Ratings(
-                      firebase: args.firebase,
-                      connectivity: args.connectivity,
-                      partner: args.partner,
-                    );
+                    return Ratings();
                   });
                 }
 

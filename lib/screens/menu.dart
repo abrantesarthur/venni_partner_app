@@ -110,11 +110,6 @@ class Menu extends StatelessWidget {
                     Navigator.pushNamed(
                       context,
                       Ratings.routeName,
-                      arguments: RatingsArguments(
-                        user,
-                        connectivity,
-                        partner,
-                      ),
                     );
                   },
                   iconLeft: Icons.stars,

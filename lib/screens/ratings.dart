@@ -1,39 +1,19 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/rendering.dart';
-import 'package:partner_app/models/connectivity.dart';
-import 'package:partner_app/models/user.dart';
 import 'package:partner_app/models/partner.dart';
+import 'package:partner_app/services/firebase/firebase.dart';
 import 'package:partner_app/styles.dart';
 import 'package:partner_app/vendors/firebaseFunctions/interfaces.dart';
+import 'package:partner_app/vendors/firebaseFunctions/methods.dart';
 import 'package:partner_app/widgets/floatingCard.dart';
 import 'package:partner_app/widgets/goBackButton.dart';
 import 'package:partner_app/widgets/horizontalBar.dart';
 import 'package:partner_app/widgets/overallPadding.dart';
 import 'package:provider/provider.dart';
 
-class RatingsArguments {
-  final UserModel user;
-  final ConnectivityModel connectivity;
-  final PartnerModel partner;
-
-  RatingsArguments(
-    this.user,
-    this.connectivity,
-    this.partner,
-  );
-}
 
 class Ratings extends StatefulWidget {
   static String routeName = "Ratings";
-  final UserModel firebase;
-  final ConnectivityModel connectivity;
-  final PartnerModel partner;
-
-  Ratings({
-    required this.firebase,
-    required this.connectivity,
-    required this.partner,
-  });
+  final firebase = FirebaseService();
 
   @override
   RatingsState createState() => RatingsState();
@@ -41,7 +21,7 @@ class Ratings extends StatefulWidget {
 
 class RatingsState extends State<Ratings> {
   List<Trip> pastTrips = [];
-  Future<Trips> getPastTripsResult;
+  late Future<Trips> getPastTripsResult;
   bool isLoading = false;
   int fiveStarsCount = 0;
   int fourStarsCount = 0;
@@ -64,8 +44,8 @@ class RatingsState extends State<Ratings> {
       GetPastTripsArguments args = GetPastTripsArguments(pageSize: 200);
       trips = await widget.firebase.functions.getPastTrips(args: args);
 
-      // downlaod partner data so ratings is updated
-      await widget.partner.downloadData(widget.firebase);
+      // download partner data so ratings is updated
+      await widget.firebase.model.partner.downloadData();
 
       trips.items.forEach((trip) {
         // save feedback if it exists
@@ -124,7 +104,7 @@ class RatingsState extends State<Ratings> {
         // pastTrips is still empty. Otherwise, we will override trips that were
         // added later to pastTrips by getMorePastTrips
         if (snapshot.hasData && pastTrips.length == 0) {
-          pastTrips = snapshot.data.items;
+          pastTrips = snapshot.data?.items ?? [];
         }
 
         return Scaffold(
@@ -173,9 +153,9 @@ class RatingsState extends State<Ratings> {
                   child: Text(
                     (partner.rating ?? 5) > 4.5
                         ? "Excelente"
-                        : partner.rating > 4.0
+                        : partner.rating! > 4.0
                             ? "Bom"
-                            : partner.rating > 3.5
+                            : partner.rating! > 3.5
                                 ? "Regular"
                                 : "Ruim",
                     style: TextStyle(
@@ -183,7 +163,7 @@ class RatingsState extends State<Ratings> {
                       fontWeight: FontWeight.w600,
                       color: (partner.rating ?? 5) > 4.5
                           ? Colors.green
-                          : partner.rating > 4
+                          : partner.rating! > 4
                               ? AppColor.secondaryYellow
                               : AppColor.secondaryRed,
                     ),
