@@ -3,10 +3,11 @@ import 'package:image_picker/image_picker.dart';
 import 'package:partner_app/models/connectivity.dart';
 import 'package:partner_app/models/user.dart';
 import 'package:partner_app/models/partner.dart';
+import 'package:partner_app/services/firebase/database/methods.dart';
+import 'package:partner_app/services/firebase/firebase.dart';
+import 'package:partner_app/services/firebase/firebaseStorage.dart';
 import 'package:partner_app/styles.dart';
 import 'package:partner_app/vendors/imagePicker.dart';
-import 'package:partner_app/services/firebase/firebaseStorage.dart';
-import 'package:partner_app/services/firebase/database/methods.dart';
 import 'package:partner_app/widgets/appButton.dart';
 import 'package:partner_app/widgets/arrowBackButton.dart';
 import 'package:partner_app/widgets/overallPadding.dart';
@@ -14,13 +15,14 @@ import 'package:provider/provider.dart';
 
 class SendProfilePhoto extends StatefulWidget {
   static const String routeName = "sendProfilePhoto";
+  final firebase = FirebaseService();
 
   @override
   SendProfilePhotoState createState() => SendProfilePhotoState();
 }
 
 class SendProfilePhotoState extends State<SendProfilePhoto> {
-  Widget buttonChild;
+  Widget? buttonChild;
   bool lockScreen = false;
 
   @override
@@ -162,7 +164,7 @@ class SendProfilePhotoState extends State<SendProfilePhoto> {
     }
 
     // get profilePhoto from camera or gallery
-    Future<PickedFile> futureProfilePhoto = await pickImage(context);
+    Future<PickedFile?> futureProfilePhoto = await pickImage(context);
 
     // show progress indicator and lock screen
     setState(() {
@@ -172,18 +174,20 @@ class SendProfilePhotoState extends State<SendProfilePhoto> {
       lockScreen = true;
     });
 
-    PickedFile profilePhoto = await futureProfilePhoto;
+    PickedFile? profilePhoto = await futureProfilePhoto;
 
     if (profilePhoto != null) {
       try {
         // send profilePhoto to firebase
-        await firebase.storage.pushProfilePhoto(
-          partnerID: firebase.auth.currentUser.uid,
+        await widget.firebase.storage.pushProfilePhoto(
+          // FIXME: currentUser must not be null
+          partnerID: firebase.auth.currentUser?.uid ?? "",
           profilePhoto: profilePhoto,
         );
         // on success, make profilePhoto as submitted both on firebase and locally
-        await firebase.database.setSubmittedProfilePhoto(
-          partnerID: firebase.auth.currentUser.uid,
+        await widget.firebase.database.setSubmittedProfilePhoto(
+          // FIXME: currentUser must not be null
+          partnerID: firebase.auth.currentUser?.uid,
           value: true,
         );
         partner.updateProfilePhotoSubmitted(true);
