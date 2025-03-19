@@ -162,14 +162,14 @@ extension AppFirebaseFunctions on FirebaseFunctions {
     }
   }
 
-  Future<Transfers> getTransfers(GetTransfersArguments args) async {
+  Future<Transfers?> getTransfers(GetTransfersArguments args) async {
     Map<String, dynamic> data = {};
     data["count"] = args.count;
     data["page"] = args.page;
     data["pagarme_recipient_id"] = args.pagarmeRecipientID;
     HttpsCallableResult result =
         await this.httpsCallable("payment-get_transfers").call(data);
-    if (result != null && result.data != null) {
+    if (result.data != null) {
       return Transfers.fromJson(result.data);
     }
 

@@ -3,6 +3,7 @@ import 'package:flutter/rendering.dart';
 import 'package:partner_app/models/connectivity.dart';
 import 'package:partner_app/models/user.dart';
 import 'package:partner_app/screens/transferDetail.dart';
+import 'package:partner_app/services/firebase/firebase.dart';
 import 'package:partner_app/styles.dart';
 import 'package:partner_app/vendors/firebaseFunctions/interfaces.dart';
 import 'package:partner_app/vendors/firebaseFunctions/methods.dart';
@@ -19,18 +20,15 @@ class TransfersRouteArguments {
 
 class TransfersRoute extends StatefulWidget {
   static String routeName = "TransfersRoute";
-  final UserModel firebase;
-  final ConnectivityModel connectivity;
-
-  TransfersRoute({required this.firebase, required this.connectivity});
+  final firebase = FirebaseService();
 
   @override
   TransfersRouteState createState() => TransfersRouteState();
 }
 
 class TransfersRouteState extends State<TransfersRoute> {
-  Future<Transfers> transfersFuture;
-  List<Transfer> transfers;
+  Future<Transfers?>? transfersFuture;
+  late List<Transfer> transfers;
 
   @override
   void initState() {
@@ -39,7 +37,7 @@ class TransfersRouteState extends State<TransfersRoute> {
     transfersFuture = getTransfers();
   }
 
-  Future<Transfers> getTransfers() async {
+  Future<Transfers?> getTransfers() async {
     return widget.firebase.functions.getTransfers(
       GetTransfersArguments(
         count: 10,
@@ -54,12 +52,12 @@ class TransfersRouteState extends State<TransfersRoute> {
     final screenHeight = MediaQuery.of(context).size.height;
     ConnectivityModel connectivity = Provider.of<ConnectivityModel>(context);
 
-    return FutureBuilder(
+    return FutureBuilder<Transfers?>(
       future: transfersFuture,
-      builder: (BuildContext context, AsyncSnapshot<Transfers> snapshot) {
+      builder: (BuildContext context, AsyncSnapshot<Transfers?> snapshot) {
         // populate transfers as soon as future returns.
         if (snapshot.hasData && transfers.length == 0) {
-          transfers = snapshot.data.items;
+          transfers = snapshot.data!.items;
         }
 
         return Scaffold(
