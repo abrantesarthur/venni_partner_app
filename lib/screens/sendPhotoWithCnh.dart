@@ -3,10 +3,11 @@ import 'package:image_picker/image_picker.dart';
 import 'package:partner_app/models/connectivity.dart';
 import 'package:partner_app/models/user.dart';
 import 'package:partner_app/models/partner.dart';
+import 'package:partner_app/services/firebase/database/methods.dart';
+import 'package:partner_app/services/firebase/firebase.dart';
+import 'package:partner_app/services/firebase/firebaseStorage.dart';
 import 'package:partner_app/styles.dart';
 import 'package:partner_app/vendors/imagePicker.dart';
-import 'package:partner_app/services/firebase/firebaseStorage.dart';
-import 'package:partner_app/services/firebase/database/methods.dart';
 import 'package:partner_app/widgets/appButton.dart';
 import 'package:partner_app/widgets/arrowBackButton.dart';
 import 'package:partner_app/widgets/overallPadding.dart';
@@ -14,13 +15,14 @@ import 'package:provider/provider.dart';
 
 class SendPhotoWithCnh extends StatefulWidget {
   static const String routeName = "sendPhotoWithCnh";
+  final firebase = FirebaseService();
 
   @override
   SendPhotoWithCnhState createState() => SendPhotoWithCnhState();
 }
 
 class SendPhotoWithCnhState extends State<SendPhotoWithCnh> {
-  Widget buttonChild;
+  Widget? buttonChild;
   bool lockScreen = false;
 
   @override
@@ -152,7 +154,7 @@ class SendPhotoWithCnhState extends State<SendPhotoWithCnh> {
     }
 
     // get crlv from camera or gallery
-    Future<PickedFile> futurePhotoWithCnh = await pickImage(context);
+    Future<PickedFile?> futurePhotoWithCnh = await pickImage(context);
 
     // show progress indicator and lock screen
     setState(() {
@@ -162,18 +164,20 @@ class SendPhotoWithCnhState extends State<SendPhotoWithCnh> {
       lockScreen = true;
     });
 
-    PickedFile photoWithCnh = await futurePhotoWithCnh;
+    PickedFile? photoWithCnh = await futurePhotoWithCnh;
 
     if (photoWithCnh != null) {
       try {
         // send photoWithCnh to firebase
-        await firebase.storage.pushPhotoWithCnh(
-          partnerID: firebase.auth.currentUser.uid,
+        await widget.firebase.storage.pushPhotoWithCnh(
+          // FIXME: currentUser must not be null
+          partnerID: firebase.auth.currentUser?.uid ?? "",
           photoWithCnh: photoWithCnh,
         );
         // on success, make photoWithCnh as submitted both on firebase and locally
-        await firebase.database.setSubmittedPhotoWithCnh(
-          partnerID: firebase.auth.currentUser.uid,
+        await widget.firebase.database.setSubmittedPhotoWithCnh(
+          // FIXME: currentUser must not be null
+          partnerID: firebase.auth.currentUser?.uid ?? "",
           value: true,
         );
         partner.updatePhotoWithCnhSubmitted(true);
