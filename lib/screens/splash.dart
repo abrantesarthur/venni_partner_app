@@ -3,12 +3,17 @@ import 'package:partner_app/styles.dart';
 import 'package:partner_app/widgets/overallPadding.dart';
 
 class Splash extends StatelessWidget {
-  final String text;
-  final Widget button;
-  final Widget child;
+  final String? text;
+  final Widget? button;
+  final Widget? child;
   final VoidCallback onTap;
 
-  Splash({this.text, this.button, this.onTap, this.child});
+  Splash({
+    this.text,
+    this.button,
+    required this.onTap,
+    this.child
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -35,7 +40,7 @@ class Splash extends StatelessWidget {
                         ? Column(
                             children: [
                               SizedBox(height: height / 40),
-                              Text(text,
+                              Text(text!,
                                   textAlign: TextAlign.center,
                                   style: TextStyle(
                                     fontSize: 25,
@@ -47,9 +52,9 @@ class Splash extends StatelessWidget {
                           )
                         : Container(),
                     SizedBox(height: height / 20),
-                    button != null ? button : Container(),
+                    button != null ? button! : Container(),
                     Spacer(),
-                    child != null ? child : Container(),
+                    child != null ? child! : Container(),
                     SizedBox(height: height / 40),
                   ],
                 ),
