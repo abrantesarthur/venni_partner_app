@@ -250,7 +250,7 @@ class BankAccount {
   final String agencia; // 4 chars max, all numbers
   final String? agenciaDv; // optional
   final String conta;
-  final String contaDv;
+  final String? contaDv;
   final BankAccountType type;
   final String documentNumber;
   final String legalName;
@@ -261,7 +261,7 @@ class BankAccount {
     required this.agencia,
     this.agenciaDv,
     required this.conta,
-    required this.contaDv,
+    this.contaDv,
     required this.type,
     required this.documentNumber,
     required this.legalName,
