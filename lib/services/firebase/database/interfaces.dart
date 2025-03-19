@@ -245,10 +245,10 @@ Map<BankAccountType, String> accountTypeMap = {
 };
 
 class BankAccount {
-  final int id;
+  final int? id;
   final String bankCode; // 3 chars max, all numbers
   final String agencia; // 4 chars max, all numbers
-  final String agenciaDv; // optional
+  final String? agenciaDv; // optional
   final String conta;
   final String contaDv;
   final BankAccountType type;

@@ -123,7 +123,7 @@ class TransferDetailState extends State<TransferDetail> {
               primaryText: "Agência",
               secondaryText: widget.transfer.bankAccount.agencia +
                   (widget.transfer.bankAccount.agenciaDv != null
-                      ? "-" + widget.transfer.bankAccount.agenciaDv
+                      ? "-" + widget.transfer.bankAccount.agenciaDv!
                       : ""),
               primaryTextSize: 16,
               secondaryTextSize: 18,
