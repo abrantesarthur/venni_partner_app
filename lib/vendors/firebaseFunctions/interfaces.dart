@@ -219,9 +219,9 @@ extension PaymentMethodExtension on PaymentMethod {
 }
 
 class GetPastTripsArguments {
-  int pageSize;
-  int maxRequestTime;
-  int minRequestTime;
+  int? pageSize;
+  int? maxRequestTime;
+  int? minRequestTime;
 
   GetPastTripsArguments({
     this.pageSize,

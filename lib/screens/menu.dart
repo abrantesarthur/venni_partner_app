@@ -131,10 +131,6 @@ class Menu extends StatelessWidget {
                     Navigator.pushNamed(
                       context,
                       PastTrips.routeName,
-                      arguments: PastTripsArguments(
-                        user,
-                        connectivity,
-                      ),
                     );
                   },
                   iconLeft: Icons.motorcycle,

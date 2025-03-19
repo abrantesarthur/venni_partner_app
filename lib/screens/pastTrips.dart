@@ -4,35 +4,27 @@ import 'package:flutter_svg/svg.dart';
 import 'package:partner_app/models/connectivity.dart';
 import 'package:partner_app/models/user.dart';
 import 'package:partner_app/screens/pastTripDetail.dart';
+import 'package:partner_app/services/firebase/firebase.dart';
 import 'package:partner_app/styles.dart';
 import 'package:partner_app/vendors/firebaseFunctions/interfaces.dart';
+import 'package:partner_app/vendors/firebaseFunctions/methods.dart';
 import 'package:partner_app/widgets/goBackButton.dart';
 import 'package:partner_app/widgets/overallPadding.dart';
 import 'package:provider/provider.dart';
 
-class PastTripsArguments {
-  final UserModel user;
-  final ConnectivityModel connectivity;
-
-  PastTripsArguments(this.user, this.connectivity);
-}
-
 class PastTrips extends StatefulWidget {
   static String routeName = "PastTrips";
-  final UserModel firebase;
-  final ConnectivityModel connectivity;
-
-  PastTrips({required this.firebase, required this.connectivity});
+  final firebase = FirebaseService();
 
   @override
   PastTripsState createState() => PastTripsState();
 }
 
 class PastTripsState extends State<PastTrips> {
-  List<Trip> pastTrips;
-  Future<Trips> getPastTripsResult;
-  bool isLoading;
-  ScrollController scrollController;
+  late List<Trip> pastTrips;
+  late Future<Trips> getPastTripsResult;
+  late bool isLoading;
+  late ScrollController scrollController;
 
   @override
   void initState() {
@@ -81,13 +73,13 @@ class PastTripsState extends State<PastTrips> {
 
   Future<void> getMorePastTrips() async {
     //  least recent trip is the last in chronologically sorted pastTrips
-    Trip leastRecentTrip;
+    Trip? leastRecentTrip;
     if (pastTrips.isNotEmpty) {
       leastRecentTrip = pastTrips[pastTrips.length - 1];
     }
 
     // get 10 trips that happened before least recent trip
-    int maxRequestTime;
+    int? maxRequestTime;
     if (leastRecentTrip != null) {
       maxRequestTime = leastRecentTrip.requestTime - 1;
     }
@@ -95,14 +87,12 @@ class PastTripsState extends State<PastTrips> {
       pageSize: 10,
       maxRequestTime: maxRequestTime,
     );
-    Trips result;
+    Trips result = Trips(items: []);
     try {
       result = await widget.firebase.functions.getPastTrips(args: args);
     } catch (_) {}
     setState(() {
-      if (result != null) {
-        pastTrips.addAll(result.items);
-      }
+      pastTrips.addAll(result.items);
       isLoading = false;
     });
   }
@@ -119,7 +109,7 @@ class PastTripsState extends State<PastTrips> {
         // pastTrips is still empty. Otherwise, we will override trips that were
         // added later to pastTrips by getMorePastTrips
         if (snapshot.hasData && pastTrips.length == 0) {
-          pastTrips = snapshot.data.items;
+          pastTrips = snapshot.data!.items;
           // if we have less than 5 pastTrips initially, request more
           if (pastTrips.length < 5) {
             getMorePastTrips();
@@ -233,7 +223,6 @@ class PastTripsState extends State<PastTrips> {
           PastTripDetail.routeName,
           arguments: PastTripDetailArguments(
             pastTrip: trip,
-            firebase: widget.firebase,
           ),
         );
       },

@@ -357,12 +357,8 @@ class _AppState extends State<App> {
 
                 // if PastTrips is pushed
                 if (settings.name == PastTrips.routeName) {
-                  final PastTripsArguments args = settings.arguments as PastTripsArguments;
                   return MaterialPageRoute(builder: (context) {
-                    return PastTrips(
-                      firebase: args.firebase,
-                      connectivity: args.connectivity,
-                    );
+                    return PastTrips();
                   });
                 }
 

@@ -1,35 +1,31 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
-import 'package:partner_app/models/user.dart';
 import 'package:partner_app/models/googleMaps.dart';
 import 'package:partner_app/models/partner.dart';
 import 'package:partner_app/screens/pastTrips.dart';
+import 'package:partner_app/services/firebase/firebase.dart';
 import 'package:partner_app/styles.dart';
 import 'package:partner_app/vendors/firebaseFunctions/interfaces.dart';
 import 'package:partner_app/widgets/floatingCard.dart';
 import 'package:partner_app/widgets/goBackButton.dart';
 import 'package:partner_app/widgets/overallPadding.dart';
-import 'package:provider/provider.dart';
 
 class PastTripDetailArguments {
   final Trip pastTrip;
-  final UserModel firebase;
 
   PastTripDetailArguments({
     required this.pastTrip,
-    required this.firebase,
   });
 }
 
 class PastTripDetail extends StatefulWidget {
   static String routeName = "PastTripDetail";
   final Trip pastTrip;
-  final UserModel firebase;
+  final firebase = FirebaseService();
 
   PastTripDetail({
     required this.pastTrip,
-    required this.firebase,
   });
 
   @override
@@ -37,19 +33,12 @@ class PastTripDetail extends StatefulWidget {
 }
 
 class PastTripDetailState extends State<PastTripDetail> {
-  GoogleMapsModel googleMaps = GoogleMapsModel();
-
-  @override
-  void dispose() {
-    googleMaps.dispose();
-    super.dispose();
-  }
-
   @override
   Widget build(BuildContext context) {
     final screenWidth = MediaQuery.of(context).size.width;
     final screenHeight = MediaQuery.of(context).size.height;
-    PartnerModel partner = Provider.of<PartnerModel>(context, listen: false);
+    PartnerModel partner = widget.firebase.model.partner;
+    GoogleMapsModel googleMaps = widget.firebase.model.googleMaps;
 
     return Scaffold(
       body: Stack(
@@ -62,10 +51,10 @@ class PastTripDetailState extends State<PastTripDetail> {
             mapType: MapType.normal,
             initialCameraPosition: CameraPosition(
               target: LatLng(
-                partner.position?.latitude,
-                partner.position?.longitude,
+                partner.position?.latitude ?? 0,
+                partner.position?.longitude ?? 0,
               ),
-              zoom: googleMaps.initialZoom,
+              zoom: widget.firebase.model.googleMaps.initialZoom,
             ),
             padding: EdgeInsets.only(
               top: screenHeight / 12,
