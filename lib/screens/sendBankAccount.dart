@@ -1,17 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:partner_app/models/connectivity.dart';
-import 'package:partner_app/models/user.dart';
-import 'package:partner_app/models/partner.dart';
 import 'package:partner_app/services/firebase/database/interfaces.dart';
 import 'package:partner_app/services/firebase/database/methods.dart';
-import 'package:partner_app/vendors/firebaseFunctions/methods.dart';
+import 'package:partner_app/services/firebase/firebase.dart';
 import 'package:partner_app/styles.dart';
+import 'package:partner_app/vendors/firebaseFunctions/methods.dart';
 import 'package:partner_app/widgets/appButton.dart';
 import 'package:partner_app/widgets/appInputText.dart';
 import 'package:partner_app/widgets/arrowBackButton.dart';
 import 'package:partner_app/widgets/overallPadding.dart';
-import 'package:provider/provider.dart';
 
 enum SendBankAccountMode { send, edit }
 
@@ -24,6 +21,7 @@ class SendBankAccountArguments {
 class SendBankAccount extends StatefulWidget {
   static const String routeName = "SendBankAccount";
   final SendBankAccountMode mode;
+  final firebase = FirebaseService();
 
   SendBankAccount({required this.mode});
 
@@ -33,17 +31,17 @@ class SendBankAccount extends StatefulWidget {
 
 // TOOD: display warnings if something goes wrong
 class SendBankAccountState extends State<SendBankAccount> with RouteAware {
-  TextEditingController agenciaController;
-  TextEditingController agenciaDvController;
-  TextEditingController contaController;
-  TextEditingController contaDvController;
+  late TextEditingController agenciaController;
+  late TextEditingController agenciaDvController;
+  late TextEditingController contaController;
+  late TextEditingController contaDvController;
   bool agenciaIsValid = false;
   bool contaIsValid = false;
   bool contaDvIsValid = false;
   bool lockScreen = false;
-  Banks selectedBank;
-  BankAccountType selectedAccountType;
-  Widget buttonChild;
+  Banks? selectedBank;
+  BankAccountType? selectedAccountType;
+  Widget? buttonChild;
 
   @override
   void initState() {
@@ -166,7 +164,7 @@ class SendBankAccountState extends State<SendBankAccount> with RouteAware {
                                   items: bankTypeToNameMap.keys
                                       .map((bankName) => DropdownMenuItem(
                                             child: Text(
-                                                bankTypeToNameMap[bankName]),
+                                                bankTypeToNameMap[bankName]!),
                                             value: bankName,
                                           ))
                                       .toList()),
@@ -268,7 +266,7 @@ class SendBankAccountState extends State<SendBankAccount> with RouteAware {
                                   },
                                   items: accountTypeMap.keys
                                       .map((key) => DropdownMenuItem(
-                                            child: Text(accountTypeMap[key]),
+                                            child: Text(accountTypeMap[key]!),
                                             value: key,
                                           ))
                                       .toList()),
@@ -309,9 +307,8 @@ class SendBankAccountState extends State<SendBankAccount> with RouteAware {
   }
 
   Future<void> buttonCallback(BuildContext context) async {
-    final connectivity = Provider.of<ConnectivityModel>(context, listen: false);
-    final partner = Provider.of<PartnerModel>(context, listen: false);
-    final firebase = Provider.of<UserModel>(context, listen: false);
+    final connectivity = widget.firebase.model.connectivity;
+    final partner = widget.firebase.model.partner;
 
     if (!connectivity.hasConnection) {
       await connectivity.alertOffline(
@@ -334,23 +331,24 @@ class SendBankAccountState extends State<SendBankAccount> with RouteAware {
 
     try {
       // add bank account to firebase
-      BankAccount ba = await firebase.functions.createBankAccount(
+      BankAccount ba = await widget.firebase.functions.createBankAccount(
         BankAccount(
-          bankCode: selectedBank.getCode(),
+          bankCode: selectedBank!.getCode(),
           agencia: agenciaController.text,
           agenciaDv: agenciaDvController.text,
           conta: contaController.text,
           contaDv: contaDvController.text,
-          type: selectedAccountType,
-          documentNumber: partner.cpf,
-          legalName: partner.name + " " + partner.lastName,
+          type: selectedAccountType!,
+          // FIXME: ensure cpf, name, and lastName are not null
+          documentNumber: partner.cpf ?? "",
+          legalName: (partner.name ?? "") + " " + (partner.lastName ?? ""),
         ),
       );
 
       // if sending, mark bank account as submitted on firebase and locally
       if (widget.mode == SendBankAccountMode.send) {
-        await firebase.database.setSubmittedBankAccount(
-          partnerID: firebase.auth.currentUser.uid,
+        await widget.firebase.database.setSubmittedBankAccount(
+          partnerID: widget.firebase.auth.currentUser?.uid,
           value: true,
         );
         partner.updateBankAccountSubmitted(true);
