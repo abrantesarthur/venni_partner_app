@@ -4,6 +4,7 @@ import 'package:partner_app/models/partner.dart';
 import 'package:partner_app/screens/editEmail.dart';
 import 'package:partner_app/screens/editPhone.dart';
 import 'package:partner_app/screens/insertNewPassword.dart';
+import 'package:partner_app/services/firebase/firebase.dart';
 import 'package:partner_app/styles.dart';
 import 'package:partner_app/widgets/arrowBackButton.dart';
 import 'package:partner_app/widgets/borderlessButton.dart';
@@ -25,19 +26,13 @@ class ProfileArguments {
 
 class Profile extends StatefulWidget {
   static const String routeName = "Profile";
-  final PartnerModel partner;
-  final UserModel firebase;
-
-  Profile({
-    required this.partner,
-    required this.firebase,
-  });
+  final firebase = FirebaseService();
 
   ProfileState createState() => ProfileState();
 }
 
 class ProfileState extends State<Profile> {
-  Future<bool> downloadedPartnerData;
+  late Future<bool> downloadedPartnerData;
 
   @override
   void initState() {
@@ -50,7 +45,7 @@ class ProfileState extends State<Profile> {
         context,
         listen: false,
       );
-      firebase.auth.currentUser.reload();
+      firebase.auth.currentUser?.reload();
     });
 
     super.initState();
@@ -58,7 +53,7 @@ class ProfileState extends State<Profile> {
 
   Future<bool> downloadPartnerData() async {
     try {
-      await widget.partner.downloadData(widget.firebase);
+      await widget.firebase.model.partner.downloadData();
       return true;
     } catch (e) {
       return false;
@@ -109,7 +104,7 @@ class ProfileState extends State<Profile> {
                             ),
                           ),
                         )
-                      : (snapshot.data == null || !snapshot.data)
+                      : (snapshot.data == null || !snapshot.data!)
                           ? Text(
                               "Algo deu errado. Cheque asua conexão com a internet e tente novamente.",
                               style: TextStyle(fontSize: 16),
@@ -133,7 +128,7 @@ class ProfileState extends State<Profile> {
                                                         null
                                                     ? AssetImage(
                                                         "images/user_icon.png")
-                                                    : partner.profileImage.file,
+                                                    : partner.profileImage!.file,
                                               ),
                                             ),
                                           ),
@@ -213,9 +208,9 @@ class ProfileState extends State<Profile> {
                                               setState(() {});
                                             },
                                             primaryText: "Alterar Telefone",
-                                            secondaryText: firebase
+                                            secondaryText: widget.firebase
                                                 .auth.currentUser?.phoneNumber
-                                                ?.withoutCountryCode(),
+                                                ?.withoutCountryCode() ?? "",
                                             label: "Confirmado",
                                             labelColor: Colors.green,
                                             iconRight:
@@ -238,14 +233,13 @@ class ProfileState extends State<Profile> {
                                               setState(() {});
                                             },
                                             primaryText: "Alterar email",
-                                            secondaryText: firebase
-                                                .auth.currentUser?.email,
-                                            label: firebase.auth.currentUser
-                                                    .emailVerified
+                                            secondaryText: widget.firebase
+                                                .auth.currentUser?.email ?? "",
+                                            label: widget.firebase.auth.currentUser?.emailVerified == true
                                                 ? "Confirmado"
                                                 : "Não confirmado",
-                                            labelColor: firebase.auth
-                                                    .currentUser.emailVerified
+                                            labelColor: widget.firebase.auth
+                                                    .currentUser?.emailVerified == true
                                                 ? Colors.green
                                                 : AppColor.secondaryRed,
                                             iconRight:
