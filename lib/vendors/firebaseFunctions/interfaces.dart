@@ -287,7 +287,7 @@ class Payment {
   int previousOwedCommission;
   int paidOwedCommission;
   int currentOwedCommission;
-  int partnerAmountReceived;
+  int? partnerAmountReceived;
 
   Payment({
     required this.success,

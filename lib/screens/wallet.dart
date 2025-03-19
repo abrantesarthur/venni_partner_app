@@ -81,13 +81,13 @@ class WalletState extends State<Wallet> {
       // calculate cash and card revenues of the last 24 hours
       trips.items.forEach((trip) {
         if (trip.paymentMethod == PaymentMethod.cash) {
-          // for cash, we consider entire fare prace, which is, in fact, what
+          // for cash, we consider entire fare price, which is, in fact, what
           // the partner received
           cashGainsInPeriod += trip.farePrice;
         } else {
           // for credit card payments, we consider what the partner received
           // after paying Venni's commissions
-          cardGainsInPeriod += trip.payment?.partnerAmountReceived ??
+          cardGainsInPeriod += trip.payment.partnerAmountReceived ??
               (0.8 * trip.farePrice).round();
         }
       });
@@ -474,15 +474,13 @@ extension PeriodExtension on Period {
         return "esta semana";
       case Period.thisMonth:
         return "este mês";
-      default:
-        return "últimas 24 horas";
     }
   }
 
   int getTimestamp() {
     DateTime now = DateTime.now();
     switch (this) {
-      // today at midnigth
+      // today at midnight
       case Period.today:
         return DateTime(now.year, now.month, now.day).millisecondsSinceEpoch;
       // week starts on monday at midnight
@@ -490,8 +488,6 @@ extension PeriodExtension on Period {
         return now.subtract(Duration(days: now.weekday)).millisecondsSinceEpoch;
       case Period.thisMonth:
         return DateTime(now.year, now.month).millisecondsSinceEpoch;
-      default:
-        return DateTime(now.year, now.month, now.day).millisecondsSinceEpoch;
     }
   }
 }
