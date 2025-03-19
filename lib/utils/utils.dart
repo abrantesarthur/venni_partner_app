@@ -173,7 +173,7 @@ extension AppBitmapDescriptor on BitmapDescriptor {
     String svgString =
         await DefaultAssetBundle.of(context).loadString(assetName);
     // Create DrawableRoot from SVG String
-    DrawableRoot svgDrawableRoot = await svg.fromSvgString(svgString, null);
+    DrawableRoot svgDrawableRoot = await svg.string(svgString, null);
 
     // toPicture() and toImage() don't seem to be pixel ratio aware, so we calculate the actual sizes here
     MediaQueryData queryData = MediaQuery.of(context);

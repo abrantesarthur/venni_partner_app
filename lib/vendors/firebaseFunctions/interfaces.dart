@@ -1,38 +1,32 @@
-import 'package:flutter/material.dart';
 import 'package:partner_app/services/firebase/database/interfaces.dart';
 
 class BalanceProperty {
-  int amount; // in cents
+  int? amount; // in cents
 
   BalanceProperty({required this.amount});
 
-  factory BalanceProperty.fromJson(Map json) {
-    if (json == null) {
-      return null;
-    }
-    return BalanceProperty(amount: json["amount"]);
+  factory BalanceProperty.fromJson(Map? json) {
+    return BalanceProperty(amount: json?["amount"]);
   }
 }
 
 class Balance {
-  final BalanceProperty waitingFunds;
-  final BalanceProperty available;
-  final BalanceProperty transfered;
+  final BalanceProperty? waitingFunds;
+  final BalanceProperty? available;
+  final BalanceProperty? transfered;
 
   Balance({
-    required this.waitingFunds,
-    required this.available,
-    required this.transfered,
+    this.waitingFunds,
+    this.available,
+    this.transfered,
   });
 
   factory Balance.fromJson(Map json) {
-    return json == null
-        ? null
-        : Balance(
-            waitingFunds: BalanceProperty.fromJson(json["waiting_funds"]),
-            available: BalanceProperty.fromJson(json["available"]),
-            transfered: BalanceProperty.fromJson(json["transfered"]),
-          );
+    return Balance(
+      waitingFunds: BalanceProperty.fromJson(json["waiting_funds"]),
+      available: BalanceProperty.fromJson(json["available"]),
+      transfered: BalanceProperty.fromJson(json["transfered"]),
+    );
   }
 }
 
@@ -43,7 +37,7 @@ enum TransferType {
 }
 
 extension TransferTypeExtension on TransferType {
-  static TransferType fromString(String s) {
+  static TransferType? fromString(String s) {
     switch (s) {
       case "ted":
         return TransferType.ted;
@@ -66,7 +60,7 @@ enum TransferStatus {
 }
 
 extension TransferStatusExtension on TransferStatus {
-  static TransferStatus fromString(String s) {
+  static TransferStatus? fromString(String s) {
     switch (s) {
       case "pending_transfer":
         return TransferStatus.pendingTransfer;
@@ -102,49 +96,45 @@ extension TransferStatusExtension on TransferStatus {
 }
 
 class Transfer {
-  int id;
-  int amount; // after fees
-  TransferType type;
-  TransferStatus status;
-  int fee;
-  DateTime fundingDate; // TODO: maybe it's a string
-  DateTime fundingEstimatedDate; // TODO: maybe it's a string
-  DateTime dateCreated; //  TODO: maybe it's a string
-  BankAccount bankAccount;
+  int? id;
+  int? amount; // after fees
+  TransferType? type;
+  TransferStatus? status;
+  int? fee;
+  DateTime? fundingDate; // TODO: maybe it's a string
+  DateTime? fundingEstimatedDate; // TODO: maybe it's a string
+  DateTime? dateCreated; //  TODO: maybe it's a string
+  BankAccount? bankAccount;
 
   Transfer({
-    required this.id,
-    required this.amount,
-    required this.type,
-    required this.status,
-    required this.fee,
-    required this.fundingDate,
-    required this.fundingEstimatedDate,
-    required this.dateCreated,
-    required this.bankAccount,
+    this.id,
+    this.amount,
+    this.type,
+    this.status,
+    this.fee,
+    this.fundingDate,
+    this.fundingEstimatedDate,
+    this.dateCreated,
+    this.bankAccount,
   });
 
-  factory Transfer.fromJson(Map json) {
-    if (json == null) {
-      return null;
-    }
-
+  factory Transfer.fromJson(Map? json) {
     return Transfer(
-      id: json["id"],
-      amount: json["amount"],
-      type: TransferTypeExtension.fromString(json["type"]),
-      status: TransferStatusExtension.fromString(json["status"]),
-      fee: json["fee"],
-      fundingDate: json["funding_date"] == null
+      id: json?["id"],
+      amount: json?["amount"],
+      type: TransferTypeExtension.fromString(json?["type"]),
+      status: TransferStatusExtension.fromString(json?["status"]),
+      fee: json?["fee"],
+      fundingDate: json?["funding_date"] == null
           ? null
-          : DateTime.parse(json["funding_date"]),
-      fundingEstimatedDate: json["funding_estimated_date"] == null
+          : DateTime.parse(json!["funding_date"]),
+      fundingEstimatedDate: json?["funding_estimated_date"] == null
           ? null
-          : DateTime.parse(json["funding_estimated_date"]),
-      dateCreated: json["date_created"] == null
+          : DateTime.parse(json!["funding_estimated_date"]),
+      dateCreated: json?["date_created"] == null
           ? null
-          : DateTime.parse(json["date_created"]),
-      bankAccount: BankAccount.fromJson(json["bank_account"]),
+          : DateTime.parse(json!["date_created"]),
+      bankAccount: BankAccount.fromJson(json?["bank_account"]),
     );
   }
 }
@@ -174,7 +164,7 @@ enum TripStatus {
 }
 
 extension TripStatusExtension on TripStatus {
-  static TripStatus fromString(String s) {
+  static TripStatus? fromString(String s) {
     switch (s) {
       case "waiting-confirmation":
         return TripStatus.waitingConfirmation;
@@ -206,7 +196,7 @@ enum PaymentMethod {
 }
 
 extension PaymentMethodExtension on PaymentMethod {
-  static PaymentMethod fromString(String s) {
+  static PaymentMethod? fromString(String s) {
     switch (s) {
       case "cash":
         return PaymentMethod.cash;
@@ -269,9 +259,7 @@ class PartnerRating {
   });
 
   factory PartnerRating.fromJson(Map json) {
-    return json == null
-        ? null
-        : PartnerRating(
+    return PartnerRating(
             score: json["score"],
             cleanlinessWentWell: json["cleanliness_went_well"],
             safetyWentWell: json["safety_went_well"],
@@ -299,9 +287,7 @@ class Payment {
   });
 
   factory Payment.fromJson(Map json) {
-    return json == null
-        ? null
-        : Payment(
+    return Payment(
             success: json["success"],
             venniCommission: json["venni_commission"],
             previousOwedCommission: json["previous_owed_commission"],
@@ -314,23 +300,23 @@ class Payment {
 
 class Trip {
   String clientID;
-  TripStatus tripStatus;
+  TripStatus? tripStatus;
   String originPlaceID;
   String destinationPlaceID;
-  double originLat;
-  double originLng;
-  double destinationLat;
-  double destinationLng;
+  double? originLat;
+  double? originLng;
+  double? destinationLat;
+  double? destinationLng;
   int farePrice;
-  int distanceMeters;
+  int? distanceMeters;
   String distanceText;
-  int durationSeconds;
+  int? durationSeconds;
   String durationText;
   String clientToDestinationEncodedPoints;
-  int requestTime;
+  int? requestTime;
   String originAddress;
   String destinationAddress;
-  PaymentMethod paymentMethod;
+  PaymentMethod? paymentMethod;
   String clientName; // added to the response by partnerGetCurrentTrip
   String clientPhone; // added to response by partnerGetCurrentTrip
   PartnerRating partnerRating;
@@ -362,24 +348,24 @@ class Trip {
   });
 
   factory Trip.fromJson(Map json) {
-    int distanceMeters = json["distance_meters"] == null
+    int? distanceMeters = json["distance_meters"] == null
         ? null
         : int.parse(json["distance_meters"]);
-    int durationSeconds = json["duration_seconds"] == null
+    int? durationSeconds = json["duration_seconds"] == null
         ? null
         : int.parse(json["duration_seconds"]);
-    int requestTime =
+    int? requestTime =
         json["request_time"] == null ? null : int.parse(json["request_time"]);
-    PaymentMethod paymentMethod =
+    PaymentMethod? paymentMethod =
         PaymentMethodExtension.fromString(json["payment_method"]);
-    double originLat =
+    double? originLat =
         json["origin_lat"] == null ? null : double.parse(json["origin_lat"]);
-    double originLng =
+    double? originLng =
         json["origin_lng"] == null ? null : double.parse(json["origin_lng"]);
-    double destinationLat = json["destination_lat"] == null
+    double? destinationLat = json["destination_lat"] == null
         ? null
         : double.parse(json["destination_lat"]);
-    double destinationLng = json["destination_lng"] == null
+    double? destinationLng = json["destination_lng"] == null
         ? null
         : double.parse(json["destination_lng"]);
 
@@ -418,7 +404,7 @@ enum Demand {
 }
 
 extension DemandExtension on Demand {
-  static Demand fromString(String s) {
+  static Demand? fromString(String s) {
     switch (s) {
       case "low":
         return Demand.LOW;
@@ -452,17 +438,14 @@ class ZoneDemand {
     required this.minLng,
   });
 
-  factory ZoneDemand.fromJson(Map json) {
-    if (json == null) {
-      return null;
-    }
+  factory ZoneDemand.fromJson(Map? json) {
     return ZoneDemand(
-      zoneName: json["zone_name"],
-      demand: DemandExtension.fromString(json["demand"]),
-      maxLat: json["max_lat"] + .0,
-      minLat: json["min_lat"] + .0,
-      maxLng: json["max_lng"] + .0,
-      minLng: json["min_lng"] + .0,
+      zoneName: json?["zone_name"] ?? "",
+      demand: DemandExtension.fromString(json?["demand"]) ?? Demand.LOW,
+      maxLat: json?["max_lat"] ?? 0 + .0,
+      minLat: json?["min_lat"] ?? 0 + .0,
+      maxLng: json?["max_lng"] ?? 0 + .0,
+      minLng: json?["min_lng"] ?? 0 + .0,
     );
   }
 }
@@ -472,14 +455,10 @@ class DemandByZone {
 
   DemandByZone({required this.values});
 
-  factory DemandByZone.fromJson(Map<String, dynamic> json) {
-    if (json == null) {
-      return null;
-    }
-
+  factory DemandByZone.fromJson(Map<String, dynamic>? json) {
     Map<String, ZoneDemand> values = {};
 
-    json.keys.forEach((key) {
+    json?.keys.forEach((key) {
       values[key] = ZoneDemand.fromJson(json[key]);
     });
 
@@ -500,9 +479,9 @@ class ApprovedPartners {
 }
 
 class ApprovedPartner {
-  PartnerStatus status;
-  double currentLatitude;
-  double currentLongitude;
+  PartnerStatus? status;
+  double? currentLatitude;
+  double? currentLongitude;
 
   ApprovedPartner({
     required this.status,
@@ -510,19 +489,15 @@ class ApprovedPartner {
     required this.currentLongitude,
   });
 
-  factory ApprovedPartner.fromJson(Map json) {
-    if (json == null) {
-      return null;
-    }
-
+  factory ApprovedPartner.fromJson(Map? json) {
     return ApprovedPartner(
-      status: PartnerStatusExtension.fromString(json["partner_status"]),
-      currentLatitude: json["partner_latitude"] == null
+      status: PartnerStatusExtension.fromString(json?["partner_status"]),
+      currentLatitude: json?["partner_latitude"] == null
           ? null
-          : double.parse(json["partner_latitude"]),
-      currentLongitude: json["partner_longitude"] == null
+          : double.parse(json?["partner_latitude"]),
+      currentLongitude: json?["partner_longitude"] == null
           ? null
-          : double.parse(json["partner_longitude"]),
+          : double.parse(json?["partner_longitude"]),
     );
   }
 }
