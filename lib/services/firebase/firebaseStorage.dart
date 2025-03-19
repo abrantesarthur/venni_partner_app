@@ -72,7 +72,7 @@ extension AppFirebaseStorage on FirebaseStorage {
     ListResult results;
     try {
       results = await this.ref().child("partner-documents").child(id).list();
-      if (results != null && results.items.length > 0) {
+      if (results.items.length > 0) {
         Reference? profilePhotoRef;
         results.items.forEach((item) {
           if (item.fullPath.contains("profilePhoto")) {
