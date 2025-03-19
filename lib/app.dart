@@ -28,7 +28,7 @@ import 'package:partner_app/screens/sendCnh.dart';
 import 'package:partner_app/screens/sendCrlv.dart';
 import 'package:partner_app/screens/documents.dart';
 import 'package:partner_app/screens/home.dart';
-import 'package:partner_app/screens/insertAditionalInfo.dart';
+import 'package:partner_app/screens/insertAdditionalInfo.dart';
 import 'package:partner_app/screens/insertEmail.dart';
 import 'package:partner_app/screens/insertName.dart';
 import 'package:partner_app/screens/insertPassword.dart';

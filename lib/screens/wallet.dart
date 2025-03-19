@@ -6,7 +6,6 @@ import 'package:partner_app/screens/balance.dart';
 import 'package:partner_app/screens/transfers.dart';
 import 'package:partner_app/utils/utils.dart';
 import 'package:partner_app/vendors/firebaseFunctions/interfaces.dart';
-import 'package:partner_app/vendors/firebaseFunctions/methods.dart';
 import 'package:partner_app/styles.dart';
 import 'package:partner_app/widgets/appButton.dart';
 import 'package:partner_app/widgets/arrowBackButton.dart';
@@ -16,11 +15,11 @@ import 'package:partner_app/widgets/overallPadding.dart';
 import 'package:provider/provider.dart';
 
 class WalletArguments {
-  final UserModel firebase;
+  final UserModel user;
   final PartnerModel partner;
 
   WalletArguments({
-    required this.firebase,
+    required this.user,
     required this.partner,
   });
 }

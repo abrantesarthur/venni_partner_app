@@ -553,7 +553,7 @@ class HomeState extends State<Home> with WidgetsBindingObserver {
   }
 
   void onAccountStatusUpdate(DatabaseEvent e) async {
-    AccountStatus newAccountStatus = AccountStatusExtension.fromString(
+    AccountStatus? newAccountStatus = AccountStatusExtension.fromString(
       e.snapshot.value.toString(),
     );
     if (newAccountStatus == AccountStatus.locked) {

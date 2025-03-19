@@ -19,7 +19,7 @@ class Menu extends StatelessWidget {
   Widget build(BuildContext context) {
     final double screenHeight = MediaQuery.of(context).size.height;
     final double screenWidth = MediaQuery.of(context).size.width;
-    final UserModel firebase = Provider.of<UserModel>(context);
+    final UserModel user = Provider.of<UserModel>(context);
     final PartnerModel partner = Provider.of<PartnerModel>(context);
     final ConnectivityModel connectivity = Provider.of<ConnectivityModel>(
       context,
@@ -39,7 +39,7 @@ class Menu extends StatelessWidget {
                   Profile.routeName,
                   arguments: ProfileArguments(
                     partner: partner,
-                    firebase: firebase,
+                    user: user,
                   ),
                 ),
                 child: Column(
@@ -48,12 +48,12 @@ class Menu extends StatelessWidget {
                     CircularImage(
                       imageFile: partner.profileImage == null
                           ? AssetImage("images/user_icon.png")
-                          : partner.profileImage.file,
+                          : partner.profileImage!.file,
                     ),
                     Spacer(),
                     Text(
-                      firebase.auth.currentUser != null
-                          ? firebase.auth.currentUser.displayName
+                      user.isUserSignedIn
+                          ? user.auth.currentUser!.displayName!
                           : "",
                       textAlign: TextAlign.center,
                       style: TextStyle(
@@ -92,7 +92,7 @@ class Menu extends StatelessWidget {
                       context,
                       Wallet.routeName,
                       arguments: WalletArguments(
-                        firebase: firebase,
+                        user: user,
                         partner: partner,
                       ),
                     );
@@ -111,7 +111,7 @@ class Menu extends StatelessWidget {
                       context,
                       Ratings.routeName,
                       arguments: RatingsArguments(
-                        firebase,
+                        user,
                         connectivity,
                         partner,
                       ),
@@ -132,7 +132,7 @@ class Menu extends StatelessWidget {
                       context,
                       PastTrips.routeName,
                       arguments: PastTripsArguments(
-                        firebase,
+                        user,
                         connectivity,
                       ),
                     );
@@ -173,7 +173,6 @@ class Menu extends StatelessWidget {
                   onTap: () => Navigator.pushNamed(
                     context,
                     Demand.routeName,
-                    arguments: DemandArguments(firebase: firebase),
                   ),
                   iconLeft: Icons.offline_bolt,
                   iconLeftSize: 24,

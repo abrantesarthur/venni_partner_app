@@ -2,11 +2,7 @@ import 'dart:async';
 
 import 'package:flutter/material.dart';
 import 'package:partner_app/models/connectivity.dart';
-import 'package:partner_app/models/user.dart';
-import 'package:partner_app/models/googleMaps.dart';
 import 'package:partner_app/models/partner.dart';
-import 'package:partner_app/models/timer.dart';
-import 'package:partner_app/models/trip.dart';
 import 'package:partner_app/screens/home.dart';
 import 'package:partner_app/screens/sendBankAccount.dart';
 import 'package:partner_app/screens/sendCnh.dart';
@@ -46,10 +42,10 @@ class DocumentsState extends State<Documents> {
     // subscribe to changes in account_status so UI is updated appropriately
     final user = widget.firebase.auth.currentUser;
     if(user != null) {
-      accountStatusSubscription =widget.firebase.database.onAccountStatusUpdate(
+      accountStatusSubscription = widget.firebase.database.onAccountStatusUpdate(
         user.uid,
           (e) {
-          AccountStatus accountStatus = AccountStatusExtension.fromString(
+          AccountStatus? accountStatus = AccountStatusExtension.fromString(
             e.snapshot.value.toString(),
           );
           // update partner model accordingly

@@ -1,7 +1,7 @@
 import 'package:background_location_tracker/background_location_tracker.dart';
 import 'package:flutter/material.dart';
-import 'package:partner_app/models/user.dart';
 import 'package:partner_app/models/partner.dart';
+import 'package:partner_app/services/firebase/firebase.dart';
 import 'package:partner_app/styles.dart';
 import 'package:partner_app/utils/utils.dart';
 import 'package:partner_app/services/firebase/database/interfaces.dart';
@@ -12,13 +12,14 @@ import 'package:provider/provider.dart';
 import 'package:sliding_up_panel/sliding_up_panel.dart';
 
 class PartnerAvailable extends StatefulWidget {
+  final firebase = FirebaseService();
   @override
   PartnerAvailableState createState() => PartnerAvailableState();
 }
 
 class PartnerAvailableState extends State<PartnerAvailable> {
   bool lockScreen = false;
-  Widget buttonChild;
+  Widget? buttonChild;
 
   @override
   Widget build(BuildContext context) {
@@ -89,7 +90,7 @@ class PartnerAvailableState extends State<PartnerAvailable> {
                     color: AppColor.primaryPink,
                   ),
                 )
-              : buttonChild,
+              : buttonChild!,
         ],
       ),
       color: Colors.white,
@@ -124,12 +125,8 @@ class PartnerAvailableState extends State<PartnerAvailable> {
         });
 
         // send request to disconnect partner
-        UserModel firebase = Provider.of<UserModel>(
-          context,
-          listen: false,
-        );
         try {
-          await firebase.functions.disconnect();
+          await widget.firebase.functions.disconnect();
         } catch (e) {
           // warn user about failure
           await showOkDialog(
@@ -150,7 +147,7 @@ class PartnerAvailableState extends State<PartnerAvailable> {
         // stop report their position to firebase
         partner.sendPositionToFirebase(false);
         // stop location service so we no longer listen to location updates
-        BackgroundLocation.stopLocationService();
+        BackgroundLocationTrackerManager.stopTracking();
         partner.updatePartnerStatus(PartnerStatus.unavailable);
       },
     );

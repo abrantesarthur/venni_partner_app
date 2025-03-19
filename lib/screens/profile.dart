@@ -15,11 +15,11 @@ import '../models/user.dart';
 
 class ProfileArguments {
   final PartnerModel partner;
-  final UserModel firebase;
+  final UserModel user;
 
   ProfileArguments({
     required this.partner,
-    required this.firebase,
+    required this.user,
   });
 }
 

@@ -4,9 +4,6 @@ import 'package:background_location_tracker/background_location_tracker.dart';
 import 'package:flutter/material.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
-import 'package:partner_app/models/user.dart';
-import 'package:partner_app/models/googleMaps.dart';
-import 'package:partner_app/models/trip.dart';
 import 'package:partner_app/services/firebase/firebase.dart';
 import 'package:partner_app/services/firebase/database/interfaces.dart';
 import 'package:partner_app/services/firebase/database/methods.dart';
@@ -18,7 +15,7 @@ class ProfileImage {
   late ImageProvider<Object> file;
   late String name;
 
-  ProfileImage({ required this.file,required this.name});
+  ProfileImage({required this.file, required this.name});
 }
 
 class PartnerModel extends ChangeNotifier {
@@ -50,7 +47,6 @@ class PartnerModel extends ChangeNotifier {
   int? _gains;
   bool _acceptedTrip = false;
   bool _sendPositionToFirebase = false;
-
 
   // getters
   String? get id => _id;
@@ -89,7 +85,6 @@ class PartnerModel extends ChangeNotifier {
     await this.downloadData(notify: false);
   }
 
-
   void sendPositionToFirebase(bool v) {
     _sendPositionToFirebase = v;
   }
@@ -101,7 +96,7 @@ class PartnerModel extends ChangeNotifier {
     }
   }
 
-  void updateAccountStatus(AccountStatus acs) {
+  void updateAccountStatus(AccountStatus? acs) {
     _accountStatus = acs;
     notifyListeners();
   }
@@ -264,8 +259,8 @@ class PartnerModel extends ChangeNotifier {
           // Use origin coordinates if partner is going to pick up client
           secondCoordinates = LatLng(trip.originLat!, trip.originLng!);
         } else if (trip.tripStatus == TripStatus.inProgress &&
-                  trip.destinationLat != null &&
-                  trip.destinationLng != null) {
+            trip.destinationLat != null &&
+            trip.destinationLng != null) {
           // Use destination coordinates if trip is in progress
           secondCoordinates = LatLng(trip.destinationLat!, trip.destinationLng!);
         }
@@ -320,7 +315,7 @@ class PartnerModel extends ChangeNotifier {
     _amountOwed = pi.amountOwed;
     _bankAccount = pi.bankAccount;
     _gains = (_gains ?? 0) > 0 ? _gains : 0;
-  
+
     if (notify) {
       notifyListeners();
     }

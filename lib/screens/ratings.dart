@@ -5,7 +5,6 @@ import 'package:partner_app/models/user.dart';
 import 'package:partner_app/models/partner.dart';
 import 'package:partner_app/styles.dart';
 import 'package:partner_app/vendors/firebaseFunctions/interfaces.dart';
-import 'package:partner_app/vendors/firebaseFunctions/methods.dart';
 import 'package:partner_app/widgets/floatingCard.dart';
 import 'package:partner_app/widgets/goBackButton.dart';
 import 'package:partner_app/widgets/horizontalBar.dart';
@@ -13,12 +12,12 @@ import 'package:partner_app/widgets/overallPadding.dart';
 import 'package:provider/provider.dart';
 
 class RatingsArguments {
-  final UserModel firebase;
+  final UserModel user;
   final ConnectivityModel connectivity;
   final PartnerModel partner;
 
   RatingsArguments(
-    this.firebase,
+    this.user,
     this.connectivity,
     this.partner,
   );

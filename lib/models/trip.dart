@@ -29,7 +29,6 @@ class TripModel extends ChangeNotifier {
   double? _destinationLat;
   double? _destinationLng;
 
-
   String? get clientID => _clientID;
   TripStatus? get tripStatus => _tripStatus;
   String? get originPlaceID => _originPlaceID;
@@ -49,7 +48,7 @@ class TripModel extends ChangeNotifier {
   String? get originAddress => _originAddress;
   String? get destinationAddress => _destinationAddress;
   PaymentMethod? get paymentMethod => _paymentMethod;
-  String get clientName => _clientName?.split(" ")[0] ?? "";
+  String get clientName => _clientName?.split(" ").first ?? "";
   String? get clientFullName => _clientName;
   String? get clientPhone => _clientPhone;
   ProfileImage? get profileImage => _profileImage;
@@ -105,8 +104,8 @@ class TripModel extends ChangeNotifier {
     bool notify = true,
   }) async {
     Trip? trip = await firebase.functions.getCurrentTrip();
-    if(trip != null) {
-      fromTripInterface(trip , notify: notify);
+    if (trip != null) {
+      fromTripInterface(trip, notify: notify);
       // get client profile image
       ProfileImage pi = await firebase.storage.getClientProfilePicture(trip.clientID);
       updateProfileImage(pi, notify: notify);

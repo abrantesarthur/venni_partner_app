@@ -6,16 +6,15 @@ import 'package:partner_app/models/user.dart';
 import 'package:partner_app/screens/pastTripDetail.dart';
 import 'package:partner_app/styles.dart';
 import 'package:partner_app/vendors/firebaseFunctions/interfaces.dart';
-import 'package:partner_app/vendors/firebaseFunctions/methods.dart';
 import 'package:partner_app/widgets/goBackButton.dart';
 import 'package:partner_app/widgets/overallPadding.dart';
 import 'package:provider/provider.dart';
 
 class PastTripsArguments {
-  final UserModel firebase;
+  final UserModel user;
   final ConnectivityModel connectivity;
 
-  PastTripsArguments(this.firebase, this.connectivity);
+  PastTripsArguments(this.user, this.connectivity);
 }
 
 class PastTrips extends StatefulWidget {
