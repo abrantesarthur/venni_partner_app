@@ -1,27 +1,19 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:flutter_masked_text/flutter_masked_text.dart';
-import 'package:partner_app/models/user.dart';
-import 'package:partner_app/models/partner.dart';
-import 'package:partner_app/vendors/firebaseFunctions/methods.dart';
-import 'package:partner_app/vendors/firebaseFunctions/interfaces.dart';
+import 'package:flutter_masked_text2/flutter_masked_text2.dart';
+import 'package:partner_app/services/firebase/firebase.dart';
 import 'package:partner_app/styles.dart';
 import 'package:partner_app/utils/utils.dart';
+import 'package:partner_app/vendors/firebaseFunctions/methods.dart';
 import 'package:partner_app/widgets/appButton.dart';
 import 'package:partner_app/widgets/appInputText.dart';
 import 'package:partner_app/widgets/arrowBackButton.dart';
 import 'package:partner_app/widgets/overallPadding.dart';
-import 'package:provider/provider.dart';
-
-class WithdrawArguments {
-  final int availableAmount;
-
-  WithdrawArguments({required this.availableAmount});
-}
 
 class Withdraw extends StatefulWidget {
   static String routeName = "Withdraw";
   final int availableAmount;
+  final firebase = FirebaseService();
 
   Withdraw({required this.availableAmount});
 
@@ -35,7 +27,7 @@ class WithdrawState extends State<Withdraw> {
     thousandSeparator: ",",
   );
   bool lockScreen = false;
-  Widget buttonChild;
+  Widget? buttonChild;
 
   @override
   Widget build(BuildContext context) {
@@ -169,17 +161,10 @@ class WithdrawState extends State<Withdraw> {
 
     // request withdraw
     try {
-      UserModel firebase = Provider.of<UserModel>(
-        context,
-        listen: false,
-      );
-      PartnerModel partner = Provider.of<PartnerModel>(
-        context,
-        listen: false,
-      );
-      Transfer transfer = await firebase.functions.createTransfer(
+       await widget.firebase.functions.createTransfer(
         amount: (controller.numberValue * 100).floor().toString(),
-        pagarmeRecipientID: partner.pagarmeRecipientID,
+        // FIXME: pagarmeRecipientID should not be null
+        pagarmeRecipientID: widget.firebase.model.partner.pagarmeRecipientID ?? "",
       );
     } catch (e) {
       // displaying warning on failure
