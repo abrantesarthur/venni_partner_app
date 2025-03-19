@@ -18,7 +18,7 @@ Future<void> _askPermission(
   );
 }
 
-Future<PickedFile> _pickImageFrom(
+Future<PickedFile?> _pickImageFrom(
   BuildContext context,
   ImageSource source,
 ) async {
@@ -40,12 +40,12 @@ Future<PickedFile> pickImageFromGallery(BuildContext context) async {
   return _pickImageFrom(context, ImageSource.gallery);
 }
 
-Future<PickedFile> pickImageFromCamera(BuildContext context) async {
+Future<PickedFile?> pickImageFromCamera(BuildContext context) async {
   return _pickImageFrom(context, ImageSource.camera);
 }
 
-Future<Future<PickedFile>> pickImage(BuildContext context) async {
-  return showDialog<Future<PickedFile>>(
+Future<Future<PickedFile?>> pickImage(BuildContext context) async {
+  return showDialog<Future<PickedFile?>>(
     context: context,
     builder: (BuildContext context) {
       return AlertDialog(
@@ -70,7 +70,7 @@ Future<Future<PickedFile>> pickImage(BuildContext context) async {
               ListTile(
                 onTap: () async {
                   // get image from camera
-                  Future<PickedFile> futureImg = pickImageFromCamera(context);
+                  Future<PickedFile?> futureImg = pickImageFromCamera(context);
                   Navigator.pop(context, futureImg);
                 },
                 title: Text("Câmera"),

@@ -362,10 +362,6 @@ class Trip {
   });
 
   factory Trip.fromJson(Map json) {
-    if (json == null) {
-      return null;
-    }
-
     int distanceMeters = json["distance_meters"] == null
         ? null
         : int.parse(json["distance_meters"]);

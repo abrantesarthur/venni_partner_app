@@ -3,10 +3,11 @@ import 'package:image_picker/image_picker.dart';
 import 'package:partner_app/models/connectivity.dart';
 import 'package:partner_app/models/user.dart';
 import 'package:partner_app/models/partner.dart';
+import 'package:partner_app/services/firebase/database/methods.dart';
+import 'package:partner_app/services/firebase/firebase.dart';
+import 'package:partner_app/services/firebase/firebaseStorage.dart';
 import 'package:partner_app/styles.dart';
 import 'package:partner_app/vendors/imagePicker.dart';
-import 'package:partner_app/services/firebase/firebaseStorage.dart';
-import 'package:partner_app/services/firebase/database/methods.dart';
 import 'package:partner_app/widgets/appButton.dart';
 import 'package:partner_app/widgets/arrowBackButton.dart';
 import 'package:partner_app/widgets/overallPadding.dart';
@@ -14,13 +15,14 @@ import 'package:provider/provider.dart';
 
 class SendCrlv extends StatefulWidget {
   static const String routeName = "sendCrlv";
+  final firebase = FirebaseService();
 
   @override
   SendCrlvState createState() => SendCrlvState();
 }
 
 class SendCrlvState extends State<SendCrlv> {
-  Widget buttonChild;
+  Widget? buttonChild;
   bool lockScreen = false;
 
   @override
@@ -152,7 +154,7 @@ class SendCrlvState extends State<SendCrlv> {
     }
 
     // get crlv from camera or gallery
-    Future<PickedFile> futureCrlv = await pickImage(context);
+    Future<PickedFile?> futureCrlv = await pickImage(context);
 
     // show progress indicator and lock screen
     setState(() {
@@ -162,19 +164,21 @@ class SendCrlvState extends State<SendCrlv> {
       lockScreen = true;
     });
 
-    PickedFile crlv = await futureCrlv;
+    PickedFile? crlv = await futureCrlv;
 
     if (crlv != null) {
       try {
         // send crlv to firebase
-        await firebase.storage.pushCrlv(
-          partnerID: firebase.auth.currentUser.uid,
+        await widget.firebase.storage.pushCrlv(
+          // FIXME: currentUser must not be null
+          partnerID: firebase.auth.currentUser?.uid ?? "",
           crlv: crlv,
         );
 
         // on success, make crlv as submitted both on firebase and locally
-        await firebase.database.setSubmittedCrlv(
-          partnerID: firebase.auth.currentUser.uid,
+        await widget.firebase.database.setSubmittedCrlv(
+          // FIXME: currentUser must not be null
+          partnerID: firebase.auth.currentUser?.uid ?? "",
           value: true,
         );
         partner.updateCrlvSubmitted(true);

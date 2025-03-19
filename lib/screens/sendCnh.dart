@@ -3,10 +3,11 @@ import 'package:image_picker/image_picker.dart';
 import 'package:partner_app/models/connectivity.dart';
 import 'package:partner_app/models/user.dart';
 import 'package:partner_app/models/partner.dart';
+import 'package:partner_app/services/firebase/database/methods.dart';
+import 'package:partner_app/services/firebase/firebase.dart';
+import 'package:partner_app/services/firebase/firebaseStorage.dart';
 import 'package:partner_app/styles.dart';
 import 'package:partner_app/vendors/imagePicker.dart';
-import 'package:partner_app/services/firebase/firebaseStorage.dart';
-import 'package:partner_app/services/firebase/database/methods.dart';
 import 'package:partner_app/widgets/appButton.dart';
 import 'package:partner_app/widgets/arrowBackButton.dart';
 import 'package:partner_app/widgets/overallPadding.dart';
@@ -14,20 +15,20 @@ import 'package:provider/provider.dart';
 
 class SendCnh extends StatefulWidget {
   static const String routeName = "sendCnh";
+  final firebase = FirebaseService();
 
   @override
   SendCnhState createState() => SendCnhState();
 }
 
 class SendCnhState extends State<SendCnh> {
-  Widget buttonChild;
+  Widget? buttonChild;
   bool lockScreen = false;
 
   @override
   Widget build(BuildContext context) {
     final screenHeight = MediaQuery.of(context).size.height;
     final screenWidth = MediaQuery.of(context).size.width;
-    final connectivity = Provider.of<ConnectivityModel>(context);
 
     return Scaffold(
       backgroundColor: Colors.white,
@@ -153,7 +154,7 @@ class SendCnhState extends State<SendCnh> {
     }
 
     // get cnh from camera or gallery
-    Future<PickedFile> futureCnh = await pickImage(context);
+    Future<PickedFile?> futureCnh = await pickImage(context);
 
     // show progress indicator and lock screen
     setState(() {
@@ -163,19 +164,21 @@ class SendCnhState extends State<SendCnh> {
       lockScreen = true;
     });
 
-    PickedFile cnh = await futureCnh;
+    PickedFile? cnh = await futureCnh;
 
     if (cnh != null) {
       try {
         // store cnh in firebase storage
-        await firebase.storage.pushCnh(
-          partnerID: firebase.auth.currentUser.uid,
+        await widget.firebase.storage.pushCnh(
+          // FIXME: current user must not be null
+          partnerID: firebase.auth.currentUser?.uid ?? "",
           cnh: cnh,
         );
 
         // on success, make cnh as submitted both on firebase database and locally
-        await firebase.database.setSubmittedCnh(
-          partnerID: firebase.auth.currentUser.uid,
+        await widget.firebase.database.setSubmittedCnh(
+          // FIXME: current user must not be null
+          partnerID: firebase.auth.currentUser?.uid ?? "",
           value: true,
         );
         partner.updateCnhSubmitted(true);
