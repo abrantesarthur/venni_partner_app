@@ -4,9 +4,11 @@ import 'package:partner_app/models/user.dart';
 import 'package:partner_app/models/partner.dart';
 import 'package:partner_app/screens/balance.dart';
 import 'package:partner_app/screens/transfers.dart';
+import 'package:partner_app/services/firebase/firebase.dart';
 import 'package:partner_app/utils/utils.dart';
 import 'package:partner_app/vendors/firebaseFunctions/interfaces.dart';
 import 'package:partner_app/styles.dart';
+import 'package:partner_app/vendors/firebaseFunctions/methods.dart';
 import 'package:partner_app/widgets/appButton.dart';
 import 'package:partner_app/widgets/arrowBackButton.dart';
 import 'package:partner_app/widgets/borderlessButton.dart';
@@ -26,26 +28,21 @@ class WalletArguments {
 
 class Wallet extends StatefulWidget {
   static const routeName = "Wallet";
-  final UserModel firebase;
-  final PartnerModel partner;
+  final firebase = FirebaseService();
 
-  Wallet({
-    required this.firebase,
-    required this.partner,
-  });
+  Wallet();
 
   @override
   WalletState createState() => WalletState();
 }
 
 class WalletState extends State<Wallet> {
-  Future<void> future;
-  Balance balance;
+  late Future<void> future;
+  Balance? balance;
   int cashGainsInPeriod = 0;
   int cardGainsInPeriod = 0;
   int tripCountInPeriod = 0;
   Period period = Period.today;
-  Transfers transfers;
 
   @override
   void initState() {
@@ -59,11 +56,14 @@ class WalletState extends State<Wallet> {
 
   Future<void> downloadBalance() async {
     // download partner data to update amount owed
-    await widget.partner.downloadData(widget.firebase);
+    await widget.firebase.model.partner.downloadData();
 
-    balance = await widget.firebase.functions.getBalance(
-      widget.partner.pagarmeRecipientID,
-    );
+    final pagarmeRecipientID = widget.firebase.model.partner.pagarmeRecipientID;
+    if(pagarmeRecipientID != null) {
+      balance = await widget.firebase.functions.getBalance(
+        pagarmeRecipientID,
+      );
+    }
   }
 
   Future<Trips> getPastTrips(Period period) async {
@@ -206,7 +206,8 @@ class WalletState extends State<Wallet> {
                                                 fontWeight: FontWeight.bold,
                                               ),
                                               text: reaisFromCents(
-                                                balance.available.amount,
+                                                // FIXME: balance must be defined
+                                                balance?.available.amount ?? 0,
                                               ),
                                             ),
                                           ],
@@ -247,7 +248,8 @@ class WalletState extends State<Wallet> {
                                                 fontWeight: FontWeight.bold,
                                               ),
                                               text: reaisFromCents(
-                                                balance.waitingFunds.amount,
+                                                // FIXME: balance must be defined
+                                                balance?.waitingFunds.amount ?? 0,
                                               ),
                                             ),
                                           ],
@@ -288,7 +290,7 @@ class WalletState extends State<Wallet> {
                                                 fontWeight: FontWeight.bold,
                                               ),
                                               text: reaisFromCents(
-                                                partner.amountOwed,
+                                                partner.amountOwed ?? 0,
                                               ),
                                             ),
                                           ],
@@ -329,10 +331,13 @@ class WalletState extends State<Wallet> {
                                           child: DropdownButton(
                                             value: period,
                                             onChanged: (value) async {
-                                              await getPastTrips(value);
-                                              setState(() {
-                                                period = value;
-                                              });
+                                              if(value != null) {
+                                                await getPastTrips(value);
+
+                                                setState(() {
+                                                  period = value;
+                                                });
+                                              }
                                             },
                                             items: Period.values
                                                 .map((tf) => DropdownMenuItem(
