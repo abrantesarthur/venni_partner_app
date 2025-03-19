@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:partner_app/models/connectivity.dart';
-import 'package:partner_app/models/user.dart';
 import 'package:partner_app/models/partner.dart';
 import 'package:partner_app/models/trip.dart';
 import 'package:partner_app/screens/home.dart';
@@ -22,11 +21,11 @@ class RateClient extends StatefulWidget {
 }
 
 class RateClientState extends State<RateClient> {
-  String _rateDescription;
-  int _rate;
-  bool _showThankYouMessage;
-  bool activateButton;
-  bool _lockScreen;
+  late String _rateDescription;
+  late int _rate;
+  late bool _showThankYouMessage;
+  late bool activateButton;
+  late bool _lockScreen;
   final firebase = FirebaseService();
 
   @override
@@ -43,9 +42,7 @@ class RateClientState extends State<RateClient> {
   Widget build(BuildContext context) {
     final screenHeight = MediaQuery.of(context).size.height;
     final screenWidth = MediaQuery.of(context).size.width;
-    PartnerModel partner = Provider.of<PartnerModel>(context);
     TripModel trip = Provider.of<TripModel>(context);
-    ConnectivityModel connectivity = Provider.of<ConnectivityModel>(context);
 
     return Scaffold(
       resizeToAvoidBottomInset: false,
@@ -81,7 +78,7 @@ class RateClientState extends State<RateClient> {
                 crossAxisAlignment: CrossAxisAlignment.center,
                 children: [
                   Text(
-                    "R\$ " + (trip.farePrice / 100).toStringAsFixed(2),
+                    "R\$ " + (trip.farePrice! / 100).toStringAsFixed(2),
                     style: TextStyle(
                       fontSize: 42,
                       fontWeight: FontWeight.w800,
@@ -111,7 +108,7 @@ class RateClientState extends State<RateClient> {
                   Divider(thickness: 0.1, color: Colors.black),
                   SizedBox(height: screenHeight / 50),
                   Text(
-                    "Avalie a sua corrida com " + trip?.clientName,
+                    "Avalie a sua corrida com " + trip.clientName,
                     textAlign: TextAlign.center,
                     style: TextStyle(
                       fontSize: 24,
@@ -123,7 +120,7 @@ class RateClientState extends State<RateClient> {
                     size: screenHeight / 9,
                     imageFile: trip.profileImage == null
                         ? AssetImage("images/user_icon.png")
-                        : trip.profileImage.file,
+                        : trip.profileImage!.file,
                   ),
                   SizedBox(height: screenHeight / 25),
                   Column(
@@ -239,7 +236,6 @@ class RateClientState extends State<RateClient> {
       context,
       listen: false,
     );
-    UserModel user = Provider.of<UserModel>(context, listen: false);
     PartnerModel partner = Provider.of<PartnerModel>(context, listen: false);
     TripModel trip = Provider.of<TripModel>(context, listen: false);
 
@@ -278,10 +274,10 @@ class RateClientState extends State<RateClient> {
 
     if (trip.paymentMethod == PaymentMethod.cash) {
       // venni's fee for cash payments is 15%
-      partner.increaseGainsBy((trip.farePrice * 0.85).round());
+      partner.increaseGainsBy((trip.farePrice! * 0.85).round());
     } else {
       // venni's fee for credit_crd payments is 20%
-      partner.increaseGainsBy((trip.farePrice * 0.80).round());
+      partner.increaseGainsBy((trip.farePrice! * 0.80).round());
     }
 
     // set partner available locally. completeTrip will have done the same in backend
