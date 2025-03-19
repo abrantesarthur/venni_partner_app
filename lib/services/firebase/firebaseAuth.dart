@@ -4,6 +4,7 @@ import 'package:partner_app/screens/documents.dart';
 import 'package:partner_app/screens/home.dart';
 import 'package:partner_app/screens/insertEmail.dart';
 import 'package:partner_app/screens/insertName.dart';
+import 'package:partner_app/services/firebase/database/methods.dart';
 import 'package:partner_app/services/firebase/firebase.dart';
 import 'package:partner_app/services/firebase/database/interfaces.dart';
 import 'package:uuid/uuid.dart';
@@ -149,6 +150,10 @@ extension AppFirebaseAuth on FirebaseAuth {
     required Gender gender,
   }) async {
     try {
+      // FIXME: credential.user must be defined
+      if(currentUser == null) {
+        throw new FirebaseAuthException(code: "internal-error");
+      }
       //update other userCredential information
       if (email != null) {
         await credential.user?.updateEmail(email);
@@ -159,13 +164,13 @@ extension AppFirebaseAuth on FirebaseAuth {
       await credential.user?.updateDisplayName(displayName);
 
       // create partner entry in database with some of the fields set
-      final partner = this.currentUser;
+      final partner = currentUser!;
       try {
         await firebase.database.createPartner(PartnerInterface.fromJson({
           "uid": partner.uid,
-          "name": partner.displayName.split(" ").first,
+          "name": partner.displayName?.split(" ").first,
           "last_name": partner.displayName
-              .substring(partner.displayName.indexOf(" ") + 1),
+              ?.substring(partner.displayName?.indexOf(" ") ?? 0 + 1),
           "cpf": cpf,
           "gender": gender.toString().substring(7),
           "phone_number": partner.phoneNumber,
@@ -176,8 +181,8 @@ extension AppFirebaseAuth on FirebaseAuth {
       }
 
       // send email verification if necessary
-      if (!firebase.auth.currentUser.emailVerified) {
-        await credential.user.sendEmailVerification();
+      if (!partner.emailVerified) {
+        await credential.user?.sendEmailVerification();
       }
 
       // log sign up event
@@ -190,12 +195,16 @@ extension AppFirebaseAuth on FirebaseAuth {
   }
 
   Future<UserCredential> _reauthenticateWithEmailAndPassword(String password) {
+    if(currentUser == null || currentUser?.email == null) {
+      // FIXME: improve this error
+      throw FirebaseAuthException(code: "internal-error");
+    }
     // reauthenticate user to avoid 'requires-recent-login' error
-    EmailAuthCredential credential = EmailAuthProvider.credential(
-      email: this.currentUser.email,
+    AuthCredential credential = EmailAuthProvider.credential(
+      email: currentUser!.email!,
       password: password,
-    );
-    return this.currentUser.reauthenticateWithCredential(credential);
+    );      
+    return this.currentUser!.reauthenticateWithCredential(credential);
   }
 
   Future<CheckPasswordResponse> checkPassword(String password) async {
