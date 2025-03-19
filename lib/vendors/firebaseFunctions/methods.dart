@@ -1,14 +1,10 @@
 import 'package:cloud_functions/cloud_functions.dart';
 import 'package:flutter/material.dart';
-import 'package:partner_app/models/user.dart';
-import 'package:partner_app/models/partner.dart';
-import 'package:partner_app/models/trip.dart';
 import 'package:partner_app/services/firebase/firebase.dart';
 import 'package:partner_app/services/firebase/firebaseAnalytics.dart';
 import 'package:partner_app/utils/utils.dart';
 import 'package:partner_app/services/firebase/database/interfaces.dart';
 import 'package:partner_app/vendors/firebaseFunctions/interfaces.dart';
-import 'package:provider/provider.dart';
 
 extension AppFirebaseFunctions on FirebaseFunctions {
   Future<BankAccount?> createBankAccount(BankAccount bankAccount) async {
@@ -57,7 +53,7 @@ extension AppFirebaseFunctions on FirebaseFunctions {
     };
     HttpsCallableResult result =
         await this.httpsCallable("payment-create_transfer").call(data);
-    if (result != null && result.data != null) {
+    if (result.data != null) {
       return Transfer.fromJson(result.data);
     }
     return null;
@@ -148,8 +144,9 @@ extension AppFirebaseFunctions on FirebaseFunctions {
     Map<String, int> data = {"client_rating": clientRating};
     try {
       await this.httpsCallable("trip-complete").call(data);
+      // FIXME: busySince seems weird. It's also initialized with DateTime.now().
       int tripDuration =
-          DateTime.now().millisecondsSinceEpoch - (firebase.model.partner.busySince ?? 0);
+          DateTime.now().millisecondsSinceEpoch - firebase.model.partner.busySince;
       try {
         await Future.wait([
           firebase.analytics.logPartnerCompleteTrip(
