@@ -3,8 +3,8 @@ import 'package:partner_app/styles.dart';
 
 class CancelButton extends StatelessWidget {
   final VoidCallback onPressed;
-  final Color backgroundColor;
-  final Color iconColor;
+  final Color? backgroundColor;
+  final Color? iconColor;
 
   CancelButton({
     required this.onPressed,
