@@ -3,13 +3,13 @@ import 'package:flutter/services.dart';
 import 'package:partner_app/widgets/appInputText.dart';
 
 class AppInputPassword extends StatefulWidget {
-  final bool enabled;
-  final bool obscurePassword;
+  final bool? enabled;
+  final bool? obscurePassword;
   final TextEditingController controller;
-  final bool autoFocus;
-  final String hintText;
-  final FocusNode focusNode;
-  final Function onSubmittedCallback;
+  final bool? autoFocus;
+  final String? hintText;
+  final FocusNode? focusNode;
+  final Function? onSubmittedCallback;
 
   AppInputPassword({
     required this.controller,
@@ -25,9 +25,9 @@ class AppInputPassword extends StatefulWidget {
 }
 
 class AppInputPasswordState extends State<AppInputPassword> {
-  bool obscurePassword;
-  TextEditingController controller;
-  IconData _endIconData;
+  bool? obscurePassword;
+  late TextEditingController controller;
+  late IconData _endIconData;
 
   @override
   void initState() {
@@ -42,7 +42,7 @@ class AppInputPasswordState extends State<AppInputPassword> {
 
   void _toggleObscurePassword() {
     setState(() {
-      if (obscurePassword) {
+      if (obscurePassword == true) {
         _endIconData = Icons.remove_red_eye;
         obscurePassword = false;
       } else {
