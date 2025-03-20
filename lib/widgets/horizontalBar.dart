@@ -2,13 +2,13 @@ import 'package:flutter/material.dart';
 import 'package:partner_app/styles.dart';
 
 class HorizontalBar extends StatelessWidget {
-  final String leftText;
-  final Widget leftWidget;
+  final String? leftText;
+  final Widget? leftWidget;
   final String rightText;
   final double fill;
-  final double centerWidth;
-  final int leftFlex;
-  final int rightFlex;
+  final double? centerWidth;
+  final int? leftFlex;
+  final int? rightFlex;
 
   HorizontalBar({
     this.leftText,
@@ -28,15 +28,14 @@ class HorizontalBar extends StatelessWidget {
       children: [
         Expanded(
           flex: leftFlex ?? 1,
-          child: leftWidget ??
-              Text(
-                leftText,
+          child: leftWidget ?? (leftText != null ? Text(
+                leftText!,
                 style: TextStyle(
                   color: Colors.black,
                   fontSize: 12,
                   fontWeight: FontWeight.w600,
                 ),
-              ),
+              ) : Container()),
         ),
         Container(
           height: screenHeight / 100,
