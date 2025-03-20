@@ -32,10 +32,10 @@ class DemandState extends State<Demand> {
   }
 
   Future<void> downloadData() async {
-    ApprovedPartners approvedPartners =
+    ApprovedPartners? approvedPartners =
         await widget.firebase.functions.getApprovedPartners();
-    approvedPartnersCount = approvedPartners.items.length;
-    approvedPartners.items.forEach((partner) {
+    approvedPartnersCount = approvedPartners?.items.length ?? 0;
+    approvedPartners?.items.forEach((partner) {
       if (partner.status == PartnerStatus.available) {
         connectedPartnersCount++;
       } else if (partner.status == PartnerStatus.busy) {
