@@ -524,10 +524,12 @@ class HomeState extends State<Home> with WidgetsBindingObserver {
   }
 
   void onTripStatusUpdate(DatabaseEvent e) async {
-    TripStatus newTripStatus = TripStatusExtension.fromString(
+    TripStatus? newTripStatus = TripStatusExtension.fromString(
       e.snapshot.value.toString(),
     );
-    widget.firebase.model.trip.updateTripStatus(newTripStatus);
+    if(newTripStatus != null) {
+      widget.firebase.model.trip.updateTripStatus(newTripStatus);
+    }
 
     // update trip status
     // draw markers
