@@ -3,7 +3,7 @@ import 'package:partner_app/styles.dart';
 
 class OkDialog extends StatelessWidget {
   final String title;
-  final String content;
+  final String? content;
 
   OkDialog({
     required this.title,
@@ -16,7 +16,7 @@ class OkDialog extends StatelessWidget {
       title: Text(title),
       content: content != null
           ? Text(
-              content,
+              content!,
               style: TextStyle(color: AppColor.disabled),
             )
           : null,
