@@ -3,29 +3,29 @@ import 'package:flutter_svg/svg.dart';
 import 'package:partner_app/styles.dart';
 
 class BorderlessButton extends StatelessWidget {
-  final VoidCallback onTap;
-  final String primaryText;
-  final String secondaryText;
-  final IconData iconLeft;
-  final double iconLeftSize;
-  final Color iconLeftColor;
-  final IconData iconRight;
-  final double iconRightSize;
-  final Color iconRightColor;
-  final String primaryTextRight;
-  final Color primaryTextRightColor;
-  final double primaryTextRightSize;
-  final double primaryTextSize;
-  final double secondaryTextSize;
-  final String secondaryTextRight;
-  final Color primaryTextColor;
-  final FontWeight primaryTextWeight;
-  final double paddingTop;
-  final double paddingBottom;
-  final String label;
-  final Color labelColor;
-  final String svgLeftPath; // has lower priority than svg left
-  final double svgLeftWidth;
+  final VoidCallback? onTap;
+  final String? primaryText;
+  final String? secondaryText;
+  final IconData? iconLeft;
+  final double? iconLeftSize;
+  final Color? iconLeftColor;
+  final IconData? iconRight;
+  final double? iconRightSize;
+  final Color? iconRightColor;
+  final String? primaryTextRight;
+  final Color? primaryTextRightColor;
+  final double? primaryTextRightSize;
+  final double? primaryTextSize;
+  final double? secondaryTextSize;
+  final String? secondaryTextRight;
+  final Color? primaryTextColor;
+  final FontWeight? primaryTextWeight;
+  final double? paddingTop;
+  final double? paddingBottom;
+  final String? label;
+  final Color? labelColor;
+  final String? svgLeftPath; // has lower priority than svg left
+  final double? svgLeftWidth;
 
   BorderlessButton({
     this.primaryTextColor,
@@ -79,7 +79,7 @@ class BorderlessButton extends StatelessWidget {
                     ? Row(
                         children: [
                           SvgPicture.asset(
-                            svgLeftPath,
+                            svgLeftPath!,
                             width: svgLeftWidth ?? 18,
                           ),
                           SizedBox(width: screenWidth / 30),
@@ -102,7 +102,7 @@ class BorderlessButton extends StatelessWidget {
                       ? Container(
                           alignment: Alignment.centerLeft,
                           child: Text(
-                            secondaryText,
+                            secondaryText!,
                             overflow: TextOverflow.ellipsis,
                             style: TextStyle(
                               color: AppColor.disabled,
@@ -124,7 +124,7 @@ class BorderlessButton extends StatelessWidget {
                           left: screenWidth / 100,
                         ),
                         child: Text(
-                          label,
+                          label!,
                           style: TextStyle(
                             fontSize: 13,
                             color: labelColor ?? Colors.green,
@@ -137,7 +137,7 @@ class BorderlessButton extends StatelessWidget {
                         crossAxisAlignment: CrossAxisAlignment.end,
                         children: [
                           Text(
-                            primaryTextRight,
+                            primaryTextRight!,
                             style: TextStyle(
                               color: primaryTextRightColor ?? Colors.black,
                               fontSize: primaryTextRightSize ?? 16,
@@ -147,7 +147,7 @@ class BorderlessButton extends StatelessWidget {
                           ),
                           secondaryTextRight != null
                               ? Text(
-                                  secondaryTextRight,
+                                  secondaryTextRight!,
                                   overflow: TextOverflow.ellipsis,
                                   style: TextStyle(
                                     color: AppColor.disabled,
