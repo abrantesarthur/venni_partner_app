@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 
 class CircularImage extends StatelessWidget {
-  final ImageProvider<Object> imageFile;
-  final double size;
+  final ImageProvider<Object>? imageFile;
+  final double? size;
 
   CircularImage({required this.imageFile, this.size});
   // TODO: use screenWidth instead of screenHeight
@@ -19,7 +19,7 @@ class CircularImage extends StatelessWidget {
           fit: BoxFit.cover,
           image: imageFile == null
               ? AssetImage("images/user_icon.png")
-              : imageFile,
+              : imageFile!,
         ),
       ),
     );
