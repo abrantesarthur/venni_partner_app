@@ -2,10 +2,10 @@ import 'package:flutter/material.dart';
 
 class OverallPadding extends StatelessWidget {
   final Widget child;
-  final double bottom;
-  final double top;
-  final double left;
-  final double right;
+  final double? bottom;
+  final double? top;
+  final double? left;
+  final double? right;
 
   OverallPadding({
     required this.child,
