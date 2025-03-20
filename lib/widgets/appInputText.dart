@@ -4,30 +4,30 @@ import 'package:partner_app/styles.dart';
 
 // TODO: add default endIcon that, when tapped, clears input field
 class AppInputText extends StatelessWidget {
-  final Function onTapCallback;
-  final String hintText;
-  final Color hintColor;
-  final IconData iconData;
-  final Color iconDataColor;
-  final IconData endIcon;
-  final Function? onSubmittedCallback;
-  final TextEditingController controller;
-  final List<TextInputFormatter> inputFormatters;
-  final double width;
-  final TextInputType keyboardType;
-  final Function endIconOnTapCallback;
+  final GestureTapCallback? onTapCallback;
+  final String? hintText;
+  final Color? hintColor;
+  final IconData? iconData;
+  final Color? iconDataColor;
+  final IconData? endIcon;
+  final ValueChanged<String>? onSubmittedCallback;
+  final TextEditingController? controller;
+  final List<TextInputFormatter>? inputFormatters;
+  final double? width;
+  final TextInputType? keyboardType;
+  final GestureTapCallback? endIconOnTapCallback;
   final bool? obscureText;
-  final bool autoFocus;
+  final bool? autoFocus;
   final FocusNode? focusNode;
   final bool? enabled;
-  final double fontSize;
-  final int maxLines;
-  final String title;
-  final TextStyle titleStyle;
-  final Color backgroundColor;
-  final Color fontColor;
-  final bool hasBorders;
-  final CrossAxisAlignment crossAxisAlignment;
+  final double? fontSize;
+  final int? maxLines;
+  final String? title;
+  final TextStyle? titleStyle;
+  final Color? backgroundColor;
+  final Color? fontColor;
+  final bool? hasBorders;
+  final CrossAxisAlignment? crossAxisAlignment;
 
   AppInputText({
     this.maxLines,
@@ -64,7 +64,7 @@ class AppInputText extends StatelessWidget {
       children: [
         title != null
             ? Text(
-                title,
+                title!,
                 style: titleStyle ??
                     TextStyle(
                       fontWeight: FontWeight.bold,
