@@ -298,10 +298,7 @@ class HomeState extends State<Home> with WidgetsBindingObserver {
                               // once we retrieve the client information. Also, I should start thinking
                               // or at least researching about how firebase deals with connectivity issues.
                               p.status == PartnerStatus.busy
-                                  ? PartnerBusy(
-                                      trip: widget.firebase.model.trip,
-                                      partner: widget.firebase.model.partner,
-                                    )
+                                  ? PartnerBusy()
                                   : Container(),
                             ],
                           ),

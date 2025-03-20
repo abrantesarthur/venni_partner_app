@@ -5,22 +5,20 @@ import 'package:partner_app/models/user.dart';
 import 'package:partner_app/models/partner.dart';
 import 'package:partner_app/models/trip.dart';
 import 'package:partner_app/screens/rateClient.dart';
-import 'package:partner_app/vendors/firebaseFunctions/interfaces.dart';
-import 'package:partner_app/vendors/firebaseFunctions/methods.dart';
 import 'package:partner_app/services/firebase/database/methods.dart';
+import 'package:partner_app/services/firebase/firebase.dart';
+import 'package:partner_app/vendors/firebaseFunctions/interfaces.dart';
 import 'package:partner_app/styles.dart';
 import 'package:partner_app/utils/utils.dart';
+import 'package:partner_app/vendors/firebaseFunctions/methods.dart';
 import 'package:partner_app/vendors/urlLauncher.dart';
 import 'package:partner_app/widgets/borderlessButton.dart';
 import 'package:partner_app/widgets/circularImage.dart';
 import 'package:partner_app/widgets/floatingCard.dart';
 import 'package:provider/provider.dart';
-import 'package:slider_button/slider_button.dart';
 
 class PartnerBusy extends StatefulWidget {
-  final TripModel trip;
-  final PartnerModel partner;
-  PartnerBusy({required this.trip, required this.partner});
+  final firebase = FirebaseService();
 
   @override
   PartnerBusyState createState() => PartnerBusyState();
@@ -28,23 +26,27 @@ class PartnerBusy extends StatefulWidget {
 
 class PartnerBusyState extends State<PartnerBusy> {
   bool lockScreen = false;
-  Widget buttonChild;
   bool isDraggable = true;
-  bool partnerIsNear;
+  bool partnerIsNear = false;
 
   @override
   void initState() {
+    final position = widget.firebase.model.partner.position;
+    final trip = widget.firebase.model.trip;
+    if(position != null && trip.originLat != null && trip.originLng != null) {
     partnerIsNear = getDistanceBetweenCoordinates(
           LatLng(
-            widget.partner.position.latitude,
-            widget.partner.position.longitude,
+            position.latitude,
+            position.longitude,
           ),
           LatLng(
-            widget.trip.originLat,
-            widget.trip.originLng,
+            trip.originLat!,
+            trip.originLng!,
           ),
         ) <
         150;
+    }
+
     super.initState();
   }
 
@@ -52,29 +54,32 @@ class PartnerBusyState extends State<PartnerBusy> {
   Widget build(BuildContext context) {
     final screenHeight = MediaQuery.of(context).size.height;
     final screenWidth = MediaQuery.of(context).size.width;
+    
     // listen for PartnerModel changes in case the partner approaches the client
     PartnerModel partner = Provider.of<PartnerModel>(context);
     // listen for TripModel changes in case the status changes
     TripModel trip = Provider.of<TripModel>(context);
-    UserModel firebase = Provider.of<UserModel>(context, listen: false);
 
     // whenever we rebuild, it may be because PartnerModel notified listeners about
-    // the partner's udpated position. if partner is going to pick up the client,
+    // the partner's updated position. if partner is going to pick up the client,
     // use that position to recalculate how far he is from the pick up point.
     // This distance will be used to decide when to display a "Start Trip" button
     if (trip.tripStatus == TripStatus.waitingPartner) {
-      bool _partnerIsNear = getDistanceBetweenCoordinates(
-            LatLng(toFixed(partner.position.latitude, 6),
-                toFixed(partner.position.longitude, 6)),
-            LatLng(trip.originLat, trip.originLng),
-          ) <
-          150;
-      if (!partnerIsNear && _partnerIsNear) {
+      bool _partnerIsNear = false;
+      if(partner.position != null && trip.originLat != null && trip.originLng != null) {
+        _partnerIsNear = getDistanceBetweenCoordinates(
+          LatLng(toFixed(partner.position!.latitude, 6),
+              toFixed(partner.position!.longitude, 6)),
+          LatLng(trip.originLat!, trip.originLng!),
+        ) <
+        150;
+      }
+      if (!partnerIsNear && _partnerIsNear && trip.clientID != null) {
         // if partner just got close, set him as nearby in database so client is notified
-        firebase.database.setPartnerIsNear(trip.clientID, true);
-      } else if (partnerIsNear && !_partnerIsNear) {
+        widget.firebase.database.setPartnerIsNear(trip.clientID!, true);
+      } else if (partnerIsNear && !_partnerIsNear && trip.clientID != null) {
         // if partner just got far, set him as not nearby in database so client is notified
-        firebase.database.setPartnerIsNear(trip.clientID, false);
+        widget.firebase.database.setPartnerIsNear(trip.clientID!, false);
       }
       partnerIsNear = _partnerIsNear;
     }
@@ -185,8 +190,7 @@ class PartnerBusyState extends State<PartnerBusy> {
   Widget buildTripWaitingPartnerPanel(BuildContext context) {
     final screenHeight = MediaQuery.of(context).size.height;
     final screenWidth = MediaQuery.of(context).size.width;
-    UserModel firebase = Provider.of<UserModel>(context, listen: false);
-    TripModel trip = Provider.of<TripModel>(context, listen: false);
+    final trip = widget.firebase.model.trip;
 
     return FloatingCard(
       leftMargin: 0,
@@ -201,7 +205,7 @@ class PartnerBusyState extends State<PartnerBusy> {
                           ? () {}
                           : () async {
                               try {
-                                await firebase.functions.startTrip(context);
+                                await widget.firebase.functions.startTrip(context);
                               } catch (e) {
                                 showOkDialog(
                                   context: context,
