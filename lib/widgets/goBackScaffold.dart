@@ -6,12 +6,12 @@ class GoBackScaffold extends StatelessWidget {
   static const String routeName = "GoBackScaffold";
 
   final List<Widget> children;
-  final CrossAxisAlignment crossAxisAlignment;
-  final bool resizeToAvoidBottomInset;
-  final String title;
-  final IconData goBackIcon;
-  final TextStyle titleStyle;
-  final VoidCallback onPressed;
+  final CrossAxisAlignment? crossAxisAlignment;
+  final bool? resizeToAvoidBottomInset;
+  final String? title;
+  final IconData? goBackIcon;
+  final TextStyle? titleStyle;
+  final VoidCallback? onPressed;
 
   GoBackScaffold({
     required this.children,
@@ -49,7 +49,7 @@ class GoBackScaffold extends StatelessWidget {
             title != null
                 ? Column(children: [
                     Text(
-                      title,
+                      title!,
                       style: titleStyle ??
                           TextStyle(
                               fontSize: 22,

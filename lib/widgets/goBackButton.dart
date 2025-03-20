@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 
 class GoBackButton extends StatelessWidget {
   final VoidCallback onPressed;
-  final IconData icon;
+  final IconData? icon;
 
   GoBackButton({required this.onPressed, this.icon});
 
