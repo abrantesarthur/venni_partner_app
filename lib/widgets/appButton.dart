@@ -3,19 +3,19 @@ import 'package:partner_app/styles.dart';
 
 class AppButton extends StatelessWidget {
   final String textData;
-  final TextStyle textStyle;
-  final double height;
-  final double width;
-  final double borderRadius;
-  final IconData iconRight;
-  final Color iconRightColor;
-  final IconData iconLeft;
-  final Color buttonColor;
+  final TextStyle? textStyle;
+  final double? height;
+  final double? width;
+  final double? borderRadius;
+  final IconData? iconRight;
+  final Color? iconRightColor;
+  final IconData? iconLeft;
+  final Color? buttonColor;
   final VoidCallback onTapCallBack;
   final Widget? child;
-  final BoxBorder border;
+  final BoxBorder? border;
   final bool hasShadow;
-  final Widget widgetRight;
+  final Widget? widgetRight;
 
   AppButton({
     this.textStyle,

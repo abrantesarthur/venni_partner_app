@@ -6,7 +6,6 @@ import 'package:geolocator/geolocator.dart';
 import 'package:partner_app/utils/utils.dart';
 import 'package:permission_handler/permission_handler.dart';
 
-Position userPosition;
 
 bool dialogShown = false;
 
@@ -47,7 +46,7 @@ Future<Position?> _determineUserPositionIOS(BuildContext context) async {
   );
 }
 
-Future<Position> _determineUserPositionAndroid(BuildContext context) async {
+Future<Position?> _determineUserPositionAndroid(BuildContext context) async {
   if (await Permission.location.serviceStatus.isDisabled) {
     return Future.error("location-service-disabled");
   }
@@ -69,11 +68,12 @@ Future<Position> _determineUserPositionAndroid(BuildContext context) async {
       dialogShown = true;
       permission = await requestAndroidPermission(context);
       dialogShown = false;
+
+      if (!permission.isGranted) {
+        return Future.error("location-not-granted");
+      }
     }
 
-    if (!permission.isGranted) {
-      return Future.error("location-not-granted");
-    }
   }
 
   return await Geolocator.getCurrentPosition(
@@ -143,7 +143,7 @@ Future<PermissionStatus> requestAndroidPermission(BuildContext context) async {
 }
 
 Future<void> _openAppSettings(BuildContext context) async {
-  bool settingsOpened;
+  bool? settingsOpened;
   if (Platform.isAndroid) {
     // display warning that the settings will be opened
     await showOkDialog(
@@ -157,7 +157,7 @@ Future<void> _openAppSettings(BuildContext context) async {
     settingsOpened = await Geolocator.openLocationSettings();
   }
 
-  if (!settingsOpened) {
+  if (settingsOpened == null || settingsOpened == false) {
     // if the user did not open settings, return error
     return Future.error("location-permanently-denied");
   }
