@@ -2,12 +2,12 @@ import 'package:flutter/material.dart';
 
 class CircularButton extends StatelessWidget {
   final Color buttonColor;
-  final Function onPressedCallback;
+  final VoidCallback onPressedCallback;
   final Widget child;
 
   CircularButton({
     required this.buttonColor,
-    this.onPressedCallback,
+    required this.onPressedCallback,
     required this.child,
   });
 
