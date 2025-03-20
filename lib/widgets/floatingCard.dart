@@ -2,17 +2,17 @@ import 'package:flutter/material.dart';
 
 class FloatingCard extends StatelessWidget {
   final Widget child;
-  final double width;
-  final double leftMargin;
-  final double rightMargin;
-  final double topMargin;
-  final double leftPadding;
-  final double rightPadding;
-  final double borderRadius;
-  final double topPadding;
-  final double bottomPadding;
-  final double elevation;
-  final Color color;
+  final double? width;
+  final double? leftMargin;
+  final double? rightMargin;
+  final double? topMargin;
+  final double? leftPadding;
+  final double? rightPadding;
+  final double? borderRadius;
+  final double? topPadding;
+  final double? bottomPadding;
+  final double? elevation;
+  final Color? color;
 
   FloatingCard({
     this.width,
