@@ -18,13 +18,13 @@ Future<void> _askPermission(
   );
 }
 
-Future<PickedFile?> _pickImageFrom(
+Future<XFile?> _pickImageFrom(
   BuildContext context,
   ImageSource source,
 ) async {
   // try to get image
   try {
-    PickedFile pickedFile = await ImagePicker().getImage(source: source);
+    XFile? pickedFile = await ImagePicker().pickImage(source: source);
     return pickedFile;
   } catch (e) {
     // ask user to update permission in app settings
@@ -36,16 +36,16 @@ Future<PickedFile?> _pickImageFrom(
   return null;
 }
 
-Future<PickedFile> pickImageFromGallery(BuildContext context) async {
+Future<XFile?> pickImageFromGallery(BuildContext context) async {
   return _pickImageFrom(context, ImageSource.gallery);
 }
 
-Future<PickedFile?> pickImageFromCamera(BuildContext context) async {
+Future<XFile?> pickImageFromCamera(BuildContext context) async {
   return _pickImageFrom(context, ImageSource.camera);
 }
 
-Future<Future<PickedFile?>> pickImage(BuildContext context) async {
-  return showDialog<Future<PickedFile?>>(
+Future<Future<XFile?>?> pickImage(BuildContext context) async {
+  return showDialog<Future<XFile?>>(
     context: context,
     builder: (BuildContext context) {
       return AlertDialog(
@@ -57,7 +57,7 @@ Future<Future<PickedFile?>> pickImage(BuildContext context) async {
               ListTile(
                 onTap: () async {
                   // get image from gallery
-                  Future<PickedFile> futureImg = pickImageFromGallery(context);
+                  Future<XFile?> futureImg = pickImageFromGallery(context);
                   Navigator.pop(context, futureImg);
                 },
                 title: Text("Galeria"),
@@ -70,7 +70,7 @@ Future<Future<PickedFile?>> pickImage(BuildContext context) async {
               ListTile(
                 onTap: () async {
                   // get image from camera
-                  Future<PickedFile?> futureImg = pickImageFromCamera(context);
+                  Future<XFile?> futureImg = pickImageFromCamera(context);
                   Navigator.pop(context, futureImg);
                 },
                 title: Text("Câmera"),
