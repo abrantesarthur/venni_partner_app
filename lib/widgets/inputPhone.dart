@@ -3,11 +3,11 @@ import 'package:flutter/services.dart';
 import 'package:partner_app/widgets/appInputText.dart';
 
 class InputPhone extends StatelessWidget {
-  final Function onSubmittedCallback;
-  final TextEditingController controller;
-  final bool enabled;
-  final FocusNode focusNode;
-  final int maxLines;
+  final ValueChanged<String>? onSubmittedCallback;
+  final TextEditingController? controller;
+  final bool? enabled;
+  final FocusNode? focusNode;
+  final int? maxLines;
 
   InputPhone({
     this.onSubmittedCallback,
