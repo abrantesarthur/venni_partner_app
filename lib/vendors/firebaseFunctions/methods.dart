@@ -117,7 +117,7 @@ extension AppFirebaseFunctions on FirebaseFunctions {
     await this.httpsCallable("trip-partner_cancel").call();
   }
 
-  Future<void> startTrip(BuildContext context) async {
+  Future<bool> startTrip(BuildContext context) async {
     final firebase = FirebaseService();
 
     try {
@@ -129,7 +129,10 @@ extension AppFirebaseFunctions on FirebaseFunctions {
         firebase.analytics.logPartnerStartTrip(
           clientWaitingTime: clientWaitingTime,
         );
-      } catch (_) {}
+      return true;
+      } catch (_) {
+        return false;
+      }
     } catch (e) {
       throw e;
     }

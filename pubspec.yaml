@@ -42,7 +42,7 @@ dependencies:
   geolocator: ^11.0.0
   sliding_up_panel: ^2.0.0+1
   intl: ^0.19.0
-  slide_to_act: ^2.0.2  # replacing slider_button
+  slider_button: ^2.1.0
   map_launcher: ^3.1.0
   vibration: ^1.8.4
   system_settings: ^2.1.0

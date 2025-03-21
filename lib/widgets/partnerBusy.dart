@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:map_launcher/map_launcher.dart';
-import 'package:partner_app/models/user.dart';
 import 'package:partner_app/models/partner.dart';
 import 'package:partner_app/models/trip.dart';
 import 'package:partner_app/screens/rateClient.dart';
@@ -16,6 +15,7 @@ import 'package:partner_app/widgets/borderlessButton.dart';
 import 'package:partner_app/widgets/circularImage.dart';
 import 'package:partner_app/widgets/floatingCard.dart';
 import 'package:provider/provider.dart';
+import 'package:slider_button/slider_button.dart';
 
 class PartnerBusy extends StatefulWidget {
   final firebase = FirebaseService();
@@ -150,9 +150,11 @@ class PartnerBusyState extends State<PartnerBusy> {
     return Padding(
       padding: EdgeInsets.only(bottom: screenHeight / 50),
       child: SliderButton(
+        // FIXME: understand what returning bool? means
         action: () async {
           try {
             await Navigator.pushNamed(context, RateClient.routeName);
+            return true;
           } catch (_) {
             showOkDialog(
               context: context,
@@ -160,6 +162,7 @@ class PartnerBusyState extends State<PartnerBusy> {
               content: "Verifique sua conexão e tente novamente",
             );
           }
+          return null;
         },
         label: Text(
           "FINALIZAR CORRIDA",
@@ -201,19 +204,22 @@ class PartnerBusyState extends State<PartnerBusy> {
             children: [
               partnerIsNear
                   ? SliderButton(
-                      action: lockScreen
-                          ? () {}
-                          : () async {
-                              try {
-                                await widget.firebase.functions.startTrip(context);
-                              } catch (e) {
-                                showOkDialog(
-                                  context: context,
-                                  title: "Falha ao iniciar a corrida",
-                                  content: "Tente novamente",
-                                );
-                              }
-                            },
+                      action: () async {
+                        if(lockScreen) {
+                          return null;
+                        }
+                        try {
+                          await widget.firebase.functions.startTrip(context);
+                          return true;
+                        } catch (e) {
+                          showOkDialog(
+                            context: context,
+                            title: "Falha ao iniciar a corrida",
+                            content: "Tente novamente",
+                          );
+                          return false;
+                        }
+                      },
                       label: Text(
                         "INICIAR CORRIDA",
                         style: TextStyle(
@@ -253,10 +259,10 @@ class PartnerBusyState extends State<PartnerBusy> {
                     )
                   : CircularImage(
                       size: 60,
-                      imageFile: trip.profileImage.file,
+                      imageFile: trip.profileImage!.file,
                     ),
               Text(
-                (partnerIsNear ? "Aguarde " : "Busque ") + trip?.clientName,
+                (partnerIsNear ? "Aguarde " : "Busque ") + trip.clientName,
                 style: TextStyle(
                   fontWeight: FontWeight.w600,
                   fontSize: 24,
@@ -291,37 +297,40 @@ class PartnerBusyState extends State<PartnerBusy> {
             height: screenHeight / 3,
             child: Column(
               children: [
-                Divider(thickness: 0.1, color: Colors.black),
-                SizedBox(height: screenHeight / 100),
-                BorderlessButton(
-                  primaryText: "MENSAGEM",
-                  primaryTextSize: 20,
-                  primaryTextWeight: FontWeight.w600,
-                  iconRight: Icons.message,
-                  iconRightColor: Colors.black,
-                  iconRightSize: 25,
-                  onTap: () async => await messageClient(
-                    context,
-                    widget.trip.clientPhone,
+                widget.firebase.model.trip.clientPhone != null ? Column(children: [
+                  Divider(thickness: 0.1, color: Colors.black),
+                  SizedBox(height: screenHeight / 100),
+                  BorderlessButton(
+                    primaryText: "MENSAGEM",
+                    primaryTextSize: 20,
+                    primaryTextWeight: FontWeight.w600,
+                    iconRight: Icons.message,
+                    iconRightColor: Colors.black,
+                    iconRightSize: 25,
+                    onTap: () async => await messageClient(
+                      context,
+                      widget.firebase.model.trip.clientPhone!,
+                    ),
                   ),
-                ),
-                SizedBox(height: screenHeight / 100),
-                Divider(thickness: 0.1, color: Colors.black),
-                SizedBox(height: screenHeight / 100),
-                BorderlessButton(
-                  primaryText: "LIGAÇÃO",
-                  primaryTextSize: 20,
-                  primaryTextWeight: FontWeight.w600,
-                  iconRight: Icons.phone_in_talk,
-                  iconRightColor: Colors.black,
-                  iconRightSize: 25,
-                  onTap: () async => await UrlLauncher.openPhone(
-                    context,
-                    widget.trip.clientPhone,
+                  SizedBox(height: screenHeight / 100),
+                  Divider(thickness: 0.1, color: Colors.black),
+                  SizedBox(height: screenHeight / 100),
+                  BorderlessButton(
+                    primaryText: "LIGAÇÃO",
+                    primaryTextSize: 20,
+                    primaryTextWeight: FontWeight.w600,
+                    iconRight: Icons.phone_in_talk,
+                    iconRightColor: Colors.black,
+                    iconRightSize: 25,
+                    onTap: () async => await UrlLauncher.openPhone(
+                      context,
+                      widget.firebase.model.trip.clientPhone!,
+                    ),
                   ),
-                ),
-                SizedBox(height: screenHeight / 100),
-                Divider(thickness: 0.1, color: Colors.black),
+                  SizedBox(height: screenHeight / 100),
+                  Divider(thickness: 0.1, color: Colors.black),
+                ],
+                ) : Container(),
                 Spacer(),
                 Divider(thickness: 0.1, color: Colors.black),
                 SizedBox(height: screenHeight / 100),
@@ -346,7 +355,7 @@ class PartnerBusyState extends State<PartnerBusy> {
   }
 
   Future<void> cancelTrip(BuildContext context) async {
-    UserModel firebase = Provider.of<UserModel>(context, listen: false);
+    final firebase = FirebaseService();
 
     await showYesNoDialog(
       context,
@@ -395,7 +404,7 @@ class PartnerBusyState extends State<PartnerBusy> {
     }
 
     // give preference to opening Google Maps
-    AvailableMap chosenMap;
+    AvailableMap? chosenMap;
     availableMaps.forEach((map) {
       // give preference to Google Maps
       if (map.mapName == "Google Maps") {
@@ -406,18 +415,20 @@ class PartnerBusyState extends State<PartnerBusy> {
 
     if (trip.tripStatus == TripStatus.waitingPartner) {
       // if client is waiting partner, show directions to client
-      await chosenMap.showDirections(
+      await chosenMap!.showDirections(
+      // FIXME: ensure that originLat and originLng are defined!
         destination: Coords(
-          trip.originLat,
-          trip.originLng,
+          trip.originLat!,
+          trip.originLng!,
         ),
       );
     } else if (trip.tripStatus == TripStatus.inProgress) {
       // if trip is in progress, show directions to destination
-      await chosenMap.showDirections(
+      // FIXME: ensure that destinationLat and destinationLng are defined!
+      await chosenMap!.showDirections(
         destination: Coords(
-          trip.destinationLat,
-          trip.destinationLng,
+          trip.destinationLat!,
+          trip.destinationLng!,
         ),
       );
     }
