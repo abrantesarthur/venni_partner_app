@@ -1,24 +1,24 @@
 import 'package:audioplayers/audioplayers.dart';
 import 'package:flutter/material.dart';
-import 'package:partner_app/models/user.dart';
-import 'package:partner_app/models/partner.dart';
 import 'package:partner_app/models/timer.dart';
+import 'package:partner_app/services/firebase/firebase.dart';
 import 'package:partner_app/styles.dart';
 import 'package:partner_app/utils/utils.dart';
 import 'package:partner_app/services/firebase/database/interfaces.dart';
+import 'package:partner_app/vendors/firebaseFunctions/methods.dart';
 import 'package:partner_app/widgets/appButton.dart';
 import 'package:partner_app/widgets/floatingCard.dart';
-import 'package:partner_app/vendors/firebaseFunctions/methods.dart';
 import 'package:provider/provider.dart';
 import 'package:vibration/vibration.dart';
 
 class PartnerRequested extends StatefulWidget {
+  final firebase = FirebaseService();
   @override
   PartnerRequestedState createState() => PartnerRequestedState();
 }
 
 class PartnerRequestedState extends State<PartnerRequested> {
-  Widget buttonChild;
+  Widget? buttonChild;
   bool lock = false;
 
   @override
@@ -74,12 +74,14 @@ class PartnerRequestedState extends State<PartnerRequested> {
                   widgetRight: buttonChild == null
                       ? Consumer<TimerModel>(
                           builder: (context, timer, _) {
+                            // FIXME: ensure that remainingSeconds is not null!
                             // play notification sound and vibrate every 2 seconds
-                            if (timer.remainingSeconds % 2 == 0) {
+                            if (timer.remainingSeconds != null && timer.remainingSeconds! % 2 == 0) {
                               // snooze partners phone and play sound
                               try {
-                                AudioCache player = AudioCache();
-                                player.play("trip_request_notification.mp3");
+                                // FIXME: ensure this new approach works
+                                AudioPlayer player = AudioPlayer();
+                                player.play(AssetSource("trip_request_notification.mp3"));
                                 Vibration.vibrate();
                               } catch (_) {}
                             }
@@ -105,8 +107,7 @@ class PartnerRequestedState extends State<PartnerRequested> {
   }
 
   Future<void> accept(BuildContext context) async {
-    PartnerModel partner = Provider.of<PartnerModel>(context, listen: false);
-    UserModel firebase = Provider.of<UserModel>(context, listen: false);
+    final partner = widget.firebase.model.partner;
 
     // mark the pilot as having accepted trip, so if 15s timeout
     // finishes, we don't send a declineTrip request and don't update
@@ -123,7 +124,7 @@ class PartnerRequestedState extends State<PartnerRequested> {
 
     // send request to accept the trip
     try {
-      await firebase.functions.acceptTrip();
+      await widget.firebase.functions.acceptTrip();
     } catch (e) {
       // TODO: personalize warninig in case the reason acceptTrip faile is
       // because another partner was quicker
@@ -145,8 +146,8 @@ class PartnerRequestedState extends State<PartnerRequested> {
     // block until partner is granted or denied the trip
     // so that circular progress indicator continues
     // being displayed
-    while (partner.partnerStatus != PartnerStatus.busy &&
-        partner.partnerStatus != PartnerStatus.available) {
+    while (partner.status != PartnerStatus.busy &&
+        partner.status != PartnerStatus.available) {
       await Future.delayed(Duration(seconds: 1));
     }
   }
