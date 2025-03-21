@@ -3,10 +3,10 @@ import 'package:partner_app/styles.dart';
 
 class YesNoDialog extends StatelessWidget {
   final String title;
-  final String content;
-  final VoidCallback onPressedNo; // defaults to Navigator.pop(context)
+  final String? content;
+  final VoidCallback? onPressedNo; // defaults to Navigator.pop(context)
   final VoidCallback onPressedYes;
-  final Widget child;
+  final Widget? child;
 
   YesNoDialog({
     required this.title,
@@ -23,7 +23,7 @@ class YesNoDialog extends StatelessWidget {
       content: child ??
           (content != null
               ? Text(
-                  content,
+                  content!,
                   style: TextStyle(color: AppColor.disabled),
                 )
               : null),
