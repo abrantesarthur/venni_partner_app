@@ -3,9 +3,9 @@ import 'package:partner_app/styles.dart';
 
 class Warning extends StatelessWidget {
   final String message;
-  final Function onTapCallback;
-  final Color color;
-  final double fontSize;
+  final GestureTapUpCallback? onTapCallback;
+  final Color? color;
+  final double? fontSize;
 
   Warning(
       {required this.message, this.onTapCallback, this.color, this.fontSize});
@@ -13,7 +13,7 @@ class Warning extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return GestureDetector(
-      onTap: () => onTapCallback(context),
+      onTap: () => onTapCallback,
       child: Text(
         message,
         style: TextStyle(
