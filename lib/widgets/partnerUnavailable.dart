@@ -1,24 +1,19 @@
-import 'dart:io';
-
+import 'package:partner_app/services/firebase/firebase.dart';
 import 'package:flutter/material.dart';
-import 'package:partner_app/models/user.dart';
-import 'package:partner_app/models/googleMaps.dart';
-import 'package:partner_app/models/partner.dart';
-import 'package:partner_app/models/trip.dart';
 import 'package:partner_app/utils/utils.dart';
 import 'package:partner_app/services/firebase/database/interfaces.dart';
 import 'package:partner_app/vendors/firebaseFunctions/methods.dart';
 import 'package:partner_app/widgets/appButton.dart';
 import 'package:partner_app/widgets/overallPadding.dart';
-import 'package:provider/provider.dart';
 
 class PartnerUnavailable extends StatefulWidget {
+  final firebase = FirebaseService();
   @override
   PartnerUnavailableStatus createState() => PartnerUnavailableStatus();
 }
 
 class PartnerUnavailableStatus extends State<PartnerUnavailable> {
-  Widget buttonChild;
+  Widget? buttonChild;
   bool lock = false;
 
   @override
@@ -36,14 +31,10 @@ class PartnerUnavailableStatus extends State<PartnerUnavailable> {
   }
 
   Future<void> connect(BuildContext context) async {
-    UserModel firebase = Provider.of<UserModel>(context, listen: false);
-    PartnerModel partner = Provider.of<PartnerModel>(context, listen: false);
-    GoogleMapsModel googleMaps =
-        Provider.of<GoogleMapsModel>(context, listen: false);
-    TripModel trip = Provider.of<TripModel>(context, listen: false);
-
     // make sure notifications are on
-    await firebase.requestNotifications(context);
+    final user = widget.firebase.model.user;
+    final partner = widget.firebase.model.partner;
+    await user.requestNotifications(context);
 
     // make sure partner has shared his location
     if (partner.position == null) {
@@ -72,10 +63,12 @@ class PartnerUnavailableStatus extends State<PartnerUnavailable> {
     // send request to connect, thus updating partner's status to 'available'
     // and setting his position
     try {
-      await firebase.functions.connect(
-        currentLatitude: partner.position.latitude,
-        currentLongitude: partner.position.longitude,
-      );
+      if(partner.position != null) {
+        await widget.firebase.functions.connect(
+          currentLatitude: partner.position!.latitude,
+          currentLongitude: partner.position!.longitude,
+        );
+      }
     } catch (e) {
       print(e);
       // warn user about failure
@@ -93,11 +86,11 @@ class PartnerUnavailableStatus extends State<PartnerUnavailable> {
     }
 
     // clear gains so we can start counting them again. These gains are increased
-    // whenever the partner compeltes a new trip
+    // whenever the partner completes a new trip
     partner.updateGains(0, notify: false);
 
     // start listening for location updates
-    partner.handlePositionUpdates(firebase, googleMaps, trip);
+    partner.handlePositionUpdates();
 
     // periodically report their position to firebase
     partner.sendPositionToFirebase(true);
