@@ -164,7 +164,8 @@ enum TripStatus {
 }
 
 extension TripStatusExtension on TripStatus {
-  static TripStatus? fromString(String s) {
+  static TripStatus? fromString(String? s) {
+    if (s == null) return null;
     switch (s) {
       case "waiting-confirmation":
         return TripStatus.waitingConfirmation;
@@ -196,7 +197,7 @@ enum PaymentMethod {
 }
 
 extension PaymentMethodExtension on PaymentMethod {
-  static PaymentMethod? fromString(String s) {
+  static PaymentMethod? fromString(String? s) {
     switch (s) {
       case "cash":
         return PaymentMethod.cash;

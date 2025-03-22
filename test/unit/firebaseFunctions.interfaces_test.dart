@@ -3,11 +3,6 @@ import 'package:partner_app/vendors/firebaseFunctions/interfaces.dart';
 
 void main() {
   group("Trip", () {
-    test("fromJson with null argument", () {
-      Trip t = Trip.fromJson(null);
-      expect(t, isNull);
-    });
-
     test("fromJson with empty argument", () {
       Trip t = Trip.fromJson({});
       expect(t, isNotNull);
@@ -83,46 +78,46 @@ void main() {
 
   group("PaymentMethod", () {
     test("fromString with null argument", () {
-      PaymentMethod pm = PaymentMethodExtension.fromString(null);
+      PaymentMethod? pm = PaymentMethodExtension.fromString(null);
       expect(pm, isNull);
     });
     test("fromString with empty string", () {
-      PaymentMethod pm = PaymentMethodExtension.fromString("");
+      PaymentMethod? pm = PaymentMethodExtension.fromString("");
       expect(pm, isNull);
     });
 
     test("fromString with invalid string", () {
-      PaymentMethod pm = PaymentMethodExtension.fromString("invalid");
+      PaymentMethod? pm = PaymentMethodExtension.fromString("invalid");
       expect(pm, isNull);
     });
 
     test("fromString with 'cash' argument", () {
-      PaymentMethod pm = PaymentMethodExtension.fromString("cash");
+      PaymentMethod? pm = PaymentMethodExtension.fromString("cash");
       expect(pm, equals(PaymentMethod.cash));
     });
 
     test("fromString with 'credit_card' argument", () {
-      PaymentMethod pm = PaymentMethodExtension.fromString("credit_card");
+      PaymentMethod? pm = PaymentMethodExtension.fromString("credit_card");
       expect(pm, equals(PaymentMethod.creditCard));
     });
   });
   group("TripStatus", () {
     test("fromString with null argument", () {
-      TripStatus ts = TripStatusExtension.fromString(null);
+      TripStatus? ts = TripStatusExtension.fromString(null);
       expect(ts, isNull);
     });
     test("fromString with empty string", () {
-      TripStatus ts = TripStatusExtension.fromString("");
+      TripStatus? ts = TripStatusExtension.fromString("");
       expect(ts, isNull);
     });
 
     test("fromString with invalid string", () {
-      TripStatus ts = TripStatusExtension.fromString("invalid");
+      TripStatus? ts = TripStatusExtension.fromString("invalid");
       expect(ts, isNull);
     });
 
     test("fromString with valid argument", () {
-      TripStatus ts = TripStatusExtension.fromString("waiting-confirmation");
+      TripStatus? ts = TripStatusExtension.fromString("waiting-confirmation");
       expect(ts, equals(TripStatus.waitingConfirmation));
       ts = TripStatusExtension.fromString("waiting-payment");
       expect(ts, equals(TripStatus.waitingPayment));
