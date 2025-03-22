@@ -13,8 +13,8 @@ import '../mocks.dart';
 void main() {
   setUp(() {
     TestWidgetsFlutterBinding.ensureInitialized();
-    when(mockFirebaseModel.auth).thenReturn(mockFirebaseAuth);
-    when(mockFirebaseModel.database).thenReturn(mockFirebaseDatabase);
+    when(mockUserModel.auth).thenReturn(mockFirebaseAuth);
+    when(mockUserModel.database).thenReturn(mockFirebaseDatabase);
     when(mockConnectivityModel.hasConnection).thenReturn(true);
   });
 
@@ -52,7 +52,7 @@ void main() {
       await tester.pumpWidget(MultiProvider(
         providers: [
           ChangeNotifierProvider<UserModel>(
-              create: (context) => mockFirebaseModel),
+              create: (context) => mockUserModel),
           ChangeNotifierProvider<ConnectivityModel>(
               create: (context) => mockConnectivityModel),
         ],
@@ -64,7 +64,7 @@ void main() {
           navigatorObservers: [mockNavigatorObserver],
           onGenerateRoute: (RouteSettings settings) {
             if (settings.name == InsertAditionalInfo.routeName) {
-              final InsertAdditionalInfoArguments args = settings.arguments;
+              final InsertAdditionalInfoArguments args = settings.arguments as InsertAdditionalInfoArguments;
               return MaterialPageRoute(builder: (context) {
                 return InsertAditionalInfo(
                   userCredential: args.userCredential,

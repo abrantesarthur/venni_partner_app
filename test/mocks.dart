@@ -11,20 +11,24 @@ import 'package:partner_app/models/partner.dart';
 import 'package:partner_app/models/timer.dart';
 import 'package:partner_app/models/trip.dart';
 import 'package:partner_app/services/firebase/database/interfaces.dart';
+import 'package:partner_app/services/firebase/firebase.dart';
 
 class MockFirebaseAuth extends Mock implements FirebaseAuth {}
 
 class MockFirebaseDatabase extends Mock implements FirebaseDatabase {}
 
-class MockFirebaseModel extends Mock implements UserModel {}
+class MockFirebaseModel extends Mock implements FirebaseService {}
+
 
 class MockDatabaseReference extends Mock implements DatabaseReference {}
 
 class MockDataSnapshot extends Mock implements DataSnapshot {}
 
-class MockEvent extends Mock implements Stream<Event> {}
+// FIXME: used to be Event instead of DatabaseEvent. Ensure this still works
+class MockEvent extends Mock implements Stream<DatabaseEvent> {}
 
-class MockStreamSubscription extends Mock implements StreamSubscription<Event> {
+// FIXME: used to be Event instead of DatabaseEvent. Ensure this still works
+class MockStreamSubscription extends Mock implements StreamSubscription<DatabaseEvent> {
 }
 
 class MockNavigatorObserver extends Mock implements NavigatorObserver {}
@@ -32,6 +36,8 @@ class MockNavigatorObserver extends Mock implements NavigatorObserver {}
 class MockUserCredential extends Mock implements UserCredential {}
 
 class MockUser extends Mock implements User {}
+
+class MockUserModel extends Mock implements UserModel {}
 
 class MockPartnerModel extends Mock implements PartnerModel {}
 
@@ -46,6 +52,7 @@ class MockConnectivityModel extends Mock implements ConnectivityModel {}
 class MockTimerModel extends Mock implements TimerModel {}
 
 MockFirebaseModel mockFirebaseModel = MockFirebaseModel();
+MockUserModel mockUserModel = MockUserModel();
 MockFirebaseAuth mockFirebaseAuth = MockFirebaseAuth();
 MockFirebaseDatabase mockFirebaseDatabase = MockFirebaseDatabase();
 MockNavigatorObserver mockNavigatorObserver = MockNavigatorObserver();

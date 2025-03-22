@@ -23,7 +23,7 @@ void main() {
     // set mocks. phone number starts as +5538999999999
     String oldNumber = "+5538888888888";
     String newNumber = "+5538999999999";
-    when(mockFirebaseModel.auth).thenReturn(mockFirebaseAuth);
+    when(mockUserModel.auth).thenReturn(mockFirebaseAuth);
     when(mockFirebaseAuth.currentUser).thenReturn(mockUser);
     when(mockUser.phoneNumber).thenReturn(oldNumber);
     when(mockConnectivityModel.hasConnection).thenReturn(true);
@@ -38,7 +38,7 @@ void main() {
       MultiProvider(
         providers: [
           ChangeNotifierProvider<UserModel>(
-              create: (context) => mockFirebaseModel),
+              create: (context) => mockUserModel),
           ChangeNotifierProvider<PartnerModel>(
               create: (context) => mockPartnerModel),
           ChangeNotifierProvider<ConnectivityModel>(
@@ -49,7 +49,7 @@ void main() {
           home: EditPhone(),
           onGenerateRoute: (RouteSettings settings) {
             if (settings.name == InsertSmsCode.routeName) {
-              final InsertSmsCodeArguments args = settings.arguments;
+              final InsertSmsCodeArguments args = settings.arguments as InsertSmsCodeArguments;
               return MaterialPageRoute(builder: (context) {
                 return InsertSmsCode(
                   verificationId: args.verificationId,

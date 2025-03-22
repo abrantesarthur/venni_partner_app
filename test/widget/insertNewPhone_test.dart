@@ -23,10 +23,10 @@ void main() {
   // define mockers behaviors
   setUp(() {
     TestWidgetsFlutterBinding.ensureInitialized();
-    when(mockFirebaseModel.auth).thenReturn(mockFirebaseAuth);
+    when(mockUserModel.auth).thenReturn(mockFirebaseAuth);
     when(mockFirebaseAuth.currentUser).thenReturn(mockUser);
-    when(mockFirebaseModel.database).thenReturn(mockFirebaseDatabase);
-    when(mockFirebaseModel.isUserSignedIn).thenReturn(true);
+    when(mockUserModel.database).thenReturn(mockFirebaseDatabase);
+    when(mockUserModel.isUserSignedIn).thenReturn(true);
     when(mockConnectivityModel.hasConnection).thenReturn(true);
   });
 
@@ -97,7 +97,7 @@ void main() {
       MultiProvider(
         providers: [
           ChangeNotifierProvider<UserModel>(
-              create: (context) => mockFirebaseModel),
+              create: (context) => mockUserModel),
           ChangeNotifierProvider<PartnerModel>(
               create: (context) => mockPartnerModel),
           ChangeNotifierProvider<ConnectivityModel>(
@@ -382,7 +382,7 @@ void main() {
         MultiProvider(
           providers: [
             ChangeNotifierProvider<UserModel>(
-                create: (context) => mockFirebaseModel),
+                create: (context) => mockUserModel),
             ChangeNotifierProvider<PartnerModel>(
                 create: (context) => mockPartnerModel),
             ChangeNotifierProvider<ConnectivityModel>(

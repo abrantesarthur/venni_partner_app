@@ -28,15 +28,15 @@ void main() {
   // define mockers behaviors
   setUp(() {
     TestWidgetsFlutterBinding.ensureInitialized();
-    when(mockFirebaseModel.auth).thenReturn(mockFirebaseAuth);
+    when(mockUserModel.auth).thenReturn(mockFirebaseAuth);
     when(mockFirebaseAuth.currentUser).thenReturn(mockUser);
     when(mockUser.displayName).thenReturn("Fulano");
-    when(mockFirebaseModel.database).thenReturn(mockFirebaseDatabase);
+    when(mockUserModel.database).thenReturn(mockFirebaseDatabase);
     when(mockFirebaseDatabase.reference()).thenReturn(mockDatabaseReference);
     when(mockDatabaseReference.child(any)).thenReturn(mockDatabaseReference);
     when(mockDatabaseReference.onValue).thenAnswer((_) => mockEvent);
     when(mockEvent.listen(any)).thenAnswer((_) => mockStreamSubscription);
-    when(mockFirebaseModel.isUserSignedIn).thenReturn(true);
+    when(mockUserModel.isUserSignedIn).thenReturn(true);
     when(mockConnectivityModel.hasConnection).thenReturn(true);
     when(mockPartnerModel.name).thenReturn("Fulano");
     when(mockPartnerModel.cnhSubmitted).thenReturn(true);
@@ -73,9 +73,9 @@ void main() {
     }
 
     if (userisRegistered != null && userisRegistered) {
-      when(mockFirebaseModel.isUserSignedIn).thenReturn(true);
+      when(mockUserModel.isUserSignedIn).thenReturn(true);
     } else {
-      when(mockFirebaseModel.isUserSignedIn).thenReturn(false);
+      when(mockUserModel.isUserSignedIn).thenReturn(false);
     }
 
     // mock FirebaseAuth's signInWithCredential to return mockUserCredential
@@ -160,7 +160,7 @@ void main() {
       await tester.pumpWidget(MultiProvider(
         providers: [
           ChangeNotifierProvider<UserModel>(
-              create: (context) => mockFirebaseModel),
+              create: (context) => mockUserModel),
           ChangeNotifierProvider<ConnectivityModel>(
             create: (context) => mockConnectivityModel,
           ),
@@ -287,7 +287,7 @@ void main() {
       await tester.pumpWidget(MultiProvider(
         providers: [
           ChangeNotifierProvider<UserModel>(
-            create: (context) => mockFirebaseModel,
+            create: (context) => mockUserModel,
           ),
           ChangeNotifierProvider<ConnectivityModel>(
             create: (context) => mockConnectivityModel,
@@ -312,7 +312,7 @@ void main() {
             if (settings.name == Documents.routeName) {
               return MaterialPageRoute(builder: (context) {
                 return Documents(
-                  firebase: mockFirebaseModel,
+                  firebase: mockUserModel,
                   partner: mockPartnerModel,
                 );
               });
@@ -321,7 +321,7 @@ void main() {
           },
           routes: {
             Home.routeName: (context) => Home(
-                  firebase: mockFirebaseModel,
+                  firebase: mockUserModel,
                   partner: mockPartnerModel,
                   googleMaps: mockGoogleMapsModel,
                   timer: mockTimerModel,
@@ -544,7 +544,7 @@ void main() {
         await tester.pumpWidget(MultiProvider(
           providers: [
             ChangeNotifierProvider<UserModel>(
-                create: (context) => mockFirebaseModel),
+                create: (context) => mockUserModel),
             ChangeNotifierProvider<ConnectivityModel>(
               create: (context) => mockConnectivityModel,
             ),
@@ -611,7 +611,7 @@ void main() {
         MultiProvider(
           providers: [
             ChangeNotifierProvider<UserModel>(
-                create: (context) => mockFirebaseModel),
+                create: (context) => mockUserModel),
             ChangeNotifierProvider<ConnectivityModel>(
               create: (context) => mockConnectivityModel,
             ),

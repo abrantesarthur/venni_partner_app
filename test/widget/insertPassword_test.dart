@@ -20,13 +20,13 @@ void main() {
   setUp(() {
     TestWidgetsFlutterBinding.ensureInitialized();
 
-    when(mockFirebaseModel.auth).thenReturn(mockFirebaseAuth);
+    when(mockUserModel.auth).thenReturn(mockFirebaseAuth);
     when(mockFirebaseAuth.currentUser).thenReturn(mockUser);
     when(mockUser.phoneNumber).thenReturn("+5538999999999");
     when(mockUser.displayName).thenReturn("Fulano");
     when(mockUser.emailVerified).thenReturn(true);
-    when(mockFirebaseModel.database).thenReturn(mockFirebaseDatabase);
-    when(mockFirebaseModel.isUserSignedIn).thenReturn(false);
+    when(mockUserModel.database).thenReturn(mockFirebaseDatabase);
+    when(mockUserModel.isUserSignedIn).thenReturn(false);
     when(mockConnectivityModel.hasConnection).thenReturn(true);
     when(mockFirebaseDatabase.reference()).thenReturn(mockDatabaseReference);
     when(mockDatabaseReference.onValue).thenAnswer((_) => mockEvent);
@@ -49,7 +49,7 @@ void main() {
       MultiProvider(
         providers: [
           ChangeNotifierProvider<UserModel>(
-              create: (context) => mockFirebaseModel),
+              create: (context) => mockUserModel),
           ChangeNotifierProvider<ConnectivityModel>(
             create: (context) => mockConnectivityModel,
           ),
@@ -70,7 +70,7 @@ void main() {
             if (settings.name == Documents.routeName) {
               return MaterialPageRoute(builder: (context) {
                 return Documents(
-                  firebase: mockFirebaseModel,
+                  firebase: mockUserModel,
                   partner: mockPartnerModel,
                 );
               });
@@ -293,7 +293,7 @@ void main() {
       expect(insertPasswordState.circularButtonCallback, isNotNull);
 
       // set mocks to succesfully register user
-      when(mockFirebaseModel.isUserSignedIn).thenReturn(isUserSignedIn);
+      when(mockUserModel.isUserSignedIn).thenReturn(isUserSignedIn);
       when(mockUserCredential.user).thenReturn(mockUser);
       when(mockUser.updateEmail(any)).thenAnswer((_) async => Future.value());
       when(mockUser.updatePassword(any))
@@ -362,7 +362,7 @@ void main() {
       expect(insertPasswordState.circularButtonCallback, isNotNull);
 
       // set mocks to throw 'wrong-password' error
-      when(mockFirebaseModel.isUserSignedIn).thenReturn(true);
+      when(mockUserModel.isUserSignedIn).thenReturn(true);
       when(mockFirebaseAuth.currentUser).thenReturn(mockUser);
       when(mockUser.email).thenReturn("example@provider.com");
       FirebaseAuthException e = FirebaseAuthException(
@@ -442,7 +442,7 @@ void main() {
       // set mocks to throw 'requires-recent-login' error
       FirebaseAuthException e = FirebaseAuthException(
           message: "message", code: "requires-recent-login");
-      when(mockFirebaseModel.isUserSignedIn).thenReturn(false);
+      when(mockUserModel.isUserSignedIn).thenReturn(false);
       when(mockUserCredential.user).thenReturn(mockUser);
       when(mockUser.updateEmail(any)).thenAnswer((_) async => throw e);
 

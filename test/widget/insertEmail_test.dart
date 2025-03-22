@@ -15,7 +15,7 @@ import '../mocks.dart';
 void main() {
   setUp(() {
     TestWidgetsFlutterBinding.ensureInitialized();
-    when(mockFirebaseModel.auth).thenReturn(mockFirebaseAuth);
+    when(mockUserModel.auth).thenReturn(mockFirebaseAuth);
     when(mockFirebaseModel.database).thenReturn(mockFirebaseDatabase);
   });
 
@@ -25,7 +25,7 @@ void main() {
         MultiProvider(
           providers: [
             ChangeNotifierProvider<UserModel>(
-                create: (context) => mockFirebaseModel)
+                create: (context) => mockUserModel)
           ],
           builder: (context, child) => MaterialApp(
             initialRoute: InsertEmail.routeName,
@@ -94,14 +94,14 @@ void main() {
       await tester.pumpWidget(MultiProvider(
         providers: [
           ChangeNotifierProvider<UserModel>(
-              create: (context) => mockFirebaseModel)
+              create: (context) => mockUserModel)
         ],
         child: MaterialApp(
           home: InsertEmail(
             userCredential: mockUserCredential,
           ),
           onGenerateRoute: (RouteSettings settings) {
-            final InsertNameArguments args = settings.arguments;
+            final InsertNameArguments args = settings.arguments as InsertNameArguments;
             return MaterialPageRoute(builder: (context) {
               return InsertName(
                 userCredential: args.userCredential,
