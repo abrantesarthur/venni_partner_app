@@ -4,17 +4,17 @@ import 'package:partner_app/services/firebase/database/interfaces.dart';
 void main() {
   group("PartnerStatus", () {
     test("fromString with null string", () {
-      PartnerStatus ps = PartnerStatusExtension.fromString(null);
+      PartnerStatus? ps = PartnerStatusExtension.fromString(null);
       expect(ps, isNull);
     });
 
     test("fromString with empty string", () {
-      PartnerStatus ps = PartnerStatusExtension.fromString("");
+      PartnerStatus? ps = PartnerStatusExtension.fromString("");
       expect(ps, isNull);
     });
 
     test("fromString with valid string", () {
-      PartnerStatus ps = PartnerStatusExtension.fromString("available");
+      PartnerStatus? ps = PartnerStatusExtension.fromString("available");
       expect(ps, equals(PartnerStatus.available));
       ps = PartnerStatusExtension.fromString("unavailable");
       expect(ps, equals(PartnerStatus.unavailable));
@@ -38,17 +38,17 @@ void main() {
 
   group("AccountStatus", () {
     test("fromString with null string", () {
-      AccountStatus acs = AccountStatusExtension.fromString(null);
+      AccountStatus? acs = AccountStatusExtension.fromString(null);
       expect(acs, isNull);
     });
 
     test("fromString with empty string", () {
-      AccountStatus acs = AccountStatusExtension.fromString("");
+      AccountStatus? acs = AccountStatusExtension.fromString("");
       expect(acs, isNull);
     });
 
     test("fromString with valid string", () {
-      AccountStatus acs =
+      AccountStatus? acs =
           AccountStatusExtension.fromString("pending_documents");
       expect(acs, equals(AccountStatus.pendingDocuments));
       acs = AccountStatusExtension.fromString("pending_review");
@@ -80,11 +80,6 @@ void main() {
   });
 
   group("Vehicle", () {
-    test("fromJson with null json", () {
-      Vehicle v = Vehicle.fromJson(null);
-      expect(v, isNull);
-    });
-
     test("fromJson with empty json", () {
       Vehicle v = Vehicle.fromJson({});
       expect(v, isNotNull);
@@ -110,17 +105,17 @@ void main() {
 
   group("Gender", () {
     test("fromString with null string", () {
-      Gender g = GenderExtension.fromString(null);
+      Gender? g = GenderExtension.fromString(null);
       expect(g, isNull);
     });
 
     test("fromString with empty string", () {
-      Gender g = GenderExtension.fromString("");
+      Gender? g = GenderExtension.fromString("");
       expect(g, isNull);
     });
 
     test("fromString with valid string", () {
-      Gender g = GenderExtension.fromString("masculino");
+      Gender? g = GenderExtension.fromString("masculino");
       expect(g, equals(Gender.masculino));
       g = GenderExtension.fromString("feminino");
       expect(g, equals(Gender.feminino));
@@ -189,17 +184,17 @@ void main() {
 
   group("BankAccountType", () {
     test("fromString with null string", () {
-      BankAccountType bat = BankAccountTypeExtension.fromString(null);
+      BankAccountType? bat = BankAccountTypeExtension.fromString(null);
       expect(bat, isNull);
     });
 
     test("fromString with empty string", () {
-      BankAccountType bat = BankAccountTypeExtension.fromString("");
+      BankAccountType? bat = BankAccountTypeExtension.fromString("");
       expect(bat, isNull);
     });
 
     test("fromString with valid string", () {
-      BankAccountType bat =
+      BankAccountType?bat =
           BankAccountTypeExtension.fromString("conta_corrente");
       expect(bat, equals(BankAccountType.conta_corrente));
       bat = BankAccountTypeExtension.fromString("conta_poupanca");
@@ -223,11 +218,6 @@ void main() {
   });
 
   group("BankAccount", () {
-    test("fromJson with null json", () {
-      BankAccount ba = BankAccount.fromJson(null);
-      expect(ba, isNull);
-    });
-
     test("fromJson with empty json", () {
       BankAccount ba = BankAccount.fromJson({});
       expect(ba, isNotNull);
@@ -290,11 +280,6 @@ void main() {
   });
 
   group("PartnerInterface", () {
-    test("fromJson with null json", () {
-      PartnerInterface pi = PartnerInterface.fromJson(null);
-      expect(pi, isNull);
-    });
-
     test("fromJson with emtpy json", () {
       PartnerInterface pi = PartnerInterface.fromJson({});
       expect(pi, isNotNull);
@@ -394,13 +379,13 @@ void main() {
       expect(pi.submittedDocuments.photoWithCnh, equals(true));
       expect(pi.submittedDocuments.profilePhoto, equals(true));
       expect(pi.submittedDocuments.bankAccount, equals(true));
-      expect(pi.bankAccount.bankCode, equals("000"));
-      expect(pi.bankAccount.agencia, equals("0000"));
-      expect(pi.bankAccount.agenciaDv, equals("0"));
-      expect(pi.bankAccount.conta, equals("00000"));
-      expect(pi.bankAccount.contaDv, equals("0"));
-      expect(pi.bankAccount.type, equals(BankAccountType.conta_corrente));
-      expect(pi.bankAccount.legalName, equals("Fulano de Tal"));
+      expect(pi.bankAccount?.bankCode, equals("000"));
+      expect(pi.bankAccount?.agencia, equals("0000"));
+      expect(pi.bankAccount?.agenciaDv, equals("0"));
+      expect(pi.bankAccount?.conta, equals("00000"));
+      expect(pi.bankAccount?.contaDv, equals("0"));
+      expect(pi.bankAccount?.type, equals(BankAccountType.conta_corrente));
+      expect(pi.bankAccount?.legalName, equals("Fulano de Tal"));
     });
 
     test("toJson", () {

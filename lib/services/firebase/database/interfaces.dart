@@ -80,10 +80,10 @@ extension AccountStatusExtension on AccountStatus {
 }
 
 class Vehicle {
-  String brand;
-  String model;
-  int year;
-  String plate;
+  String? brand;
+  String? model;
+  int? year;
+  String? plate;
 
   Vehicle({
     required this.brand,
@@ -94,10 +94,10 @@ class Vehicle {
 
   factory Vehicle.fromJson(Map<dynamic, dynamic> json) {
     return Vehicle(
-      brand: json["brand"],
-      model: json["model"],
-      year: json["year"],
-      plate: json["plate"],
+      brand: json["brand"] ?? null,
+      model: json["model"] ?? null,
+      year: json["year"] ??null,
+      plate: json["plate"] ?? null,
     );
   }
 }
@@ -127,30 +127,30 @@ extension GenderExtension on Gender {
 }
 
 class SubmittedDocuments {
-  bool? cnh;
-  bool? crlv;
-  bool? photoWithCnh;
-  bool? profilePhoto;
-  bool? bankAccount;
+  bool cnh;
+  bool crlv;
+  bool photoWithCnh;
+  bool profilePhoto;
+  bool bankAccount;
 
   SubmittedDocuments({
-    this.cnh,
-    this.crlv,
-    this.photoWithCnh,
-    this.profilePhoto,
-    this.bankAccount,
+    required this.cnh,
+    required this.crlv,
+    required this.photoWithCnh,
+    required this.profilePhoto,
+    required this.bankAccount,
   });
 
-  factory SubmittedDocuments.fromJson(Map json) {
+  factory SubmittedDocuments.fromJson(Map? json) {
     return SubmittedDocuments(
-      cnh: json["cnh"] == null ? false : json["cnh"],
-      crlv: json["crlv"] == null ? false : json["crlv"],
+      cnh: json?["cnh"] == null ? false : json?["cnh"],
+      crlv: json?["crlv"] == null ? false : json?["crlv"],
       photoWithCnh:
-          json["photo_with_cnh"] == null ? false : json["photo_with_cnh"],
+          json?["photo_with_cnh"] == null ? false : json?["photo_with_cnh"],
       profilePhoto:
-          json["profile_photo"] == null ? false : json["profile_photo"],
+          json?["profile_photo"] == null ? false : json?["profile_photo"],
       bankAccount:
-          json["bank_account"] == null ? false : json["bank_account"],
+          json?["bank_account"] == null ? false : json?["bank_account"],
     );
 }
 }
