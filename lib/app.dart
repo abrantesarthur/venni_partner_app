@@ -285,12 +285,8 @@ class _AppState extends State<App> {
 
                 // if Documents is pushed
                 if (settings.name == Documents.routeName) {
-                  final DocumentsArguments args = settings.arguments as DocumentsArguments;
                   return MaterialPageRoute(builder: (context) {
-                    return Documents(
-                      firebase: args.firebase,
-                      partner: args.partner,
-                    );
+                    return Documents();
                   });
                 }
 
@@ -304,12 +300,8 @@ class _AppState extends State<App> {
 
                 // if Wallet is pushed
                 if (settings.name == Wallet.routeName) {
-                  final WalletArguments args = settings.arguments as WalletArguments;
                   return MaterialPageRoute(builder: (context) {
-                    return Wallet(
-                      firebase: args.firebase,
-                      partner: args.partner,
-                    );
+                    return Wallet();
                   });
                 }
 
@@ -370,7 +362,6 @@ class _AppState extends State<App> {
                   final PastTripDetailArguments args = settings.arguments as PastTripDetailArguments;
                   return MaterialPageRoute(builder: (context) {
                     return PastTripDetail(
-                      firebase: args.firebase,
                       pastTrip: args.pastTrip,
                     );
                   });
@@ -378,12 +369,8 @@ class _AppState extends State<App> {
 
                 // if TransfersRoute is pushed
                 if (settings.name == TransfersRoute.routeName) {
-                  final TransfersRouteArguments args = settings.arguments as TransfersRouteArguments;
                   return MaterialPageRoute(builder: (context) {
-                    return TransfersRoute(
-                      firebase: args.firebase,
-                      connectivity: args.connectivity,
-                    );
+                    return TransfersRoute();
                   });
                 }
 
@@ -397,9 +384,8 @@ class _AppState extends State<App> {
 
                 // if Demand is pushed
                 if (settings.name == Demand.routeName) {
-                  final DemandArguments args = settings.arguments as DemandArguments;
                   return MaterialPageRoute(builder: (context) {
-                    return Demand(firebase: args.firebase);
+                    return Demand();
                   });
                 }
 

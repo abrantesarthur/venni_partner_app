@@ -10,6 +10,11 @@ import 'package:partner_app/widgets/appInputText.dart';
 import 'package:partner_app/widgets/arrowBackButton.dart';
 import 'package:partner_app/widgets/overallPadding.dart';
 
+class WithdrawArguments {
+  final int availableAmount;
+  WithdrawArguments({required this.availableAmount});
+}
+
 class Withdraw extends StatefulWidget {
   static String routeName = "Withdraw";
   final int availableAmount;

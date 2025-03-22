@@ -16,16 +16,6 @@ import 'package:partner_app/widgets/horizontalBar.dart';
 import 'package:partner_app/widgets/overallPadding.dart';
 import 'package:provider/provider.dart';
 
-class WalletArguments {
-  final UserModel user;
-  final PartnerModel partner;
-
-  WalletArguments({
-    required this.user,
-    required this.partner,
-  });
-}
-
 class Wallet extends StatefulWidget {
   static const routeName = "Wallet";
   final firebase = FirebaseService();
@@ -207,7 +197,7 @@ class WalletState extends State<Wallet> {
                                               ),
                                               text: reaisFromCents(
                                                 // FIXME: balance must be defined
-                                                balance?.available.amount ?? 0,
+                                                balance?.available?.amount ?? 0,
                                               ),
                                             ),
                                           ],
@@ -249,7 +239,7 @@ class WalletState extends State<Wallet> {
                                               ),
                                               text: reaisFromCents(
                                                 // FIXME: balance must be defined
-                                                balance?.waitingFunds.amount ?? 0,
+                                                balance?.waitingFunds?.amount ?? 0,
                                               ),
                                             ),
                                           ],

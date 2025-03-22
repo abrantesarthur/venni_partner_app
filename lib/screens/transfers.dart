@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 import 'package:partner_app/models/connectivity.dart';
-import 'package:partner_app/models/user.dart';
 import 'package:partner_app/screens/transferDetail.dart';
 import 'package:partner_app/services/firebase/firebase.dart';
 import 'package:partner_app/styles.dart';
@@ -10,13 +9,6 @@ import 'package:partner_app/vendors/firebaseFunctions/methods.dart';
 import 'package:partner_app/widgets/goBackButton.dart';
 import 'package:partner_app/widgets/overallPadding.dart';
 import 'package:provider/provider.dart';
-
-class TransfersRouteArguments {
-  final UserModel firebase;
-  final ConnectivityModel connectivity;
-
-  TransfersRouteArguments(this.firebase, this.connectivity);
-}
 
 class TransfersRoute extends StatefulWidget {
   static String routeName = "TransfersRoute";
