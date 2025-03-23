@@ -60,11 +60,11 @@ class DocumentsState extends State<Documents> {
         (e) {
           final partner = widget.firebase.model.partner;
           SubmittedDocuments sd = SubmittedDocuments.fromJson(e.snapshot.value as Map);
-          partner.updateBankAccountSubmitted(sd.bankAccount ?? false);
-          partner.updateCnhSubmitted(sd.cnh ?? false);
-          partner.updateCrlvSubmitted(sd.crlv ?? false);
-          partner.updatePhotoWithCnhSubmitted(sd.photoWithCnh ?? false);
-          partner.updateProfilePhotoSubmitted(sd.profilePhoto ?? false);
+          partner.updateBankAccountSubmitted(sd.bankAccount);
+          partner.updateCnhSubmitted(sd.cnh);
+          partner.updateCrlvSubmitted(sd.crlv);
+          partner.updatePhotoWithCnhSubmitted(sd.photoWithCnh);
+          partner.updateProfilePhotoSubmitted(sd.profilePhoto);
         },
       );
     }
