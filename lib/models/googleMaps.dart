@@ -91,7 +91,7 @@ class GoogleMapsModel extends ChangeNotifier {
 
   // _drawPolygons draws polygons on the map whose opacity indicates trip demand
   Future<void> _drawPolygons(FirebaseService firebase) async {
-    DemandByZone demandByZone;
+    DemandByZone? demandByZone;
     try {
       demandByZone = await firebase.functions.getDemandByZone();
     } catch (e) {
@@ -100,39 +100,41 @@ class GoogleMapsModel extends ChangeNotifier {
       return;
     }
 
-    // iterate over zones drawing a polygon for each representing the demand there
-    demandByZone.values.entries.forEach((entry) {
-      String key = entry.key; // zone name
-      ZoneDemand value = entry.value; // nome demand
-      // todo: on tap show warning of last trip count in last 5 minutes!
-      _polygons.add(
-        Polygon(
-          polygonId: PolygonId(key),
-          // zones with more demand have color with higher opacity
-          fillColor: AppColor.primaryPink.withOpacity(
-            value.demand == Demand.LOW
-                ? 0
-                : value.demand == Demand.MEDIUM
-                    ? 0.1
-                    : value.demand == Demand.HIGH
-                        ? 0.27
-                        : value.demand == Demand.VERYHIGH
-                            ? 0.55
-                            : 0,
+    if(demandByZone != null) {
+      // iterate over zones drawing a polygon for each representing the demand there
+      demandByZone.values.entries.forEach((entry) {
+        String key = entry.key; // zone name
+        ZoneDemand value = entry.value; // nome demand
+        // todo: on tap show warning of last trip count in last 5 minutes!
+        _polygons.add(
+          Polygon(
+            polygonId: PolygonId(key),
+            // zones with more demand have color with higher opacity
+            fillColor: AppColor.primaryPink.withOpacity(
+              value.demand == Demand.LOW
+                  ? 0
+                  : value.demand == Demand.MEDIUM
+                      ? 0.1
+                      : value.demand == Demand.HIGH
+                          ? 0.27
+                          : value.demand == Demand.VERYHIGH
+                              ? 0.55
+                              : 0,
+            ),
+            points: [
+              LatLng(value.maxLat, value.maxLng),
+              LatLng(value.maxLat, value.minLng),
+              LatLng(value.minLat, value.minLng),
+              LatLng(value.minLat, value.maxLng),
+            ],
+            strokeColor: AppColor.primaryPink.withOpacity(0.05),
+            strokeWidth: 2,
           ),
-          points: [
-            LatLng(value.maxLat, value.maxLng),
-            LatLng(value.maxLat, value.minLng),
-            LatLng(value.minLat, value.minLng),
-            LatLng(value.minLat, value.maxLng),
-          ],
-          strokeColor: AppColor.primaryPink.withOpacity(0.05),
-          strokeWidth: 2,
-        ),
-      );
-    });
+        );
+      });
+      notifyListeners();
+    }
 
-    notifyListeners();
   }
 
   Future<void> drawDestinationMarker(
@@ -184,7 +186,7 @@ class GoogleMapsModel extends ChangeNotifier {
     // get trip origin position
     final originLat = trip.originLat;
     final originLng = trip.originLng;
-    if(originLat != null && originLng != null) {s
+    if(originLat != null && originLng != null) {
       LatLng originCoordinates = LatLng(
         originLat,
         originLng,
