@@ -107,8 +107,10 @@ class TripModel extends ChangeNotifier {
     if (trip != null) {
       fromTripInterface(trip, notify: notify);
       // get client profile image
-      ProfileImage pi = await firebase.storage.getClientProfilePicture(trip.clientID);
-      updateProfileImage(pi, notify: notify);
+      ProfileImage? pi = await firebase.storage.getClientProfilePicture(trip.clientID);
+      if(pi != null) {
+        updateProfileImage(pi, notify: notify);
+      }
     } else {
       clear();
     }
