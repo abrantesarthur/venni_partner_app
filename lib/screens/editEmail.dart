@@ -73,7 +73,7 @@ class EditEmailState extends State<EditEmail> {
                           Warning(
                             message: "Reenviar email de verificação",
                             color: AppColor.secondaryPurple,
-                            onTapCallback: (context) async {
+                            onTapCallback: (_context) async {
                               // ensure user is connected to the internet
                               if (!connectivity.hasConnection) {
                                 await connectivity.alertOffline(
