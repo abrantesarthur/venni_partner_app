@@ -24,9 +24,7 @@ class ConnectivityModel extends ChangeNotifier {
 
   @override
   void dispose() {
-    if (_connectivitySubscription != null) {
-      _connectivitySubscription.cancel();
-    }
+    _connectivitySubscription.cancel();
     super.dispose();
   }
 
