@@ -300,18 +300,18 @@ class PartnerModel extends ChangeNotifier {
     _lockReason = pi.lockReason;
     _vehicle = pi.vehicle;
     _cnhSubmitted =
-        pi.submittedDocuments == null ? false : pi.submittedDocuments.cnh;
+        pi.submittedDocuments == null ? false : pi.submittedDocuments!.cnh;
     _crlvSubmitted =
-        pi.submittedDocuments == null ? false : pi.submittedDocuments.crlv;
+        pi.submittedDocuments == null ? false : pi.submittedDocuments!.crlv;
     _photoWithCnhSubmitted = pi.submittedDocuments == null
         ? false
-        : pi.submittedDocuments.photoWithCnh;
+        : pi.submittedDocuments!.photoWithCnh;
     _profilePhotoSubmitted = pi.submittedDocuments == null
         ? false
-        : pi.submittedDocuments.profilePhoto;
+        : pi.submittedDocuments!.profilePhoto;
     _bankAccountSubmitted = pi.submittedDocuments == null
         ? false
-        : pi.submittedDocuments.bankAccount;
+        : pi.submittedDocuments!.bankAccount;
     _amountOwed = pi.amountOwed;
     _bankAccount = pi.bankAccount;
     _gains = (_gains ?? 0) > 0 ? _gains : 0;
