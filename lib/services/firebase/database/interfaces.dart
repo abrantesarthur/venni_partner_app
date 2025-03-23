@@ -296,11 +296,11 @@ class BankAccount {
 }
 
 class PartnerInterface {
-  final String id;
-  final String name;
-  final String lastName;
-  final String cpf;
-  final Gender gender;
+  final String? id;
+  final String? name;
+  final String? lastName;
+  final String? cpf;
+  final Gender? gender;
   final int? memberSince;
   final String phoneNumber;
   final double? rating;
@@ -308,15 +308,15 @@ class PartnerInterface {
   final String pagarmeRecipientID;
   final PartnerStatus? partnerStatus;
   final AccountStatus? accountStatus;
-  final String denialReason;
-  final String lockReason;
-  final String currentClientID;
+  final String? denialReason;
+  final String? lockReason;
+  final String? currentClientID;
   final num? currentLatitude;
   final num? currentLongitude;
   final String currentZone;
   final num? idleSince;
-  final Vehicle vehicle;
-  final SubmittedDocuments submittedDocuments;
+  final Vehicle? vehicle;
+  final SubmittedDocuments? submittedDocuments;
   final BankAccount? bankAccount;
   final int amountOwed;
 
@@ -362,16 +362,16 @@ class PartnerInterface {
         : double.parse(json["current_longitude"]);
     num? idleSince =
         json["idle_since"] == null ? null : int.parse(json["idle_since"]);
-    SubmittedDocuments submittedDocuments =
+    SubmittedDocuments? submittedDocuments = json["submitted_documents"] == null ? null :
         SubmittedDocuments.fromJson(json["submitted_documents"]);
-    BankAccount? bankAccount = json["bank_account"] != null ? BankAccount.fromJson(json["bank_account"]) : null;
+    BankAccount? bankAccount = json["bank_account"] == null ? null : BankAccount.fromJson(json["bank_account"]);
 
     return PartnerInterface(
       id: json["uid"],
       name: json["name"],
       lastName: json["last_name"],
       cpf: json["cpf"],
-      gender: GenderExtension.fromString(json["gender"]) ?? Gender.masculino,
+      gender: GenderExtension.fromString(json["gender"]),
       memberSince: memberSince,
       phoneNumber: json["phone_number"],
       rating: rating,
@@ -399,7 +399,7 @@ class PartnerInterface {
     json["name"] = this.name;
     json["last_name"] = this.lastName;
     json["cpf"] = this.cpf;
-    json["gender"] = this.gender.getString();
+    json["gender"] = this.gender?.getString() ?? null;
     json["member_since"] = this.memberSince.toString();
     json["phone_number"] = this.phoneNumber;
     json["rating"] = this.rating.toString();
@@ -414,31 +414,20 @@ class PartnerInterface {
     json["current_longitude"] = this.currentLongitude.toString();
     json["current_zone"] = this.currentZone;
     json["idleSince"] = this.idleSince.toString();
-    json["vehicle"] = {
-      "brand": this.vehicle.brand,
-      "model": this.vehicle.model,
-      "year": this.vehicle.year,
-      "plate": this.vehicle.plate,
+    json["vehicle"] = this.vehicle == null ? null : {
+      "brand": this.vehicle!.brand,
+      "model": this.vehicle!.model,
+      "year": this.vehicle!.year,
+      "plate": this.vehicle!.plate,
     };
-    json["submitted_documents"] = {
-      "cnh": this.submittedDocuments.cnh == null
-          ? false
-          : this.submittedDocuments.cnh,
-      "crlv": this.submittedDocuments.crlv == null
-          ? false
-          : this.submittedDocuments.crlv,
-      "photo_with_cnh": this.submittedDocuments.photoWithCnh == null
-          ? false
-          : this.submittedDocuments.photoWithCnh,
-      "profile_photo": this.submittedDocuments.profilePhoto == null
-          ? false
-          : this.submittedDocuments.profilePhoto,
-      "bank_account": this.submittedDocuments.bankAccount == null
-          ? false
-          : this.submittedDocuments.profilePhoto,
+    json["submitted_documents"] = this.submittedDocuments == null ? null : {
+      "cnh": this.submittedDocuments!.cnh,
+      "crlv": this.submittedDocuments!.crlv,
+      "photo_with_cnh": this.submittedDocuments!.photoWithCnh,
+      "profile_photo": this.submittedDocuments!.profilePhoto,
+      "bank_account": this.submittedDocuments!.bankAccount,
     };
-    if (this.bankAccount != null) {
-      json["bank_account"] = {
+    json["bank_account"] = this.bankAccount == null ? null : {
         "bank_code": this.bankAccount!.bankCode,
         "agencia": this.bankAccount!.agencia,
         "agencia_dv": this.bankAccount!.agenciaDv,
@@ -448,7 +437,6 @@ class PartnerInterface {
         "document_number": this.bankAccount!.documentNumber,
         "legal_name": this.bankAccount!.legalName,
       };
-    }
     return json;
   }
 }
