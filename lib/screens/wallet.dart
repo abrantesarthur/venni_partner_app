@@ -1,6 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:partner_app/models/connectivity.dart';
-import 'package:partner_app/models/user.dart';
 import 'package:partner_app/models/partner.dart';
 import 'package:partner_app/screens/balance.dart';
 import 'package:partner_app/screens/transfers.dart';
@@ -92,19 +90,17 @@ class WalletState extends State<Wallet> {
   }
 
   @override
+  /// Builds the Wallet screen widget, displaying the user's balance and
+  /// earnings data. It uses a FutureBuilder to handle asynchronous data
+  /// fetching and displays a loading indicator, error message, or the
+  /// retrieved data based on the connection state. The screen includes
+  /// sections for balance details, earnings breakdown, and navigation
+  /// buttons for additional information.
   Widget build(BuildContext context) {
     final screenHeight = MediaQuery.of(context).size.height;
     final screenWidth = MediaQuery.of(context).size.width;
 
     PartnerModel partner = Provider.of<PartnerModel>(context);
-    UserModel firebase = Provider.of<UserModel>(
-      context,
-      listen: false,
-    );
-    ConnectivityModel connectivity = Provider.of<ConnectivityModel>(
-      context,
-      listen: false,
-    );
 
     return FutureBuilder<void>(
       future: future,
@@ -429,10 +425,6 @@ class WalletState extends State<Wallet> {
                                       onTapCallBack: () => Navigator.pushNamed(
                                         context,
                                         TransfersRoute.routeName,
-                                        arguments: TransfersRouteArguments(
-                                          firebase,
-                                          connectivity,
-                                        ),
                                       ),
                                     ),
                                   ),

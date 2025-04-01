@@ -176,7 +176,7 @@ class TransfersRouteState extends State<TransfersRoute> {
                   ),
                   children: <TextSpan>[
                     TextSpan(
-                      text: (transfer.amount / 100).toStringAsFixed(2),
+                      text: ((transfer.amount ?? 0) / 100).toStringAsFixed(2),
                       style: TextStyle(fontSize: 16),
                     ),
                   ],
@@ -189,14 +189,14 @@ class TransfersRouteState extends State<TransfersRoute> {
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
               Text(
-                formatDatetime(transfer.dateCreated.millisecondsSinceEpoch),
+                formatDatetime(transfer.dateCreated?.millisecondsSinceEpoch ?? 0),
                 style: TextStyle(
                   fontSize: 14,
                   color: AppColor.disabled,
                 ),
               ),
               Text(
-                transfer.status.getString(),
+                transfer.status?.getString() ?? '',
                 style: TextStyle(
                   fontSize: 14,
                   color: transfer.status == TransferStatus.transferred

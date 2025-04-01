@@ -295,7 +295,7 @@ class MaskedInputFormatter extends TextInputFormatter {
 Future<void> showOkDialog({
   required BuildContext context,
   required String title,
-  String content,
+  String? content,
 }) async {
   return await showDialog(
       context: context,
@@ -310,9 +310,9 @@ Future<void> showOkDialog({
 Future<T> showYesNoDialog<T>(
   BuildContext context, {
   required String title,
-  String content,
-  Widget child,
-  VoidCallback onPressedNo,
+  String? content,
+  Widget? child,
+  VoidCallback? onPressedNo,
   required VoidCallback onPressedYes,
 }) async {
   return await showDialog(
@@ -348,11 +348,11 @@ int getDistanceBetweenCoordinates(LatLng c1, LatLng c2) {
   return (earthDiameter * asin(sqrt(a)) * 1000).round();
 }
 
-double toFixed(double num, num decimals) {
+double toFixed(double num, int decimals) {
   if (decimals <= 0) {
     return num;
   }
-  int factor = pow(10, decimals);
+  double factor = pow(10, decimals).toDouble();
   return (num * factor).round() / factor;
 }
 
