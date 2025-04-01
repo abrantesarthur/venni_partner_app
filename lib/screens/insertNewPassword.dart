@@ -49,7 +49,7 @@ class InsertNewPasswordState extends State<InsertNewPassword> {
     lockScreen = false;
     displayPasswordChecks = true;
     validateOldPasswordCriteria = () {
-      String password = oldPasswordTextEditingController.text ?? "";
+      String password = oldPasswordTextEditingController.text;
       // user must type some old password
       if (password.length < 8) {
         return false;
@@ -58,7 +58,7 @@ class InsertNewPasswordState extends State<InsertNewPassword> {
     };
     validateNewPasswordCriteria = () {
       // check password requirements as user types
-      String password = newPasswordTextEditingController.text ?? "";
+      String password = newPasswordTextEditingController.text;
 
       if (password.length > 0) {
         // show password warnings and hide registration error warnigns
@@ -93,7 +93,7 @@ class InsertNewPasswordState extends State<InsertNewPassword> {
         });
       }
       // all checks must pass and user must have typed old password
-      String oldPassword = oldPasswordTextEditingController.text ?? "";
+      String oldPassword = oldPasswordTextEditingController.text;
       if (passwordChecks[0] &&
           passwordChecks[1] &&
           passwordChecks[2] &&

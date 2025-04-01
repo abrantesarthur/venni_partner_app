@@ -89,8 +89,6 @@ extension TransferStatusExtension on TransferStatus {
         return "processando";
       case TransferStatus.canceled:
         return "cancelada";
-      default:
-        return "";
     }
   }
 }

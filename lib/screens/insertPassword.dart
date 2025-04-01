@@ -4,7 +4,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter/scheduler.dart';
 import 'package:partner_app/models/connectivity.dart';
 import 'package:partner_app/models/user.dart';
-import 'package:partner_app/models/partner.dart';
 import 'package:partner_app/screens/documents.dart';
 import 'package:partner_app/screens/splash.dart';
 import 'package:partner_app/screens/start.dart';
@@ -86,7 +85,7 @@ class InsertPasswordState extends State<InsertPassword> {
     displayPasswordWarnings = true;
     passwordTextEditingController.addListener(() {
       // check password requirements as user types
-      String password = passwordTextEditingController.text ?? "";
+      String password = passwordTextEditingController.text;
 
       if (password.length > 0) {
         // show password warnings and hide registration error warnigns
@@ -214,7 +213,7 @@ class InsertPasswordState extends State<InsertPassword> {
             ),
             SizedBox(height: screenHeight / 80),
             Warning(
-              onTapCallback: (BuildContext context) {
+              onTapCallback: (TapUpDetails details) {
                 Navigator.pushNamedAndRemoveUntil(
                     context, Start.routeName, (_) => false);
               },
@@ -375,7 +374,6 @@ class InsertPasswordState extends State<InsertPassword> {
   Widget build(BuildContext context) {
     screenHeight = MediaQuery.of(context).size.height;
     UserModel firebase = Provider.of<UserModel>(context, listen: false);
-    PartnerModel partner = Provider.of<PartnerModel>(context, listen: false);
 
     return FutureBuilder(
       future: successfullyRegisteredUser,

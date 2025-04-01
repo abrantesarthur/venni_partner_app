@@ -14,7 +14,6 @@ import 'package:provider/provider.dart';
 import 'package:partner_app/utils/utils.dart';
 import 'package:partner_app/services/firebase/firebaseAuth.dart';
 
-import '../models/user.dart';
 import '../widgets/warning.dart';
 
 class InsertNewPhone extends StatefulWidget {
@@ -106,16 +105,12 @@ class InsertNewPhoneState extends State<InsertNewPhone> {
     String verificationId,
     int token,
   ) async {
-    final UserModel firebase = Provider.of<UserModel>(
-      context,
-      listen: false,
-    );
 
     setState(() {
       resendToken = token;
     });
     // update the UI for the user to enter the SMS code
-    final exception = await Navigator.pushNamed(
+    await Navigator.pushNamed(
       context,
       InsertSmsCode.routeName,
       arguments: InsertSmsCodeArguments(
@@ -142,8 +137,6 @@ class InsertNewPhoneState extends State<InsertNewPhone> {
     required BuildContext context,
     required PhoneAuthCredential credential,
   }) async {
-    UserModel firebase = Provider.of<UserModel>(context, listen: false);
-
     try {
       await widget.firebase.auth.currentUser?.updatePhoneNumber(credential);
     } catch (e) {
@@ -246,10 +239,6 @@ class InsertNewPhoneState extends State<InsertNewPhone> {
   @override
   Widget build(BuildContext context) {
     final double screenHeight = MediaQuery.of(context).size.height;
-    final UserModel firebase = Provider.of<UserModel>(
-      context,
-      listen: false,
-    );
     return Scaffold(
       body: LayoutBuilder(builder: (
         BuildContext context,

@@ -1,7 +1,6 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:partner_app/models/connectivity.dart';
-import 'package:partner_app/models/user.dart';
 import 'package:partner_app/screens/insertSmsCode.dart';
 import 'package:partner_app/services/firebase/firebase.dart';
 import 'package:partner_app/styles.dart';
@@ -182,7 +181,6 @@ class InsertPhoneNumberState extends State<InsertPhone> {
   @override
   Widget build(BuildContext context) {
     final screenHeight = MediaQuery.of(context).size.height;
-    final firebaseModel = Provider.of<UserModel>(context);
 
     return Scaffold(
       body: LayoutBuilder(

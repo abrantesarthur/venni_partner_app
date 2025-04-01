@@ -47,14 +47,14 @@ class InsertNameState extends State<InsertName> {
     circularButtonColor = AppColor.disabled;
     nameTextEditingController.addListener(() {
       controllerListener(
-        nameTextEditingController.text ?? "",
-        surnameTextEditingController.text ?? "",
+        nameTextEditingController.text,
+        surnameTextEditingController.text,
       );
     });
     surnameTextEditingController.addListener(() {
       controllerListener(
-        nameTextEditingController.text ?? "",
-        surnameTextEditingController.text ?? "",
+        nameTextEditingController.text,
+        surnameTextEditingController.text,
       );
     });
   }

@@ -46,8 +46,8 @@ class InsertNewEmailState extends State<InsertNewEmail> {
     lockScreen = false;
 
     listener = () {
-      String email = emailTextEditingController.text ?? "";
-      String password = passwordTextEditingController.text ?? "";
+      String email = emailTextEditingController.text;
+      String password = passwordTextEditingController.text;
 
       if (email.isValid() && password.length >= 8) {
         setState(() {

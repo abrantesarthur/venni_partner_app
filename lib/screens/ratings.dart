@@ -48,19 +48,16 @@ class RatingsState extends State<Ratings> {
       await widget.firebase.model.partner.downloadData();
 
       trips.items.forEach((trip) {
-        // save feedback if it exists
-        if (trip.partnerRating?.feedback != null) {
-          feedbackRatingMap[trip.partnerRating.feedback] =
-              trip.partnerRating.score;
-        }
+        // save feedback
+        feedbackRatingMap[trip.partnerRating.feedback] =
+            trip.partnerRating.score;
+        
 
-        // increase rating if exists
-        if (trip.partnerRating != null) {
-          ratingsCount++;
-        }
+        // increase rating
+        ratingsCount++;
 
         // calculate start counts
-        switch (trip.partnerRating?.score) {
+        switch (trip.partnerRating.score) {
           case 1:
             oneStarCount += 1;
             break;
