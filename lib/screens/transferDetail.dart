@@ -60,7 +60,7 @@ class TransferDetailState extends State<TransferDetail> {
                 ),
                 children: <TextSpan>[
                   TextSpan(
-                    text: (widget.transfer.amount / 100).toStringAsFixed(2),
+                    text: ((widget.transfer.amount ?? 0) / 100).toStringAsFixed(2),
                     style: TextStyle(fontSize: 28),
                   ),
                 ],
@@ -69,8 +69,9 @@ class TransferDetailState extends State<TransferDetail> {
             SizedBox(height: screenHeight / 50),
             BorderlessButton(
               primaryText: "Taxa",
+              // FIXME: widget.transfer.fee should never be null
               secondaryText:
-                  "R\$" + (widget.transfer.fee / 100).toStringAsFixed(2),
+                  "R\$" + ((widget.transfer.fee ?? 0) / 100).toStringAsFixed(2),
               primaryTextSize: 16,
               secondaryTextSize: 18,
               paddingTop: screenHeight / 150,
@@ -78,7 +79,7 @@ class TransferDetailState extends State<TransferDetail> {
             ),
             BorderlessButton(
               primaryText: "Status",
-              secondaryText: widget.transfer.status.getString(),
+              secondaryText: widget.transfer.status?.getString() ?? "",
               primaryTextSize: 16,
               secondaryTextSize: 18,
               paddingTop: screenHeight / 150,
@@ -87,8 +88,9 @@ class TransferDetailState extends State<TransferDetail> {
             widget.transfer.status == TransferStatus.transferred
                 ? BorderlessButton(
                     primaryText: "Data de depósito",
+                    // FIXME: fundingDate should never be null
                     secondaryText: formatDatetime(
-                      widget.transfer.fundingDate.millisecondsSinceEpoch,
+                      widget.transfer.fundingDate?.millisecondsSinceEpoch,
                     ) ?? "",
                     primaryTextSize: 16,
                     secondaryTextSize: 18,
@@ -100,9 +102,10 @@ class TransferDetailState extends State<TransferDetail> {
                     widget.transfer.status == TransferStatus.processing
                 ? BorderlessButton(
                     primaryText: "Previsão de depósito",
+                    // FIXME: fundingEstimatedDate should never be null
                     secondaryText: formatDatetime(
                       widget
-                          .transfer.fundingEstimatedDate.millisecondsSinceEpoch,
+                          .transfer.fundingEstimatedDate?.millisecondsSinceEpoch,
                     ) ?? "",
                     primaryTextSize: 16,
                     secondaryTextSize: 18,
@@ -113,7 +116,7 @@ class TransferDetailState extends State<TransferDetail> {
             BorderlessButton(
               primaryText: "Banco",
               secondaryText:
-                  bankCodeToNameMap[widget.transfer.bankAccount.bankCode] ?? "",
+                  bankCodeToNameMap[widget.transfer.bankAccount?.bankCode] ?? "",
               primaryTextSize: 16,
               secondaryTextSize: 18,
               paddingTop: screenHeight / 150,
@@ -121,9 +124,9 @@ class TransferDetailState extends State<TransferDetail> {
             ),
             BorderlessButton(
               primaryText: "Agência",
-              secondaryText: widget.transfer.bankAccount.agencia +
-                  (widget.transfer.bankAccount.agenciaDv != null
-                      ? "-" + widget.transfer.bankAccount.agenciaDv!
+              secondaryText: widget.transfer.bankAccount?.agencia ?? "" +
+                  (widget.transfer.bankAccount?.agenciaDv != null
+                      ? "-" + widget.transfer.bankAccount!.agenciaDv!
                       : ""),
               primaryTextSize: 16,
               secondaryTextSize: 18,
@@ -132,9 +135,9 @@ class TransferDetailState extends State<TransferDetail> {
             ),
             BorderlessButton(
               primaryText: "Conta",
-              secondaryText: widget.transfer.bankAccount.conta +
-                  (widget.transfer.bankAccount.contaDv != null
-                      ? "-" + widget.transfer.bankAccount.contaDv!
+              secondaryText: widget.transfer.bankAccount?.conta ?? "" +
+                  (widget.transfer.bankAccount?.contaDv != null
+                      ? "-" + widget.transfer.bankAccount!.contaDv!
                       : ""),
               primaryTextSize: 16,
               secondaryTextSize: 18,
@@ -143,7 +146,7 @@ class TransferDetailState extends State<TransferDetail> {
             ),
             BorderlessButton(
               primaryText: "Titular",
-              secondaryText: widget.transfer.bankAccount.legalName,
+              secondaryText: widget.transfer.bankAccount?.legalName ?? "",
               primaryTextSize: 16,
               secondaryTextSize: 18,
               paddingTop: screenHeight / 150,
@@ -151,7 +154,7 @@ class TransferDetailState extends State<TransferDetail> {
             ),
             BorderlessButton(
               primaryText: "Tipo de conta",
-              secondaryText: widget.transfer.bankAccount.type.getString(),
+              secondaryText: widget.transfer.bankAccount?.type.getString() ?? "",
               primaryTextSize: 16,
               secondaryTextSize: 18,
               paddingTop: screenHeight / 150,

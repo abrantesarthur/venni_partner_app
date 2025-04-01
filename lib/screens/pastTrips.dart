@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:partner_app/models/connectivity.dart';
-import 'package:partner_app/models/user.dart';
 import 'package:partner_app/screens/pastTripDetail.dart';
 import 'package:partner_app/services/firebase/firebase.dart';
 import 'package:partner_app/styles.dart';
@@ -81,7 +80,7 @@ class PastTripsState extends State<PastTrips> {
     // get 10 trips that happened before least recent trip
     int? maxRequestTime;
     if (leastRecentTrip != null) {
-      maxRequestTime = leastRecentTrip.requestTime - 1;
+      maxRequestTime = leastRecentTrip.requestTime! - 1;
     }
     GetPastTripsArguments args = GetPastTripsArguments(
       pageSize: 10,
@@ -237,7 +236,7 @@ class PastTripsState extends State<PastTrips> {
               ),
               SizedBox(width: screenWidth / 50),
               Text(
-                formatDatetime(trip.requestTime),
+                formatDatetime(trip.requestTime ?? 0),
                 style: TextStyle(
                   fontWeight: FontWeight.bold,
                   fontSize: 14,
@@ -251,7 +250,7 @@ class PastTripsState extends State<PastTrips> {
                 "R\$ " +
                     (trip.paymentMethod == PaymentMethod.cash
                         ? (trip.farePrice / 100).toStringAsFixed(2)
-                        : ((trip.payment?.partnerAmountReceived ??
+                        : ((trip.payment.partnerAmountReceived ??
                                     trip.farePrice * 0.8) /
                                 100)
                             .toStringAsFixed(2)),

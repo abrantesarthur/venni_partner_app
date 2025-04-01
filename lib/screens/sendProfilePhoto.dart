@@ -164,7 +164,7 @@ class SendProfilePhotoState extends State<SendProfilePhoto> {
     }
 
     // get profilePhoto from camera or gallery
-    Future<PickedFile?> futureProfilePhoto = await pickImage(context);
+    Future<XFile?>? futureProfilePhoto = await pickImage(context);
 
     // show progress indicator and lock screen
     setState(() {
@@ -174,7 +174,7 @@ class SendProfilePhotoState extends State<SendProfilePhoto> {
       lockScreen = true;
     });
 
-    PickedFile? profilePhoto = await futureProfilePhoto;
+    XFile? profilePhoto = await futureProfilePhoto;
 
     if (profilePhoto != null) {
       try {

@@ -68,13 +68,14 @@ class PastTripDetailState extends State<PastTripDetail> {
               googleMaps.onMapCreatedCallback(c);
               await googleMaps.drawMarkers(
                 context: context,
+                // FIXME: guarantee that originLat and originLng are not null
                 firstMarkerPosition: LatLng(
-                  widget.pastTrip.originLat,
-                  widget.pastTrip.originLng,
+                  widget.pastTrip.originLat ?? 0,
+                  widget.pastTrip.originLng ?? 0,
                 ),
                 secondMarkerPosition: LatLng(
-                  widget.pastTrip.destinationLat,
-                  widget.pastTrip.destinationLng,
+                  widget.pastTrip.destinationLat ?? 0,
+                  widget.pastTrip.destinationLng ?? 0,
                 ),
                 topPadding: screenHeight / 5,
                 bottomPadding: screenHeight / 10,
@@ -136,7 +137,8 @@ Widget _buildFloatingCard({
                     ),
                     SizedBox(width: screenWidth / 50),
                     Text(
-                      formatDatetime(pastTrip.requestTime),
+                      // FIXME: guarantee that requestTime is not null
+                      formatDatetime(pastTrip.requestTime ?? 0),
                       style: TextStyle(
                         fontWeight: FontWeight.bold,
                         fontSize: 14,
@@ -311,8 +313,7 @@ Widget _buildFloatingCard({
                       "R\$ " +
                           ((pastTrip.paymentMethod == PaymentMethod.creditCard
                                       ? pastTrip.payment.partnerAmountReceived
-                                      : pastTrip.farePrice) /
-                                  100)
+                                      : pastTrip.farePrice) ?? 0 / 100)
                               .toStringAsFixed(2),
                       style: TextStyle(
                         fontWeight: FontWeight.bold,
@@ -330,24 +331,4 @@ Widget _buildFloatingCard({
       SizedBox(height: screenHeight / 20),
     ],
   );
-}
-
-String getRateDescription(int rate) {
-  if (rate == null) {
-    return "sem avaliação";
-  }
-  switch (rate) {
-    case 1:
-      return "péssima";
-    case 2:
-      return "ruim";
-    case 3:
-      return "regular";
-    case 4:
-      return "boa";
-    case 5:
-      return "excelente";
-    default:
-      return "";
-  }
 }

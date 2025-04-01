@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:partner_app/models/connectivity.dart';
 import 'package:partner_app/models/user.dart';
 import 'package:partner_app/models/partner.dart';
 import 'package:partner_app/screens/demand.dart';
@@ -21,10 +20,6 @@ class Menu extends StatelessWidget {
     final double screenWidth = MediaQuery.of(context).size.width;
     final UserModel user = Provider.of<UserModel>(context);
     final PartnerModel partner = Provider.of<PartnerModel>(context);
-    final ConnectivityModel connectivity = Provider.of<ConnectivityModel>(
-      context,
-      listen: false,
-    );
 
     return Drawer(
       child: ListView(
@@ -37,10 +32,6 @@ class Menu extends StatelessWidget {
                 onTap: () => Navigator.pushNamed(
                   context,
                   Profile.routeName,
-                  arguments: ProfileArguments(
-                    partner: partner,
-                    user: user,
-                  ),
                 ),
                 child: Column(
                   children: [
@@ -91,10 +82,6 @@ class Menu extends StatelessWidget {
                     Navigator.pushNamed(
                       context,
                       Wallet.routeName,
-                      arguments: WalletArguments(
-                        user: user,
-                        partner: partner,
-                      ),
                     );
                   },
                   iconLeft: Icons.trending_up,

@@ -154,7 +154,7 @@ class SendCrlvState extends State<SendCrlv> {
     }
 
     // get crlv from camera or gallery
-    Future<PickedFile?> futureCrlv = await pickImage(context);
+    Future<XFile?>? futureCrlv = await pickImage(context);
 
     // show progress indicator and lock screen
     setState(() {
@@ -164,7 +164,7 @@ class SendCrlvState extends State<SendCrlv> {
       lockScreen = true;
     });
 
-    PickedFile? crlv = await futureCrlv;
+    XFile? crlv = await futureCrlv;
 
     if (crlv != null) {
       try {

@@ -154,7 +154,7 @@ class SendPhotoWithCnhState extends State<SendPhotoWithCnh> {
     }
 
     // get crlv from camera or gallery
-    Future<PickedFile?> futurePhotoWithCnh = await pickImage(context);
+    Future<XFile?>? futurePhotoWithCnh = await pickImage(context);
 
     // show progress indicator and lock screen
     setState(() {
@@ -164,7 +164,7 @@ class SendPhotoWithCnhState extends State<SendPhotoWithCnh> {
       lockScreen = true;
     });
 
-    PickedFile? photoWithCnh = await futurePhotoWithCnh;
+    XFile? photoWithCnh = await futurePhotoWithCnh;
 
     if (photoWithCnh != null) {
       try {

@@ -1,11 +1,9 @@
 import 'dart:async';
 
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:partner_app/models/connectivity.dart';
-import 'package:partner_app/models/user.dart';
 import 'package:partner_app/services/firebase/firebase.dart';
 import 'package:partner_app/styles.dart';
 import 'package:partner_app/widgets/appInputText.dart';
@@ -308,7 +306,7 @@ class InsertSmsCodeState extends State<InsertSmsCode> {
   Widget displayWarnings(BuildContext context, double padding) {
     Warning editPhoneWarning = Warning(
       message: "Editar o número do meu celular",
-      onTapCallback: Navigator.pop,
+      onTapCallback: (TapUpDetails details) => Navigator.pop(context),
     );
     if (warningMessage != null && _resendCodeWarning != null) {
       return Expanded(
@@ -363,7 +361,7 @@ class InsertSmsCodeState extends State<InsertSmsCode> {
     if (remainingSeconds <= 0) {
       // if remainingSeconds reaches 0, allow user to resend sms code.
       _resendCodeWarning = Warning(
-        onTapCallback: resendCode,
+        onTapCallback: (TapUpDetails details) => resendCode(context),
         message: "Reenviar o código para meu celular",
       );
     } else {

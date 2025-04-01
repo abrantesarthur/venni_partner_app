@@ -8,7 +8,7 @@ import 'dart:io' as dartIo;
 extension AppFirebaseStorage on FirebaseStorage {
   Future<void> pushCrlv({
     required String partnerID,
-    required PickedFile crlv,
+    required XFile crlv,
   }) async {
     try {
       await this
@@ -24,7 +24,7 @@ extension AppFirebaseStorage on FirebaseStorage {
 
   Future<void> pushCnh({
     required String partnerID,
-    required PickedFile cnh,
+    required XFile cnh,
   }) async {
     try {
       await this
@@ -38,7 +38,7 @@ extension AppFirebaseStorage on FirebaseStorage {
 
   Future<void> pushPhotoWithCnh({
     required String partnerID,
-    required PickedFile photoWithCnh,
+    required XFile photoWithCnh,
   }) async {
     try {
       await this
@@ -52,7 +52,7 @@ extension AppFirebaseStorage on FirebaseStorage {
 
   Future<void> pushProfilePhoto({
     required String partnerID,
-    required PickedFile profilePhoto,
+    required XFile profilePhoto,
   }) async {
     try {
       await this

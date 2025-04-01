@@ -331,7 +331,7 @@ class SendBankAccountState extends State<SendBankAccount> with RouteAware {
 
     try {
       // add bank account to firebase
-      BankAccount ba = await widget.firebase.functions.createBankAccount(
+      BankAccount? ba = await widget.firebase.functions.createBankAccount(
         BankAccount(
           bankCode: selectedBank!.getCode(),
           agencia: agenciaController.text,
@@ -355,7 +355,7 @@ class SendBankAccountState extends State<SendBankAccount> with RouteAware {
       }
 
       // if editing, update partner model
-      if (widget.mode == SendBankAccountMode.edit) {
+      if (widget.mode == SendBankAccountMode.edit && ba != null) {
         partner.updateBankAccount(ba);
       }
 
