@@ -9,6 +9,7 @@ enum NotificationType {
   tripRequest,
 }
 
+// FIXME: ensure notifications are set correctly and work as expected
 class Notifications {
   Notifications._internal();
   static final Notifications _notifications = Notifications._internal();
@@ -37,19 +38,22 @@ class Notifications {
       )
     ]);
 
+    AwesomeNotifications().setListeners(
     // stop triggering notification when user taps on it
-    AwesomeNotifications().actionStream.listen((ReceivedAction _) {
-      if (_tripRequestTimer != null) {
-        _tripRequestTimer!.cancel();
-      }
-    });
-
+      onActionReceivedMethod: (ReceivedAction receivedAction) async {
+        if (_tripRequestTimer != null) {
+          _tripRequestTimer!.cancel();
+        }
+        return;
+      },
     // stop triggering notification when user dismisses it
-    AwesomeNotifications().dismissedStream.listen((ReceivedAction event) {
-      if (_tripRequestTimer != null) {
-        _tripRequestTimer!.cancel();
-      }
-    });
+      onDismissActionReceivedMethod: (ReceivedAction receivedAction) async {
+        if (_tripRequestTimer != null) {
+          _tripRequestTimer!.cancel();
+        }
+        return;
+      },
+    );
   }
 
   // stopTriggering stops triggering any existing notification
