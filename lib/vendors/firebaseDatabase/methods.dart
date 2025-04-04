@@ -16,10 +16,13 @@ extension AppFirebaseDatabase on FirebaseDatabase {
   }
 
   Future<void> createPartner(PartnerInterface partner) async {
+    if(partner.id == null) {
+      throw Exception("Cannot create partner when its id is null");
+    }
     await this
         .reference()
         .child("partners")
-        .child(partner.id)
+        .child(partner.id!)
         .set(partner.toJson());
   }
 

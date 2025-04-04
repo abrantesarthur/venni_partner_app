@@ -9,7 +9,7 @@ class AppInputPassword extends StatefulWidget {
   final bool? autoFocus;
   final String? hintText;
   final FocusNode? focusNode;
-  final Function? onSubmittedCallback;
+  final ValueChanged<String>? onSubmittedCallback;
 
   AppInputPassword({
     required this.controller,
